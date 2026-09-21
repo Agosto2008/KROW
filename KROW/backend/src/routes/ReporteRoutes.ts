@@ -1,0 +1,26 @@
+import { Router } from 'express';
+import { reporteService } from '../services/ReporteService';
+import { verificarToken, verificarRol } from '../middlewares/AuthMiddleware';
+
+const router = Router();
+
+router.get('/', verificarToken, verificarRol('ADMIN'), async (req, res, next) => {
+  try { res.json(await reporteService.listar(req.query.estado as any)); }
+  catch (error) { next(error); }
+});
+
+router.post('/', verificarToken, async (req, res, next) => {
+  try {
+    const id = await reporteService.crear(req.body);
+    res.status(201).json({ id_reporte: id });
+  } catch (error) { next(error); }
+});
+
+router.patch('/:id/estado', verificarToken, verificarRol('ADMIN'), async (req, res, next) => {
+  try {
+    await reporteService.cambiarEstado(Number(req.params.id), req.body.estado);
+    res.json({ mensaje: 'Estado del reporte actualizado' });
+  } catch (error) { next(error); }
+});
+
+export default router;
