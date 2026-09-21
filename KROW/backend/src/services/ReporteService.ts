@@ -1,4 +1,4 @@
-import { reporteRepository } from '../repositories/ReporteRepository
+import { reporteRepository } from '../repositories/ReporteRepository';
 import { Reporte, EstadoReporte } from '../models/Reporte';
 
 export class ReporteService {

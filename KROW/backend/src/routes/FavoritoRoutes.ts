@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { favoritoService } from '../services/FavoritoService';
-import { verificarToken } from '../middlewares/AuthMiddleware';
+import { verificarToken } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
 

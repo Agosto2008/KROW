@@ -2,22 +2,22 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-import authRoutes from './routes/AuthRoute';
-import cuentaRoutes from './routes/CuentaRoute';
+import authRoutes from './routes/AuthRoutes';
+import cuentaRoutes from './routes/CuentaRoutes';
 import usuarioRoutes from './routes/UsuarioRoutes';
-import empresaRoutes from './routes/EmpresaRoute';
-import propuestaRoutes from './routes/PropuestaRoute';
-import solicitudRoutes from './routes/SolicitudRoute';
-import curriculumRoutes from './routes/CurriculumRoute';
-import conversacionRoutes from './routes/ConversacionRoute';
-import mensajeRoutes from './routes/MensajeRoute';
-import entrevistaRoutes from './routes/EntrevistaRoute';
-import notificacionRoutes from './routes/NorificacionRoute';
-import favoritoRoutes from './routes/FavoritoRoute';
-import verificacionEmpresaRoutes from './routes/VerificacionEmpresaRoute';
-import reporteRoutes from './routes/ReporteRoute';
+import empresaRoutes from './routes/EmpresaRoutes';
+import propuestaRoutes from './routes/PropuestaRoutes';
+import solicitudRoutes from './routes/SolicitudRoutes';
+import curriculumRoutes from './routes/CurriculumRoutes';
+import conversacionRoutes from './routes/ConversacionRoutes';
+import mensajeRoutes from './routes/MensajeRoutes';
+import entrevistaRoutes from './routes/EntrevistaRoutes';
+import notificacionRoutes from './routes/NotificacionRoutes';
+import favoritoRoutes from './routes/FavoritoRoutes';
+import verificacionEmpresaRoutes from './routes/VerificacionEmpresaRoutes';
+import reporteRoutes from './routes/ReporteRoutes';
 
-import { errorHandler, rutaNoEncontrada } from './middlewares/error.middleware';
+import { errorHandler, rutaNoEncontrada } from './middlewares/ErrorMiddleware';
 
 dotenv.config();
 

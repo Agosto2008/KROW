@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { cuentaService } from '../services/CuentaService';
-import { verificarToken, verificarRol } from '../middlewares/AuthMiddleware';
+import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
 

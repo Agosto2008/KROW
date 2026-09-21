@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { empresaService } from '../services/EmpresaService';
-import { verificarToken, verificarRol } from '../middlewares/AuthMiddleware';
+import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
 

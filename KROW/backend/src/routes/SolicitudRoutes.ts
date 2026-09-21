@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { solicitudService } from '../services/SolicitudService';
-import { verificarToken, verificarRol } from '../middlewares/AuthMiddleware';
+import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
 
