@@ -1,5 +1,6 @@
 import { entrevistaRepository } from '../repositories/EntrevistaRepository';
 import { Entrevista, EstadoEntrevista } from '../models/Entrevista';
+import { AppError } from '../utils/AppError';
 
 export class EntrevistaService {
   async listarPorSolicitud(solicitudId: number) {
@@ -12,7 +13,7 @@ export class EntrevistaService {
 
   async reprogramar(id: number, data: Partial<Entrevista>) {
     const entrevista = await entrevistaRepository.findById(id);
-    if (!entrevista) throw new Error('Entrevista no encontrada');
+    if (!entrevista) throw new AppError('Entrevista no encontrada', 404);
     await entrevistaRepository.update(id, { ...data, estado: 'REPROGRAMADA' });
   }
 

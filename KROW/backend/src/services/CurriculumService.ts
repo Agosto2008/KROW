@@ -1,10 +1,11 @@
 import { curriculumRepository } from '../repositories/CurriculumRepository';
 import { Curriculum } from '../models/Curriculum';
+import { AppError } from '../utils/AppError';
 
 export class CurriculumService {
     async obtenerPorUsuario(usuarioId: number) {
         const curriculum = await curriculumRepository.findByUsuario(usuarioId);
-        if (!curriculum) throw new Error('Este usuario no tiene curriculum creado');
+        if (!curriculum) throw new AppError('Este usuario no tiene curriculum creado', 404);
         return curriculum;
     }
 

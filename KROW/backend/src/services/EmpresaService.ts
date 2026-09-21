@@ -1,5 +1,6 @@
 import { empresaRepository } from '../repositories/EmpresaRepository';
 import { Empresa } from '../models/Empresa';
+import { AppError } from '../utils/AppError';
 
 export class EmpresaService {
   async listar() {
@@ -8,7 +9,7 @@ export class EmpresaService {
 
   async obtenerPorId(id: number) {
     const empresa = await empresaRepository.findById(id);
-    if (!empresa) throw new Error('Empresa no encontrada');
+    if (!empresa) throw new AppError('Empresa no encontrada', 404);
     return empresa;
   }
 

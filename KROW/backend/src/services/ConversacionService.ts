@@ -1,9 +1,10 @@
 import { conversacionRepository } from '../repositories/ConversacionRepository';
+import { AppError } from '../utils/AppError';
 
 export class ConversacionService {
   async obtenerPorSolicitud(solicitudId: number) {
     const conversacion = await conversacionRepository.findBySolicitud(solicitudId);
-    if (!conversacion) throw new Error('No existe conversación para esta solicitud');
+    if (!conversacion) throw new AppError('No existe conversación para esta solicitud', 404);
     return conversacion;
   }
 

@@ -1,13 +1,14 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { pool } from '../database/Conexion';
+import jwt, { SignOptions } from 'jsonwebtoken'; import { pool } from '../database/Conexion';
 import { cuentaRepository } from '../repositories/CuentaRepository';
 import { usuarioRepository } from '../repositories/UsuarioRepository';
-import { empresaRepository } from '../repositories/PropuestaRepository';
+import { empresaRepository } from '../repositories/EmpresaRepository';
 import { RolCuenta } from '../models/Cuenta';
+import { AppError } from '../utils/AppError';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
+const JWT_EXPIRES_IN: SignOptions['expiresIn'] =
+    (process.env.JWT_EXPIRES_IN || '1h') as SignOptions['expiresIn'];
 
 interface RegistroUsuarioInput {
     correo: string;
@@ -31,7 +32,7 @@ interface RegistroEmpresaInput {
 export class AuthService {
     async registrarUsuario(data: RegistroUsuarioInput) {
         const existente = await cuentaRepository.findByCorreo(data.correo);
-        if (existente) throw new Error('El correo ya está registrado');
+        if (existente) throw new AppError('El correo ya está registrado', 409);
 
         const passwordHash = await bcrypt.hash(data.password, 10);
 
@@ -66,7 +67,7 @@ export class AuthService {
 
     async registrarEmpresa(data: RegistroEmpresaInput) {
         const existente = await cuentaRepository.findByCorreo(data.correo);
-        if (existente) throw new Error('El correo ya está registrado');
+        if (existente) throw new AppError('El correo ya está registrado', 409);
 
         const passwordHash = await bcrypt.hash(data.password, 10);
 
@@ -96,11 +97,11 @@ export class AuthService {
 
     async login(correo: string, password: string) {
         const cuenta = await cuentaRepository.findByCorreo(correo);
-        if (!cuenta) throw new Error('Credenciales inválidas');
-        if (cuenta.estado !== 'ACTIVA') throw new Error('Cuenta no activa');
+        if (!cuenta) throw new AppError('Credenciales inválidas', 401);
+        if (cuenta.estado !== 'ACTIVA') throw new AppError('Cuenta no activa', 403);
 
         const passwordValido = await bcrypt.compare(password, cuenta.password);
-        if (!passwordValido) throw new Error('Credenciales inválidas');
+        if (!passwordValido) throw new AppError('Credenciales inválidas', 401);
 
         return this.generarToken(cuenta.id_cuenta, cuenta.rol);
     }

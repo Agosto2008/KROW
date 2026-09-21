@@ -1,16 +1,17 @@
 import { usuarioRepository } from '../repositories/UsuarioRepository';
 import { Usuario } from '../models/Usuario';
+import { AppError } from '../utils/AppError';
 
 export class UsuarioService {
     async obtenerPorId(id: number) {
         const usuario = await usuarioRepository.findById(id);
-        if (!usuario) throw new Error('Usuario no encontrado');
+        if (!usuario) throw new AppError('Usuario no encontrado', 404);
         return usuario;
     }
 
     async obtenerPorCuenta(cuentaId: number) {
         const usuario = await usuarioRepository.findByCuentaId(cuentaId);
-        if (!usuario) throw new Error('Usuario no encontrado');
+        if (!usuario) throw new AppError('Usuario no encontrado', 404);
         return usuario;
     }
 
