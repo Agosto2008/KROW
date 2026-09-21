@@ -4,7 +4,7 @@
 
 DROP DATABASE IF EXISTS krow_db_in5bm;
 CREATE DATABASE krow_db_in5bm;
-USE krow_db;
+USE krow_db_in5bm;
 
 -- ==========================================
 -- TABLA CUENTA
