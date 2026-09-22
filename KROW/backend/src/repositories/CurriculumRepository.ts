@@ -5,11 +5,14 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 interface CurriculumRow extends Curriculum, RowDataPacket { }
 
 export class CurriculumRepository {
+
+    //este metodo se encarga de buscar un curriculum asociado a un usuario 
     async findByUsuario(usuarioId: number): Promise<CurriculumRow | null> {
         const [rows] = await pool.query<CurriculumRow[]>('SELECT * FROM Curriculum WHERE usuario_id = ?', [usuarioId]);
         return rows[0] ?? null;
     }
 
+    //se encarga de crear un nuevo curriculum
     async create(usuarioId: number, data: Partial<Curriculum>): Promise<number> {
         const [result] = await pool.query<ResultSetHeader>(
             `INSERT INTO Curriculum
@@ -22,6 +25,7 @@ export class CurriculumRepository {
         return result.insertId;
     }
 
+    //este metodo actualiza el estado del curriculum de un usuario 
     async update(usuarioId: number, data: Partial<Curriculum>): Promise<void> {
         const campos = Object.keys(data);
         if (campos.length === 0) return;

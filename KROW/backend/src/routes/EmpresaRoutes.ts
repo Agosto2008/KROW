@@ -4,16 +4,19 @@ import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
 
+//lista todas las empresas
 router.get('/', async (req, res, next) => {
   try { res.json(await empresaService.listar()); }
   catch (error) { next(error); }
 });
 
+//esta ruta obtiene una empresa en especifico 
 router.get('/:id', async (req, res, next) => {
   try { res.json(await empresaService.obtenerPorId(Number(req.params.id))); }
   catch (error) { next(error); }
 });
 
+//verifica el rol que se tiene sin antes verificar el token de seguridad
 router.put('/:id', verificarToken, verificarRol('EMPRESA', 'ADMIN'), async (req, res, next) => {
   try {
     await empresaService.actualizar(Number(req.params.id), req.body);
