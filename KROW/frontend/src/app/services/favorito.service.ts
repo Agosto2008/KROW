@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Favorito } from '../models';
+import { Favorito } from '../models/Index';
 
 export interface FavoritoToggleResponse {
   mensaje: 'agregado' | 'eliminado';

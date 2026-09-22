@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { TokenStorageService } from '../core/token-storage.service';
-import { Rol, Usuario, Empresa } from '../models';
+import { Rol, Usuario, Empresa } from '../models/Index';
 
 export interface AuthResponse {
   token: string;

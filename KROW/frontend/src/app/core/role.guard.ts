@@ -1,7 +1,7 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { TokenStorageService } from './token-storage.service';
-import { Rol } from '../models';
+import { Rol } from '../models/Index';
 
 // Uso en rutas: canActivate: [authGuard, roleGuard(['ADMIN'])]
 export function roleGuard(rolesPermitidos: Rol[]): CanActivateFn {

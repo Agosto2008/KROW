@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { STORAGE_KEYS } from '../config/storage-keys';
-import { Rol } from '../models';
+import { Rol } from '../models/Index';
 
 export interface SesionGuardada {
   token: string;

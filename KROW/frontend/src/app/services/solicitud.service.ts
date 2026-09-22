@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Solicitud, EstadoSolicitud } from '../models';
+import { Solicitud, EstadoSolicitud } from '../models/Index';
 import { MensajeResponse } from '../core/mensaje-response.model';
 
 export interface SolicitudCreadaResponse {
