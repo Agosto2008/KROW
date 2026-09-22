@@ -1,7 +1,17 @@
 import { Router } from 'express';
 import { authService } from '../services/AuthService';
+import { verificarToken } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
+
+router.get('/me', verificarToken, async (req, res, next) => {
+    try {
+        const resultado = await authService.obtenerPerfilActual(req.user!.id_cuenta, req.user!.rol);
+        res.json(resultado);
+    } catch (error) {
+        next(error);
+    }
+});
 
 router.post('/registro/usuario', async (req, res, next) => {
     try {

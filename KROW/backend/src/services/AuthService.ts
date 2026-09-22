@@ -106,6 +106,25 @@ export class AuthService {
         return this.generarToken(cuenta.id_cuenta, cuenta.rol);
     }
 
+    async obtenerPerfilActual(idCuenta: number, rol: RolCuenta) {
+        const cuenta = await cuentaRepository.findById(idCuenta);
+        if (!cuenta) throw new AppError('Cuenta no encontrada', 404);
+
+        let perfil = null;
+        if (rol === 'USUARIO') {
+            perfil = await usuarioRepository.findByCuentaId(idCuenta);
+        } else if (rol === 'EMPRESA') {
+            perfil = await empresaRepository.findByCuentaId(idCuenta);
+        }
+
+        return {
+            rol,
+            correo: cuenta.correo,
+            estado: cuenta.estado,
+            perfil,
+        };
+    }
+
     private generarToken(idCuenta: number, rol: RolCuenta) {
         const token = jwt.sign({ id_cuenta: idCuenta, rol }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
         return { token, rol, id_cuenta: idCuenta };
