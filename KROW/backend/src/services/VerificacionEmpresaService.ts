@@ -1,27 +1,33 @@
+// services/VerificacionEmpresaService.ts
 import { verificacionEmpresaRepository } from '../repositories/VerificacionEmpresaRepository';
 import { empresaRepository } from '../repositories/EmpresaRepository';
+import { cuentaRepository } from '../repositories/CuentaRepository';
 import { EstadoVerificacion, TipoVerificacion } from '../models/VerificacionEmpresa';
+import { AppError } from '../utils/AppError';
 
 export class VerificacionEmpresaService {
-    // obtiene las verificaciones de una empresa
     async listarPorEmpresa(empresaId: number) {
         return verificacionEmpresaRepository.findByEmpresa(empresaId);
     }
 
-    // crea una solicitud de verificacion
     async solicitar(empresaId: number, tipoVerificacion: TipoVerificacion) {
         return verificacionEmpresaRepository.create(empresaId, tipoVerificacion);
     }
 
-    // resuelve una solicitud de verificacion
-    // si es aprobada marca la empresa como verificada
-    async resolver(id: number, empresaId: number, estado: EstadoVerificacion, administrador: string, observacion?: string) {
-        // actualiza el estado de la verificacion
+    // administradorCuentaId viene del token (req.user.id_cuenta), nunca del body:
+    // asi queda registrado quien resolvio realmente la verificacion, no lo que
+    // el cliente decida mandar.
+    async resolver(id: number, estado: EstadoVerificacion, administradorCuentaId: number, observacion?: string) {
+        const verificacion = await verificacionEmpresaRepository.findById(id);
+        if (!verificacion) throw new AppError('Verificación no encontrada', 404);
+
+        const cuentaAdmin = await cuentaRepository.findById(administradorCuentaId);
+        const administrador = cuentaAdmin?.correo ?? `cuenta_${administradorCuentaId}`;
+
         await verificacionEmpresaRepository.resolver(id, estado, administrador, observacion);
 
-        // si fue aprobada marca la empresa como verificada
         if (estado === 'APROBADA') {
-            await empresaRepository.update(empresaId, { verificada: true });
+            await empresaRepository.update(verificacion.empresa_id, { verificada: true });
         }
     }
 }

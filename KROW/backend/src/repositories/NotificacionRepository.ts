@@ -12,6 +12,12 @@ export class NotificacionRepository {
         return rows;
     }
 
+    //busca una notificacion especifica por su ID, para poder validar a quien pertenece
+    async findById(id: number): Promise<NotificacionRow | null> {
+        const [rows] = await pool.query<NotificacionRow[]>('SELECT * FROM Notificacion WHERE id_notificacion = ?', [id]);
+        return rows[0] ?? null;
+    }
+
     //crea una nueva notificacion con su respectivo id y el nombre del emisor 
     async create(usuarioId: number, titulo: string, mensaje: string, tipo: TipoNotificacion): Promise<number> {
         const [result] = await pool.query<ResultSetHeader>(
