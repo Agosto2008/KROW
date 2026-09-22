@@ -3,23 +3,16 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Pool de conexiones: reutiliza conexiones en vez de abrir una nueva por cada query
-export const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    port: Number(process.env.DB_PORT) || 3306,
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'krow_db_in5bm',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-});
+// Pool de conexiones: reutiliza conexiones existentes para evitar
+// abrir y cerrar una conexión nueva en cada consulta.
+// La configuración se obtiene desde DATABASE_URL del archivo .env.
+export const pool = mysql.createPool(process.env.DATABASE_URL!);
 
 export async function testConnection(): Promise<void> {
     try {
-        const conn = await pool.getConnection();
+        // Ejecuta una consulta sencilla para comprobar que la conexión funciona.
+        await pool.query('SELECT 1');
         console.log('Conexión a MySQL establecida');
-        conn.release();
     } catch (error) {
         console.error('Error al conectar a MySQL:', error);
         process.exit(1);

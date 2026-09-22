@@ -9,5 +9,5 @@ export * from './mensaje.model';
 export * from './entrevista.model';
 export * from './notificacion.model';
 export * from './favorito.model';
-export * from './verificacion-empresa.model';
+export * from './verificacionEmpresa.model';
 export * from './reporte.model';
