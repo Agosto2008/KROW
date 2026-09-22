@@ -5,16 +5,20 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 interface EntrevistaRow extends Entrevista, RowDataPacket {}
 
 export class EntrevistaRepository {
+
+  //este metodo busca las entrevistas asociadas a una solicitud 
   async findBySolicitud(solicitudId: number): Promise<EntrevistaRow[]> {
     const [rows] = await pool.query<EntrevistaRow[]>('SELECT * FROM Entrevista WHERE solicitud_id = ? ORDER BY fecha DESC', [solicitudId]);
     return rows;
   }
 
+  //se encarga de encontrar entrevistas especificamente por medio de su ID 
   async findById(id: number): Promise<EntrevistaRow | null> {
     const [rows] = await pool.query<EntrevistaRow[]>('SELECT * FROM Entrevista WHERE id_entrevista = ?', [id]);
     return rows[0] ?? null;
   }
 
+  //el metodo se encarga de crear una entrevista con su respectivo ID 
   async create(data: Omit<Entrevista, 'id_entrevista' | 'estado'>): Promise<number> {
     const [result] = await pool.query<ResultSetHeader>(
       `INSERT INTO Entrevista (solicitud_id, fecha, hora, modalidad, ubicacion, enlace, observaciones)
@@ -24,10 +28,12 @@ export class EntrevistaRepository {
     return result.insertId;
   }
 
+  //Modifica unicamente el estado de la entrevista
   async updateEstado(id: number, estado: EstadoEntrevista): Promise<void> {
     await pool.query('UPDATE Entrevista SET estado = ? WHERE id_entrevista = ?', [estado, id]);
   }
 
+  //aqui se actualizan unicamente los datos que se necesitan por medio de partial 
   async update(id: number, data: Partial<Entrevista>): Promise<void> {
     const campos = Object.keys(data);
     if (campos.length === 0) return;

@@ -6,6 +6,8 @@ interface CuentaRow extends Cuenta, RowDataPacket {}
 type DbClient = Pool | PoolConnection;
 
 export class CuentaRepository {
+
+  //se encarga de buscar una cuenta por medio de su correo 
   async findByCorreo(correo: string): Promise<CuentaRow | null> {
     const [rows] = await pool.query<CuentaRow[]>(
       'SELECT * FROM Cuenta WHERE correo = ? LIMIT 1',
@@ -13,7 +15,7 @@ export class CuentaRepository {
     );
     return rows[0] ?? null;
   }
-
+  //tiene casi la misma funcion que el metodo anterior solo que esta busca especificamente por ID
   async findById(id: number): Promise<CuentaRow | null> {
     const [rows] = await pool.query<CuentaRow[]>(
       'SELECT * FROM Cuenta WHERE id_cuenta = ? LIMIT 1',
@@ -31,10 +33,12 @@ export class CuentaRepository {
     return result.insertId;
   }
 
+  //se encarga de actualizar el estado de una cuenta en uso 
   async updateEstado(id: number, estado: EstadoCuenta): Promise<void> {
     await pool.query('UPDATE Cuenta SET estado = ? WHERE id_cuenta = ?', [estado, id]);
   }
 
+  //se encarga de eliminar una cuenta directamente por su ID 
   async delete(id: number): Promise<void> {
     await pool.query('DELETE FROM Cuenta WHERE id_cuenta = ?', [id]);
   }

@@ -1,18 +1,9 @@
 import { Router } from 'express';
 import { authService } from '../services/AuthService';
-import { verificarToken } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
 
-router.get('/me', verificarToken, async (req, res, next) => {
-    try {
-        const resultado = await authService.obtenerPerfilActual(req.user!.id_cuenta, req.user!.rol);
-        res.json(resultado);
-    } catch (error) {
-        next(error);
-    }
-});
-
+//redirige a la ruta para registrar un nuevo usuario 
 router.post('/registro/usuario', async (req, res, next) => {
     try {
         const resultado = await authService.registrarUsuario(req.body);
@@ -22,6 +13,7 @@ router.post('/registro/usuario', async (req, res, next) => {
     }
 });
 
+//redirige a registrar una nueva empresa
 router.post('/registro/empresa', async (req, res, next) => {
     try {
         const resultado = await authService.registrarEmpresa(req.body);
@@ -31,6 +23,7 @@ router.post('/registro/empresa', async (req, res, next) => {
     }
 });
 
+//este metodo maneja el inicio de sesion 
 router.post('/login', async (req, res) => {
     try {
         const { correo, password } = req.body;
