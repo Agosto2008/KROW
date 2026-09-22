@@ -4,6 +4,7 @@ import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
 
+//se obtiene una cuenta por medio de su ID 
 router.get('/:id', verificarToken, async (req, res, next) => {
   try {
     res.json(await cuentaService.obtenerPorId(Number(req.params.id)));
