@@ -12,6 +12,11 @@ export class VerificacionEmpresaRepository {
         return rows;
     }
 
+async findById(id: number): Promise<VerificacionRow | null> {
+    const [rows] = await pool.query<VerificacionRow[]>('SELECT * FROM VerificacionEmpresa WHERE id_verificacion = ?', [id]);
+    return rows[0] ?? null;
+}
+
     //crea una nueva verificacion en la base de datos 
     async create(empresaId: number, tipoVerificacion: TipoVerificacion): Promise<number> {
         const [result] = await pool.query<ResultSetHeader>(

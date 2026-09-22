@@ -1,9 +1,11 @@
 import { Request } from 'express';
 import { usuarioRepository } from '../repositories/UsuarioRepository';
 import { empresaRepository } from '../repositories/EmpresaRepository';
-import { solicitudRepository } from '../repositories/SolicitudRepository';
 import { propuestaRepository } from '../repositories/PropuestaRepository';
+import { solicitudRepository } from '../repositories/SolicitudRepository';
 import { conversacionRepository } from '../repositories/ConversacionRepository';
+import { entrevistaRepository } from '../repositories/EntrevistaRepository';
+import { notificacionRepository } from '../repositories/NotificacionRepository';
 import { AppError } from './AppError';
 
 // Estas funciones existen para no confiar NUNCA en un usuario_id / empresa_id
@@ -36,6 +38,17 @@ export async function verificarPropietarioEmpresa(req: Request, idEmpresaObjetiv
     const idEmpresaToken = await obtenerEmpresaIdDelToken(req);
     if (idEmpresaToken !== idEmpresaObjetivo) {
         throw new AppError('No tienes permiso para modificar este recurso', 403);
+    }
+}
+
+// Para rutas tipo /propuestas/:id donde solo la empresa dueña (o un ADMIN) puede editar/borrar
+export async function verificarPropietarioPropuesta(req: Request, idPropuestaObjetivo: number): Promise<void> {
+    if (req.user!.rol === 'ADMIN') return;
+    const propuesta = await propuestaRepository.findById(idPropuestaObjetivo);
+    if (!propuesta) throw new AppError('Propuesta no encontrada', 404);
+    const idEmpresaToken = await obtenerEmpresaIdDelToken(req);
+    if (idEmpresaToken !== propuesta.empresa_id) {
+        throw new AppError('No tienes permiso para modificar esta propuesta', 403);
     }
 }
 
@@ -72,4 +85,24 @@ export async function verificarParticipanteConversacion(req: Request, conversaci
     const conversacion = await conversacionRepository.findById(conversacionId);
     if (!conversacion) throw new AppError('Conversación no encontrada', 404);
     return verificarParticipanteSolicitud(req, conversacion.solicitud_id);
+}
+
+// Igual que las anteriores pero a partir de una Entrevista (Entrevista -> Solicitud).
+// Solo la empresa o el usuario que participan en la solicitud asociada (o un ADMIN)
+// pueden programar, reprogramar o cambiar el estado de la entrevista.
+export async function verificarParticipanteEntrevista(req: Request, entrevistaId: number): Promise<'USUARIO' | 'EMPRESA'> {
+    const entrevista = await entrevistaRepository.findById(entrevistaId);
+    if (!entrevista) throw new AppError('Entrevista no encontrada', 404);
+    return verificarParticipanteSolicitud(req, entrevista.solicitud_id);
+}
+
+// Para rutas tipo /notificaciones/:id donde solo el dueño (o un ADMIN) puede leer/modificar
+export async function verificarPropietarioNotificacion(req: Request, idNotificacion: number): Promise<void> {
+    if (req.user!.rol === 'ADMIN') return;
+    const notificacion = await notificacionRepository.findById(idNotificacion);
+    if (!notificacion) throw new AppError('Notificación no encontrada', 404);
+    const idUsuarioToken = await obtenerUsuarioIdDelToken(req);
+    if (idUsuarioToken !== notificacion.usuario_id) {
+        throw new AppError('No tienes permiso para modificar esta notificación', 403);
+    }
 }

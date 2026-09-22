@@ -118,6 +118,21 @@ export class AuthService {
         return this.generarToken(cuenta.id_cuenta, cuenta.rol);
     }
 
+    // devuelve el perfil (usuario/empresa) asociado a la cuenta autenticada,
+    // para el endpoint /me: así el front sabe quién es sin volver a pedir login
+    async obtenerPerfil(idCuenta: number, rol: RolCuenta) {
+        if (rol === 'USUARIO') {
+            const perfil = await usuarioRepository.findByCuentaId(idCuenta);
+            return { rol, perfil };
+        }
+        if (rol === 'EMPRESA') {
+            const perfil = await empresaRepository.findByCuentaId(idCuenta);
+            return { rol, perfil };
+        }
+        // ADMIN no tiene tabla de perfil propia
+        return { rol, perfil: null };
+    }
+
     // genera el token de autenticacion
     private generarToken(idCuenta: number, rol: RolCuenta) {
         const token = jwt.sign({ id_cuenta: idCuenta, rol }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });

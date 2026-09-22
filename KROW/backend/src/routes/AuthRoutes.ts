@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authService } from '../services/AuthService';
+import { verificarToken } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
 
@@ -24,13 +25,24 @@ router.post('/registro/empresa', async (req, res, next) => {
 });
 
 //este metodo maneja el inicio de sesion 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
     try {
         const { correo, password } = req.body;
         const resultado = await authService.login(correo, password);
         res.json(resultado);
-    } catch (error: any) {
-        res.status(401).json({ mensaje: error.message });
+    } catch (error) {
+        next(error);
+    }
+});
+
+//devuelve la cuenta y el perfil (usuario/empresa) del token actual, para que el front
+//sepa quien esta logueado sin tener que volver a pedir credenciales
+router.get('/me', verificarToken, async (req, res, next) => {
+    try {
+        const resultado = await authService.obtenerPerfil(req.user!.id_cuenta, req.user!.rol);
+        res.json(resultado);
+    } catch (error) {
+        next(error);
     }
 });
 

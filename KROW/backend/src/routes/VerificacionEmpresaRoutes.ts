@@ -1,28 +1,30 @@
+// routes/VerificacionEmpresaRoutes.ts
 import { Router } from 'express';
 import { verificacionEmpresaService } from '../services/VerificacionEmpresaService';
 import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
+import { obtenerEmpresaIdDelToken, verificarPropietarioEmpresa } from '../utils/resolverPerfil';
 
 const router = Router();
 
-//Obtiene todas las verificaciones relacionadas con una empresa
 router.get('/empresa/:empresaId', verificarToken, async (req, res, next) => {
-    try { res.json(await verificacionEmpresaService.listarPorEmpresa(Number(req.params.empresaId))); }
-    catch (error) { next(error); }
+    try {
+        await verificarPropietarioEmpresa(req, Number(req.params.empresaId));
+        res.json(await verificacionEmpresaService.listarPorEmpresa(Number(req.params.empresaId)));
+    } catch (error) { next(error); }
 });
 
-//esta ruta permite que una empresa solicite una verificacion
 router.post('/', verificarToken, verificarRol('EMPRESA'), async (req, res, next) => {
     try {
-        const id = await verificacionEmpresaService.solicitar(req.body.empresa_id, req.body.tipo_verificacion);
+        const empresaId = await obtenerEmpresaIdDelToken(req);
+        const id = await verificacionEmpresaService.solicitar(empresaId, req.body.tipo_verificacion);
         res.status(201).json({ id_verificacion: id });
     } catch (error) { next(error); }
 });
 
-//sirve para resolver una verificacion 
 router.patch('/:id/resolver', verificarToken, verificarRol('ADMIN'), async (req, res, next) => {
     try {
-        const { empresa_id, estado, administrador, observacion } = req.body;
-        await verificacionEmpresaService.resolver(Number(req.params.id), empresa_id, estado, administrador, observacion);
+        const { estado, observacion } = req.body;
+        await verificacionEmpresaService.resolver(Number(req.params.id), estado, req.user!.id_cuenta, observacion);
         res.json({ mensaje: 'Verificación resuelta' });
     } catch (error) { next(error); }
 });
