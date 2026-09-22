@@ -9,3 +9,4 @@ async function iniciar() {
 }
 
 iniciar();
+// inicia la conexion a la base de datos y levanta el servidor
