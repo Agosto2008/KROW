@@ -4,11 +4,13 @@ import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
 
 const router = Router();
 
+//Obtiene todas las verificaciones relacionadas con una empresa
 router.get('/empresa/:empresaId', verificarToken, async (req, res, next) => {
     try { res.json(await verificacionEmpresaService.listarPorEmpresa(Number(req.params.empresaId))); }
     catch (error) { next(error); }
 });
 
+//esta ruta permite que una empresa solicite una verificacion
 router.post('/', verificarToken, verificarRol('EMPRESA'), async (req, res, next) => {
     try {
         const id = await verificacionEmpresaService.solicitar(req.body.empresa_id, req.body.tipo_verificacion);
@@ -16,6 +18,7 @@ router.post('/', verificarToken, verificarRol('EMPRESA'), async (req, res, next)
     } catch (error) { next(error); }
 });
 
+//sirve para resolver una verificacion 
 router.patch('/:id/resolver', verificarToken, verificarRol('ADMIN'), async (req, res, next) => {
     try {
         const { empresa_id, estado, administrador, observacion } = req.body;
