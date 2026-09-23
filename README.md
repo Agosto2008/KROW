@@ -4,8 +4,6 @@ Plataforma de búsqueda de empleo para jóvenes (prácticas, pasantías y prepr�
 que conecta candidatos con **empresas verificadas**. SPA Angular 22 + backend
 Express + MySQL 8.
 
-> El plan completo (auditoría, seguridad, fases y verificaciones) está en
-> [`PLAN.md`](./PLAN.md).
 
 ---
 
