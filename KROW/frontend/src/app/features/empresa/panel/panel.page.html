@@ -18,10 +18,26 @@
             <p class="panel__meta">{{ empresa()!.ubicacion || 'Sin ubicación' }}</p>
           </div>
         </div>
-        <app-boton variante="secundario" tamanio="sm" (click)="abrirPerfil()">
-          Editar perfil
-        </app-boton>
+        <div class="panel__acciones">
+          <app-boton variante="fantasma" tamanio="sm" (click)="abrirPassword()">
+            Cambiar contraseña
+          </app-boton>
+          <app-boton variante="secundario" tamanio="sm" (click)="abrirPerfil()">
+            Editar perfil
+          </app-boton>
+        </div>
       </header>
+
+      <!-- KPIs reales (Fase 6.1): calculados de las 4 peticiones, sin setTimeout -->
+      <div class="panel__kpis" role="list">
+        @for (k of kpis(); track k.etiqueta) {
+          <div class="kpi" role="listitem">
+            <span class="kpi__valor" [class.kpi__valor--texto]="k.esTexto">{{ k.valor }}</span>
+            <span class="kpi__etiqueta">{{ k.etiqueta }}</span>
+            <span class="kpi__detalle">{{ k.detalle }}</span>
+          </div>
+        }
+      </div>
 
       <nav class="panel__tabs">
         <button class="panel__tab" [class.panel__tab--activa]="tabActiva() === 'ofertas'" (click)="setTab('ofertas')">
@@ -99,6 +115,43 @@
     <div modalFooter class="modal-footer">
       <app-boton variante="secundario" (click)="cerrarPerfil()">Cancelar</app-boton>
       <app-boton variante="primario" [cargando]="guardando()" (click)="guardarPerfil()">Guardar</app-boton>
+    </div>
+  </app-modal>
+
+  <!-- Fase 6.7: cambiar contraseña (la exige la actual) -->
+  <app-modal [abierto]="modalPasswordAbierto()" titulo="Cambiar contraseña" (cerrar)="cerrarPassword()">
+    <form [formGroup]="formPassword" class="modal-form" (ngSubmit)="guardarPassword()">
+      <app-campo-input
+        etiqueta="Contraseña actual"
+        tipo="password"
+        autocomplete="current-password"
+        formControlName="password_actual"
+        [requerido]="true"
+        [error]="errorPassword('password_actual')"
+      />
+      <app-campo-input
+        etiqueta="Nueva contraseña"
+        tipo="password"
+        autocomplete="new-password"
+        formControlName="password_nueva"
+        [requerido]="true"
+        ayuda="Mínimo 8 caracteres"
+        [error]="errorPassword('password_nueva')"
+      />
+      <app-campo-input
+        etiqueta="Repite la nueva contraseña"
+        tipo="password"
+        autocomplete="new-password"
+        formControlName="password_confirmar"
+        [requerido]="true"
+        [error]="errorPassword('password_confirmar')"
+      />
+    </form>
+    <div class="modal-footer">
+      <app-boton variante="secundario" (click)="cerrarPassword()">Cancelar</app-boton>
+      <app-boton variante="primario" [cargando]="guardandoPassword()" (click)="guardarPassword()">
+        Guardar
+      </app-boton>
     </div>
   </app-modal>
 }

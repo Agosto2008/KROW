@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../core/api/auth.service';
@@ -33,9 +33,44 @@ export class EmpresaSolicitudesPage implements OnInit {
   readonly modalAbierto = signal(false);
   readonly modalPerfilAbierto = signal(false);
   readonly cargandoPerfil = signal(false);
+  /** solicitud cuyo perfil está abierto en el modal */
+  readonly perfilActivo = signal<SolicitudConCandidato | null>(null);
   /** comentario a enviar al candidato (two-way con ngModel) */
   comentarioTexto = '';
   readonly accionActual = signal<{ solicitud: SolicitudConCandidato; estado: EstadoSolicitud } | null>(null);
+
+  /**
+   * Fase 6.3: solicitudes agrupadas por oferta (misma lista, sin pedidas
+   * extra) para que la empresa lea postulaciones por vacante.
+   */
+  readonly grupos = computed(() => {
+    const mapa = new Map<number, { propuestaId: number; propuestaNombre: string; solicitudes: SolicitudConCandidato[] }>();
+    for (const s of this.solicitudes()) {
+      const g = mapa.get(s.propuesta_id);
+      if (g) {
+        g.solicitudes.push(s);
+      } else {
+        mapa.set(s.propuesta_id, {
+          propuestaId: s.propuesta_id,
+          propuestaNombre: s.propuesta_nombre,
+          solicitudes: [s],
+        });
+      }
+    }
+    return [...mapa.values()];
+  });
+
+  /** perfil público del candidato ya abierto (cacheado por id_usuario) */
+  readonly perfilActual = computed<PerfilPublico | null>(() => {
+    const s = this.perfilActivo();
+    return s ? this.perfiles()[s.id_usuario] ?? null : null;
+  });
+
+  /** solicitudes de ESE candidato a mis ofertas (ya las tiene la página) */
+  readonly solicitudesDelCandidato = computed<SolicitudConCandidato[]>(() => {
+    const s = this.perfilActivo();
+    return s ? this.solicitudes().filter((x) => x.id_usuario === s.id_usuario) : [];
+  });
 
   ngOnInit(): void {
     const idEmpresa = this.auth.idEmpresa();
@@ -72,14 +107,17 @@ export class EmpresaSolicitudesPage implements OnInit {
       .filter(Boolean).join(' ') || 'Candidato';
   }
 
+  nombrePerfil(p: PerfilPublico): string {
+    return [p.primer_nombre, p.segundo_nombre, p.primer_apellido, p.segundo_apellido]
+      .filter(Boolean).join(' ') || 'Candidato';
+  }
+
   /** Perfil público + CV del candidato (1 query, sin datos sensibles) */
   verPerfil(s: SolicitudConCandidato): void {
-    if (this.perfiles()[s.id_usuario]) {
-      this.modalPerfilAbierto.set(true);
-      return;
-    }
-    this.cargandoPerfil.set(true);
+    this.perfilActivo.set(s);
     this.modalPerfilAbierto.set(true);
+    if (this.perfiles()[s.id_usuario]) return;
+    this.cargandoPerfil.set(true);
     this.usuarioService.obtenerPublico(s.id_usuario).subscribe({
       next: (p) => {
         this.perfiles.update((map) => ({ ...map, [s.id_usuario]: p }));
@@ -87,13 +125,15 @@ export class EmpresaSolicitudesPage implements OnInit {
       },
       error: () => {
         this.cargandoPerfil.set(false);
-        this.modalPerfilAbierto.set(false);
         this.toast.error('No se pudo cargar el perfil');
       },
     });
   }
 
-  cerrarPerfil(): void { this.modalPerfilAbierto.set(false); }
+  cerrarPerfil(): void {
+    this.modalPerfilAbierto.set(false);
+    this.perfilActivo.set(null);
+  }
 
   abrirAccion(s: SolicitudConCandidato, estado: EstadoSolicitud): void {
     this.accionActual.set({ solicitud: s, estado });

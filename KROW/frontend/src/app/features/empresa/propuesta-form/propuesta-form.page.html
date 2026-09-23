@@ -27,7 +27,7 @@
         </div>
 
         <div class="form-page__acciones">
-          <app-boton variante="secundario" (click)="guardar()" [disabled]="guardando()">Cancelar</app-boton>
+          <app-boton variante="secundario" (click)="cancelar()" [disabled]="guardando()">Cancelar</app-boton>
           <app-boton variante="primario" tipo="submit" [cargando]="guardando()">
             {{ esEdicion() ? 'Guardar cambios' : 'Publicar oferta' }}
           </app-boton>

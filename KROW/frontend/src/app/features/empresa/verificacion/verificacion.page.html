@@ -10,11 +10,9 @@
     } @else {
       <div class="verif__estado" aria-live="polite">
         <span>Estado actual:</span>
-        @if (empresa()!.verificada) {
-          <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
-        } @else {
-          <app-badge variante="neutro">Sin verificar</app-badge>
-        }
+        <app-badge [variante]="estadoVisible().variante" [conIcono]="estadoVisible().conIcono">
+          {{ estadoVisible().texto }}
+        </app-badge>
       </div>
 
       <h2 class="verif__seccion">Planes disponibles</h2>

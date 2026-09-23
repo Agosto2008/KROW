@@ -185,17 +185,31 @@
 
 ---
 
-## FASE 6 — Vistas EMPRESA (`features/empresa/`)
+## FASE 6 — Vistas EMPRESA (`features/empresa/`) ✅ COMPLETADA
 
 | # | Vista | Notas |
 |---|---|---|
-| 6.1 | Panel (KPIs reales + tabs: mis ofertas / perfil de empresa) | sin `setTimeout` como loader |
-| 6.2 | Crear/editar oferta — **arreglando el botón "Cancelar"** | `propuesta-form` |
-| 6.3 | Solicitudes recibidas (agrupadas, 1 petición) + **ver perfil del candidato** *(nueva)*: nombre, CV, solicitudes — sobre datos públicos/controlados (Fase 2.12) | Fase 2.4 |
-| 6.4 | Entrevistas (programar, reprogramar — el servicio ya tiene el método sin usar) | Fase 2.6 |
-| 6.5 | Verificación (planes + historial + estado) | sin N+1 |
-| 6.6 | Mensajes | Fase 2.11 |
-| 6.7 | Cambiar contraseña *(si se aprueba Fase 2.15)* | — |
+| 6.1 | ✅ Panel con **KPIs reales** (ofertas activas / solicitudes por revisar / entrevistas / verificación) + tabs mis ofertas / perfil | **sin `setTimeout`**: 4 peticiones en paralelo con `forkJoin` usando `auth.idEmpresa()` (antes bajaba TODA la lista de empresas para encontrar la propia); KPIs derivados con `computed` |
+| 6.2 | ✅ Crear/editar oferta — **botón "Cancelar" arreglado** (antes disparaba `guardar()`) | además se quitó el `listar()` de empresas: el backend deriva `empresa_id` del token |
+| 6.3 | ✅ Solicitudes **agrupadas por oferta** (sigue siendo 1 petición) + **ver perfil del candidato** *(nueva)*: modal con nombre, CV completo y **sus solicitudes a mis ofertas**, cacheado por `id_usuario` | Fase 2.4 + 2.12 (solo datos públicos: sin teléfono/dirección/fecha) |
+| 6.4 | ✅ Entrevistas: programar + **reprogramar** (modal precargado → `PUT /:id/reprogramar` → estado REPROGRAMADA + notificación al candidato); nombre del candidato y la oferta visibles en cada tarjeta | Fase 2.6 · el método `reprogramar()` del servicio por fin usado |
+| 6.5 | ✅ Verificación (planes + historial + estado: *Verificada* / *Solicitud en revisión* / *Sin verificar*) | **sin N+1**: `auth.idEmpresa()` + `obtenerPorId` en paralelo con el historial |
+| 6.6 | ✅ Mensajes (sin cambios: sidebar + chat ya funcionaban) | Fase 2.11 |
+| 6.7 | ✅ **Cambiar contraseña** en el panel (modal: actual + nueva + repetir; valida 8–72, confirmación y "distinta de la actual") | Fase 2.15 |
+
+**BUG corregido (afectaba a 3 vistas)**: `PropuestaService.buscar` (front) no enviaba `pagina` y el backend solo pagina con `pagina`/`buscar` → devolvía **array plano** y `res.datos`/`res.total` eran `undefined`. Rompía las destacadas de la landing, el panel de la empresa y el panel del admin. Ahora `buscar()` envía `pagina` siempre (igual que `EmpresaService.buscar`); el panel además manda `estado: undefined` para ver ofertas de **todos** los estados.
+
+**Verificación de Fase 6** (23/09/2026): **37/37 pruebas OK**
+1. Frontend `tsc --noEmit` → **0**; `ng build` → **0**; backend `tsc --noEmit` → **0**.
+2. Panel: `GET /empresas/1` → TechLab; `/propuestas?empresa_id=1&pagina=1&por_pagina=100` → **`{datos:4, total:4}`** (KPIs: 3 activas, 2/3 solicitudes por revisar, 1/1 entrevista); `/solicitudes/empresa/1` → 3; `/entrevistas/empresa/1` → 1; solicitudes sin token → **401**.
+3. Destacadas de la landing: `/propuestas?estado=ACTIVA&pagina=1&por_pagina=3` → **`{datos, total:6}`** (antes array plano = crash de `res.datos.slice`).
+4. Perfil público: `/usuarios/1/publico` con token → **Ana Perez con CV** y **sin teléfono**; sin token → 401.
+5. Reprogramar: sin token → **401**; con token EMPRESA → **200** y la entrevista 1 queda **REPROGRAMADA** con la fecha nueva (con candidato y oferta resueltos).
+6. Verificación: historial → 1 PENDIENTE; solicitar con pendiente existente → **409** "Ya tienes una solicitud pendiente" (regla anti-duplicados intacta).
+7. Cambiar contraseña: actual incorrecta → **403**; nueva <8 → **400**; válida → **200** y login con la contraseña nueva → 200.
+8. Mensajes (6.6): `/conversaciones` sin token → **401**; con token → resumen con oferta y candidato (1 conversación); `/mensajes/conversacion/1` → 3 mensajes; `PATCH .../leidos` → **200**; `POST /mensajes` → **201** y el mensaje aparece en el hilo (3 → 4).
+9. Rutas SPA → 200 en `/empresa/panel`, `/empresa/solicitudes`, `/empresa/entrevistas`, `/empresa/verificacion`, `/empresa/mensajes`, `/empresa/propuestas/nueva`, `/empresa/propuestas/1/editar`.
+10. **Seed restaurado** tras las pruebas: 7 cuentas / 7 propuestas / 6 solicitudes / 3 mensajes / entrevista 1 **PROGRAMADA** / solicitud 2 **PENDIENTE** / 2 verificaciones / 1 reporte / 3 favoritos; scripts `.tmp-*` eliminados.
 
 ---
 

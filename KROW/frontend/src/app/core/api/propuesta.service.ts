@@ -38,10 +38,14 @@ export class PropuestaService {
   /**
    * Listado paginado con búsqueda en el servidor.
    * Cada fila ya trae su empresa embebida (sin N+1).
+   *
+   * `pagina` se envía SIEMPRE (igual que EmpresaService.buscar): el backend
+   * solo activa la paginación ({datos,total,...}) si recibe `pagina` o
+   * `buscar`; sin ella devolvía una lista plana y `res.datos` era undefined.
    */
   buscar(filtros: FiltrosPropuesta = {}): Observable<Paginado<PropuestaConEmpresa>> {
     return this.http.get<Paginado<PropuestaConEmpresa>>(this.baseUrl, {
-      params: this.aParams({ estado: 'ACTIVA', ...filtros }),
+      params: this.aParams({ estado: 'ACTIVA', ...filtros, pagina: filtros.pagina ?? 1 }),
     });
   }
 

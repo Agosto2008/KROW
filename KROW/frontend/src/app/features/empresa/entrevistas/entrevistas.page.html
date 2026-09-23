@@ -18,18 +18,20 @@
           <div class="ent-item">
             <div class="ent-item__info">
               <div class="ent-item__titulo-fila">
-                <span class="ent-item__solicitud">Solicitud #{{ e.solicitud_id }}</span>
+                <span class="ent-item__solicitud">{{ nombreCandidato(e) }}</span>
                 <app-badge [variante]="getVarianteEstado(e.estado)">{{ e.estado }}</app-badge>
               </div>
               <p class="ent-item__detalle">
                 📅 {{ e.fecha | date:'dd/MM/yyyy' }} · 🕐 {{ e.hora || '—' }} · 📍 {{ e.modalidad || '—' }}
               </p>
+              <p class="ent-item__meta">Oferta: {{ e.propuesta_nombre }} · Solicitud #{{ e.solicitud_id }}</p>
               @if (e.ubicacion) { <p class="ent-item__meta">Ubicación: {{ e.ubicacion }}</p> }
               @if (e.enlace) { <p class="ent-item__meta">Enlace: {{ e.enlace }}</p> }
               @if (e.observaciones) { <p class="ent-item__meta">💬 {{ e.observaciones }}</p> }
             </div>
             <div class="ent-item__acciones">
               @if (e.estado === 'PROGRAMADA' || e.estado === 'REPROGRAMADA') {
+                <app-boton variante="fantasma" tamanio="sm" (click)="abrirReprogramar(e)">Reprogramar</app-boton>
                 <app-boton variante="secundario" tamanio="sm" (click)="cambiarEstado(e.id_entrevista, 'REALIZADA')">Realizada</app-boton>
                 <app-boton variante="peligro" tamanio="sm" (click)="cambiarEstado(e.id_entrevista, 'CANCELADA')">Cancelar</app-boton>
               }
@@ -61,5 +63,23 @@
   <div modalFooter class="modal-footer">
     <app-boton variante="secundario" (click)="cerrarModal()">Cancelar</app-boton>
     <app-boton variante="primario" (click)="programar()">Programar</app-boton>
+  </div>
+</app-modal>
+
+<!-- Fase 6.4: reprogramar una entrevista existente (el backend la pasa a REPROGRAMADA y notifica) -->
+<app-modal [abierto]="modalReprogramarAbierto()" titulo="Reprogramar entrevista" (cerrar)="cerrarReprogramar()">
+  <form [formGroup]="formReprograma" class="ent-form">
+    <div class="ent-form__grid">
+      <app-campo-input etiqueta="Fecha" tipo="date" formControlName="fecha" [requerido]="true" />
+      <app-campo-input etiqueta="Hora" tipo="text" placeholder="14:30" formControlName="hora" [requerido]="true" />
+    </div>
+    <app-campo-select etiqueta="Modalidad" [opciones]="modalidades" formControlName="modalidad" [requerido]="true" />
+    <app-campo-input etiqueta="Ubicación" formControlName="ubicacion" placeholder="Dirección si es presencial" />
+    <app-campo-input etiqueta="Enlace" formControlName="enlace" placeholder="https://meet.google.com/..." />
+    <app-campo-textarea etiqueta="Observaciones" [filas]="3" formControlName="observaciones" />
+  </form>
+  <div class="modal-footer">
+    <app-boton variante="secundario" (click)="cerrarReprogramar()">Cancelar</app-boton>
+    <app-boton variante="primario" (click)="confirmarReprogramar()">Reprogramar</app-boton>
   </div>
 </app-modal>

@@ -34,6 +34,8 @@ export class EmpresaEntrevistasPage implements OnInit {
   readonly solicitudesAceptadas = signal<SolicitudConCandidato[]>([]);
   readonly cargando = signal(true);
   readonly modalAbierto = signal(false);
+  readonly modalReprogramarAbierto = signal(false);
+  readonly entrevistaActual = signal<EntrevistaConCandidato | null>(null);
 
   readonly modalidades: OpcionSelect[] = [
     { valor: 'PRESENCIAL', etiqueta: 'Presencial' },
@@ -43,6 +45,16 @@ export class EmpresaEntrevistasPage implements OnInit {
 
   readonly form = this.fb.nonNullable.group({
     solicitud_id: [0, [Validators.required, Validators.min(1)]],
+    fecha: ['', Validators.required],
+    hora: ['', Validators.required],
+    modalidad: ['VIRTUAL', Validators.required],
+    ubicacion: [''],
+    enlace: [''],
+    observaciones: [''],
+  });
+
+  /** Fase 6.4: reprogramar una entrevista ya existente */
+  readonly formReprograma = this.fb.nonNullable.group({
     fecha: ['', Validators.required],
     hora: ['', Validators.required],
     modalidad: ['VIRTUAL', Validators.required],
@@ -78,6 +90,48 @@ export class EmpresaEntrevistasPage implements OnInit {
     this.modalAbierto.set(true);
   }
   cerrarModal(): void { this.modalAbierto.set(false); }
+
+  /** Fase 6.4: abre el modal de reprogramación precargado con la entrevista */
+  abrirReprogramar(e: EntrevistaConCandidato): void {
+    this.entrevistaActual.set(e);
+    this.formReprograma.reset({
+      fecha: (e.fecha ?? '').slice(0, 10),
+      hora: e.hora ?? '',
+      modalidad: e.modalidad ?? 'VIRTUAL',
+      ubicacion: e.ubicacion ?? '',
+      enlace: e.enlace ?? '',
+      observaciones: e.observaciones ?? '',
+    });
+    this.modalReprogramarAbierto.set(true);
+  }
+
+  cerrarReprogramar(): void {
+    this.modalReprogramarAbierto.set(false);
+    this.entrevistaActual.set(null);
+  }
+
+  confirmarReprogramar(): void {
+    const e = this.entrevistaActual();
+    if (!e || this.formReprograma.invalid) { this.formReprograma.markAllAsTouched(); return; }
+
+    const datos = this.formReprograma.getRawValue();
+    // el backend pone el estado a REPROGRAMADA y notifica al candidato
+    this.entrevistaService.reprogramar(e.id_entrevista, {
+      fecha: datos.fecha,
+      hora: datos.hora,
+      modalidad: datos.modalidad as never,
+      ubicacion: datos.ubicacion || null,
+      enlace: datos.enlace || null,
+      observaciones: datos.observaciones || null,
+    }).subscribe({
+      next: () => {
+        this.toast.exito('Entrevista reprogramada');
+        this.cerrarReprogramar();
+        this.recargar();
+      },
+      error: (err) => this.toast.error(err.message || 'No se pudo reprogramar'),
+    });
+  }
 
   programar(): void {
     if (this.form.invalid) return;

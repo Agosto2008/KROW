@@ -3,10 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PropuestaService } from '../../../core/api/propuesta.service';
-import { EmpresaService } from '../../../core/api/empresa.service';
-import { TokenStorageService } from '../../../core/token-storage.service';
 import { ToastService } from '../../../shared/toast/toast.service';
-import { Empresa } from '../../../core/models/Index';
 import { CampoInputComponent } from '../../../shared/campo-input/campo-input.component';
 import { CampoTextareaComponent } from '../../../shared/campo-textarea/campo-textarea.component';
 import { CampoSelectComponent, OpcionSelect } from '../../../shared/campo-select/campo-select.component';
@@ -23,8 +20,6 @@ import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
 export class PropuestaFormPage implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly propuestaService = inject(PropuestaService);
-  private readonly empresaService = inject(EmpresaService);
-  private readonly tokenStorage = inject(TokenStorageService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -32,7 +27,6 @@ export class PropuestaFormPage implements OnInit {
   readonly esEdicion = signal(false);
   readonly cargando = signal(true);
   readonly guardando = signal(false);
-  readonly empresa = signal<Empresa | null>(null);
   private idPropuesta: number | null = null;
 
   readonly tipos: OpcionSelect[] = [
@@ -69,43 +63,38 @@ export class PropuestaFormPage implements OnInit {
     this.idPropuesta = id || null;
     this.esEdicion.set(!!id);
 
-    const idCuenta = this.tokenStorage.obtenerIdCuenta();
-    if (!idCuenta) return;
-
-    this.empresaService.listar().subscribe({
-      next: (empresas) => {
-        const mia = empresas.find((e) => e.cuenta_id === idCuenta) ?? null;
-        this.empresa.set(mia);
-        if (this.esEdicion() && id) {
-          this.propuestaService.obtenerPorId(id).subscribe({
-            next: (p) => {
-              this.form.patchValue({
-                nombre: p.nombre,
-                descripcion: p.descripcion,
-                tipo: p.tipo,
-                modalidad: p.modalidad,
-                pago: p.pago ?? null,
-                ubicacion: p.ubicacion ?? '',
-                vacantes: p.vacantes,
-                fecha_vencimiento: p.fecha_vencimiento ?? '',
-                estado: p.estado,
-              });
-              this.cargando.set(false);
-            },
-            error: () => { this.cargando.set(false); this.router.navigate(['/empresa/panel']); },
+    // no hace falta resolver "mi empresa": el backend deriva empresa_id del
+    // token al crear/editar (antes se bajaba TODA la lista de empresas)
+    if (this.esEdicion() && id) {
+      this.propuestaService.obtenerPorId(id).subscribe({
+        next: (p) => {
+          this.form.patchValue({
+            nombre: p.nombre,
+            descripcion: p.descripcion,
+            tipo: p.tipo,
+            modalidad: p.modalidad,
+            pago: p.pago ?? null,
+            ubicacion: p.ubicacion ?? '',
+            vacantes: p.vacantes,
+            fecha_vencimiento: p.fecha_vencimiento ?? '',
+            estado: p.estado,
           });
-        } else {
           this.cargando.set(false);
-        }
-      },
-      error: () => this.cargando.set(false),
-    });
+        },
+        error: () => { this.cargando.set(false); this.router.navigate(['/empresa/panel']); },
+      });
+    } else {
+      this.cargando.set(false);
+    }
+  }
+
+  /** Fase 6.2: "Cancelar" vuelve al panel sin guardar (antes llamaba a guardar()) */
+  cancelar(): void {
+    this.router.navigate(['/empresa/panel']);
   }
 
   guardar(): void {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    const empresa = this.empresa();
-    if (!empresa) { this.toast.error('Empresa no encontrada'); return; }
 
     this.guardando.set(true);
     const datos = this.form.getRawValue();
