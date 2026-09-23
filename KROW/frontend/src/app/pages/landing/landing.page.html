@@ -1,0 +1,126 @@
+<section class="hero">
+  <div class="hero__contenedor">
+    <div class="hero__texto">
+      <app-badge variante="neutro" class="hero__badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Empresas verificadas. Sin trampa.
+      </app-badge>
+
+      <h1 class="hero__titulo">
+        Tu primer trabajo<br>
+        <em>no debería ser</em><br>
+        una lotería.
+      </h1>
+
+      <p class="hero__subtitulo">
+        KROW conecta a jóvenes con empresas reales.
+        Prácticas y empleos verificados, perfiles honestos, y
+        un proceso que respeta tu tiempo.
+      </p>
+
+      <div class="hero__acciones">
+        <app-boton variante="primario" tamanio="lg" [routerLink]="['/registro/usuario']">
+          Empezar gratis
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </app-boton>
+        <a routerLink="/propuestas" class="hero__enlace">
+          Ver ofertas →
+        </a>
+      </div>
+    </div>
+
+    <aside class="hero__panel">
+      <h2 class="hero__panel-titulo">OFERTAS DESTACADAS</h2>
+
+      @if (cargando()) {
+        <app-spinner [tamanio]="24" />
+      } @else if (propuestasDestacadas().length === 0) {
+        <p class="hero__panel-vacio">Aún no hay ofertas destacadas.</p>
+      } @else {
+        <div class="hero__lista">
+          @for (propuesta of propuestasDestacadas(); track propuesta.id_propuesta) {
+            <a
+              class="hero__item"
+              [routerLink]="['/propuestas', propuesta.id_propuesta]"
+            >
+              <div class="hero__item-avatar">
+                <span>{{ nombreEmpresa(propuesta.empresa_id).charAt(0) }}</span>
+              </div>
+              <div class="hero__item-info">
+                <span class="hero__item-nombre">{{ propuesta.nombre }}</span>
+                <span class="hero__item-empresa">{{ nombreEmpresa(propuesta.empresa_id) }}</span>
+                <div class="hero__item-badges">
+                  <app-badge variante="tipo">
+                    {{ propuesta.tipo === 'TRABAJO' ? 'Trabajo' : 'Prácticas' }}
+                  </app-badge>
+                  <app-badge variante="modalidad">
+                    {{ propuesta.modalidad.toLowerCase() }}
+                  </app-badge>
+                </div>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </aside>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stats__contenedor">
+    <div class="stats__item">
+      <span class="stats__numero">1.200+</span>
+      <span class="stats__etiqueta">Ofertas activas</span>
+    </div>
+    <div class="stats__item">
+      <span class="stats__numero">340+</span>
+      <span class="stats__etiqueta">Empresas verificadas</span>
+    </div>
+    <div class="stats__item">
+      <span class="stats__numero">8.500+</span>
+      <span class="stats__etiqueta">Candidatos registrados</span>
+    </div>
+    <div class="stats__item">
+      <span class="stats__numero">92%</span>
+      <span class="stats__etiqueta">Tasa de respuesta</span>
+    </div>
+  </div>
+</section>
+
+<section class="pilares">
+  <div class="pilares__contenedor">
+    <h2 class="pilares__titulo">Una plataforma pensada para ti</h2>
+    <div class="pilares__grid">
+      <article class="pilar">
+        <h3 class="pilar__titulo">Enfoque en jóvenes sin experiencia</h3>
+        <p class="pilar__texto">
+          Diseñado especialmente para quienes buscan su primera oportunidad laboral,
+          sin importar la edad ni el punto de partida.
+        </p>
+      </article>
+      <article class="pilar">
+        <h3 class="pilar__titulo">Claridad y transparencia</h3>
+        <p class="pilar__texto">
+          Toda la información de las ofertas es clara, honesta y visible desde el primer vistazo.
+        </p>
+      </article>
+      <article class="pilar">
+        <h3 class="pilar__titulo">Verificación de empresas</h3>
+        <p class="pilar__texto">
+          Cada empresa pasa por un proceso de verificación para garantizar un entorno seguro.
+        </p>
+      </article>
+      <article class="pilar">
+        <h3 class="pilar__titulo">Búsqueda simplificada</h3>
+        <p class="pilar__texto">
+          Una experiencia ordenada y eficiente, sin ruido innecesario ni distracciones.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>

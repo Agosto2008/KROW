@@ -1,0 +1,43 @@
+<header class="navbar">
+  <div class="navbar__contenedor">
+    <app-logo enlace="/" tamanio="md" variante="oscuro" />
+
+    <nav class="navbar__nav" aria-label="Principal">
+      @for (item of itemsNav(); track item.ruta) {
+        <a
+          class="navbar__enlace"
+          [routerLink]="item.ruta"
+          routerLinkActive="navbar__enlace--activo"
+          [routerLinkActiveOptions]="{ exact: false }"
+        >
+          {{ item.etiqueta }}
+        </a>
+      }
+    </nav>
+
+    <div class="navbar__acciones">
+      @if (autenticado()) {
+        <button class="navbar__icono" aria-label="Notificaciones">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </button>
+        <div class="navbar__usuario">
+          <span class="navbar__usuario-avatar"></span>
+          <span class="navbar__usuario-rol">{{ rol() }}</span>
+        </div>
+        <app-boton variante="fantasma" tamanio="sm" (click)="cerrarSesion()">
+          Salir
+        </app-boton>
+      } @else {
+        <app-boton variante="fantasma" tamanio="sm" [routerLink]="['/login']">
+          Entrar
+        </app-boton>
+        <app-boton variante="primario" tamanio="sm" [routerLink]="['/registro/usuario']">
+          Registrarse
+        </app-boton>
+      }
+    </div>
+  </div>
+</header>

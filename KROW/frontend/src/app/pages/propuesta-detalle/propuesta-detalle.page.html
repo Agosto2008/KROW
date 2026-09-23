@@ -1,0 +1,93 @@
+@if (cargando()) {
+  <app-spinner mensaje="Cargando propuesta..." />
+} @else if (!propuesta()) {
+  <app-empty-state titulo="Propuesta no encontrada" mensaje="La oferta que buscas no existe." />
+} @else {
+  <article class="detalle">
+    <div class="detalle__contenedor">
+      <a routerLink="/propuestas" class="detalle__volver">← Volver a ofertas</a>
+
+      <header class="detalle__cabecera">
+        <div class="detalle__cabecera-info">
+          <app-avatar-empresa
+            [fotografia]="empresa()?.fotografia ?? null"
+            tamanio="lg"
+          />
+          <div>
+            <h1 class="detalle__titulo">{{ propuesta()!.nombre }}</h1>
+            <div class="detalle__empresa">
+              <span class="detalle__empresa-nombre">{{ empresa()?.nombre }}</span>
+              @if (empresa()?.verificada) {
+                <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+              }
+            </div>
+          </div>
+        </div>
+        <button class="detalle__fav" (click)="onToggleFavorito()">
+          <svg width="20" height="20" viewBox="0 0 24 24" [attr.fill]="esFavorito() ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+          {{ esFavorito() ? 'Guardado' : 'Guardar' }}
+        </button>
+      </header>
+
+      <div class="detalle__badges">
+        <app-badge variante="tipo">{{ etiquetaTipo }}</app-badge>
+        <app-badge variante="modalidad">{{ propuesta()!.modalidad.toLowerCase() }}</app-badge>
+        <app-badge variante="neutro">{{ pagoTexto }}</app-badge>
+        @if (propuesta()!.ubicacion) {
+          <app-badge variante="neutro">{{ propuesta()!.ubicacion }}</app-badge>
+        }
+      </div>
+
+      <section class="detalle__bloque">
+        <h2 class="detalle__subtitulo">Descripción</h2>
+        <p class="detalle__texto">{{ propuesta()!.descripcion }}</p>
+      </section>
+
+      <section class="detalle__bloque">
+        <h2 class="detalle__subtitulo">Detalles</h2>
+        <div class="detalle__grid">
+          <div class="detalle__dato">
+            <span class="detalle__dato-etiqueta">Tipo</span>
+            <span class="detalle__dato-valor">{{ etiquetaTipo }}</span>
+          </div>
+          <div class="detalle__dato">
+            <span class="detalle__dato-etiqueta">Modalidad</span>
+            <span class="detalle__dato-valor">{{ propuesta()!.modalidad }}</span>
+          </div>
+          <div class="detalle__dato">
+            <span class="detalle__dato-etiqueta">Vacantes</span>
+            <span class="detalle__dato-valor">{{ propuesta()!.vacantes }}</span>
+          </div>
+          <div class="detalle__dato">
+            <span class="detalle__dato-etiqueta">Publicada</span>
+            <span class="detalle__dato-valor">{{ propuesta()!.fecha_publicacion | date:'dd/MM/yyyy' }}</span>
+          </div>
+          @if (propuesta()!.fecha_vencimiento) {
+            <div class="detalle__dato">
+              <span class="detalle__dato-etiqueta">Vence</span>
+              <span class="detalle__dato-valor">{{ propuesta()!.fecha_vencimiento | date:'dd/MM/yyyy' }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="detalle__bloque" *ngIf="empresa()">
+        <h2 class="detalle__subtitulo">Sobre la empresa</h2>
+        <p class="detalle__texto">{{ empresa()!.descripcion || 'Sin descripción.' }}</p>
+      </section>
+
+      <div class="detalle__acciones">
+        <app-boton
+          variante="primario"
+          tamanio="lg"
+          [cargando]="aplicando()"
+          (click)="onAplicar()"
+        >
+          Aplicar a esta oferta
+        </app-boton>
+      </div>
+    </div>
+  </article>
+}

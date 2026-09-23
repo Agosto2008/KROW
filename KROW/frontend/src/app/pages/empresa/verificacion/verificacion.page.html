@@ -1,0 +1,54 @@
+<section class="verif">
+  <div class="verif__contenedor">
+    <h1 class="verif__titulo">Verificación de empresa</h1>
+    <p class="verif__subtitulo">Las empresas verificadas generan más confianza en los candidatos</p>
+
+    @if (cargando()) {
+      <app-spinner />
+    } @else if (!empresa()) {
+      <app-empty-state titulo="Sin empresa" mensaje="No encontramos tu empresa." />
+    } @else {
+      <div class="verif__estado" aria-live="polite">
+        <span>Estado actual:</span>
+        @if (empresa()!.verificada) {
+          <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+        } @else {
+          <app-badge variante="neutro">Sin verificar</app-badge>
+        }
+      </div>
+
+      <h2 class="verif__seccion">Planes disponibles</h2>
+      <div class="verif__planes">
+        @for (p of planes; track p.tipo) {
+          <div class="plan">
+            <h3 class="plan__titulo">{{ p.titulo }}</h3>
+            <p class="plan__desc">{{ p.descripcion }}</p>
+            <app-boton variante="primario" tamanio="sm" [cargando]="solicitando()" (click)="solicitar(p.tipo)">
+              Solicitar
+            </app-boton>
+          </div>
+        }
+      </div>
+
+      <h2 class="verif__seccion">Historial</h2>
+      @if (verificaciones().length === 0) {
+        <app-empty-state titulo="Sin solicitudes" mensaje="Aún no has solicitado verificación." />
+      } @else {
+        <div class="verif__lista">
+          @for (v of verificaciones(); track v.id_verificacion) {
+            <div class="verif-item">
+              <div>
+                <span class="verif-item__tipo">{{ v.tipo_verificacion }}</span>
+                <span class="verif-item__fecha">{{ v.fecha | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <app-badge [variante]="getVarianteEstado(v.estado)">{{ v.estado }}</app-badge>
+              @if (v.observacion) {
+                <p class="verif-item__obs">{{ v.observacion }}</p>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</section>

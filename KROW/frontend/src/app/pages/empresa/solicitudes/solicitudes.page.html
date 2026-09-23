@@ -1,0 +1,57 @@
+<section class="emp-sol">
+  <div class="emp-sol__contenedor">
+    <header class="emp-sol__cabecera">
+      <h1 class="emp-sol__titulo">Solicitudes recibidas</h1>
+      <p class="emp-sol__subtitulo">{{ solicitudes().length }} solicitudes</p>
+    </header>
+
+    @if (cargando()) {
+      <app-spinner mensaje="Cargando solicitudes..." />
+    } @else if (solicitudes().length === 0) {
+      <app-empty-state titulo="Sin solicitudes" mensaje="Aún no has recibido solicitudes." />
+    } @else {
+      <div class="emp-sol__lista">
+        @for (s of solicitudes(); track s.id_solicitud) {
+          <div class="soli">
+            <div class="soli__info">
+              <div class="soli__titulo-fila">
+                <span class="soli__usuario">{{ nombreUsuario(s.usuario_id) }}</span>
+                <app-badge [variante]="getVarianteEstado(s.estado)">{{ getEtiquetaEstado(s.estado) }}</app-badge>
+              </div>
+              <p class="soli__propuesta">
+                Aplicó a: <strong>{{ propuestasMap()[s.propuesta_id]?.nombre || '#' + s.propuesta_id }}</strong>
+              </p>
+              <p class="soli__fecha">{{ s.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+              @if (s.comentario_empresa) {
+                <p class="soli__comentario">💬 {{ s.comentario_empresa }}</p>
+              }
+            </div>
+            <div class="soli__acciones">
+              @if (s.estado === 'PENDIENTE' || s.estado === 'EN_REVISION') {
+                <app-boton variante="secundario" tamanio="sm" (click)="abrirAccion(s, 'EN_REVISION')">Revisar</app-boton>
+                <app-boton variante="primario" tamanio="sm" (click)="abrirAccion(s, 'ACEPTADA')">Aceptar</app-boton>
+                <app-boton variante="peligro" tamanio="sm" (click)="abrirAccion(s, 'RECHAZADA')">Rechazar</app-boton>
+              } @else if (s.estado === 'ACEPTADA') {
+                <app-boton variante="secundario" tamanio="sm" (click)="abrirAccion(s, 'RECHAZADA')">Rechazar</app-boton>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<app-modal [abierto]="modalAbierto()" titulo="Comentario para el candidato" (cerrar)="cerrarModal()">
+  <app-campo-textarea
+    etiqueta="Comentario (opcional)"
+    [filas]="4"
+    [ngModel]="comentario()"
+    (ngModelChange)="comentario.set($event)"
+    placeholder="Ej: Nos gustaría conocerte mejor. ¿Podrías agendar una entrevista?"
+  />
+  <div modalFooter class="modal-footer">
+    <app-boton variante="secundario" (click)="cerrarModal()">Cancelar</app-boton>
+    <app-boton variante="primario" (click)="confirmarAccion()">Confirmar</app-boton>
+  </div>
+</app-modal>
