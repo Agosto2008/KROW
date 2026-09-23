@@ -13,3 +13,4 @@
 .emp-card__nombre { font-size: 15px; font-weight: 600; }
 .emp-card__meta { font-size: 12px; color: var(--gris-medio); }
 .emp-card__desc { font-size: 13px; color: var(--gris-carbon); margin: 4px 0 0 0; line-height: 1.5; }
+.emp-card__acciones { display: flex; gap: var(--esp-2); align-self: center; flex-shrink: 0; }

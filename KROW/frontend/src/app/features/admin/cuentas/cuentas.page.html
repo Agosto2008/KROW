@@ -5,18 +5,15 @@
       <p class="adm-cta__subtitulo">Busca, filtra y gestiona el estado de las cuentas de KROW</p>
     </header>
 
-    <form class="adm-cta__buscador" (ngSubmit)="buscar(terminoBusqueda.value)">
+    <!-- 7.5: el valor vive en textoBusqueda (ngModel) y se manda al backend;
+         antes se leía de un input oculto que siempre estaba vacío -->
+    <form class="adm-cta__buscador" (ngSubmit)="buscar()">
       <app-campo-input
         etiqueta="Buscar por correo o nombre"
         placeholder="ana@correo.com"
         autocomplete="off"
-      />
-      <input
-        #terminoBusqueda
-        type="search"
-        class="adm-cta__input-oculto"
-        tabindex="-1"
-        aria-hidden="true"
+        name="busqueda"
+        [(ngModel)]="textoBusqueda"
       />
       <app-boton variante="primario" tipo="submit" [cargando]="cargando()">Buscar</app-boton>
     </form>

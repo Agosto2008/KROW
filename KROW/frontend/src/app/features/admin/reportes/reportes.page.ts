@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ReporteService } from '../../../core/api/reporte.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { Reporte, EstadoReporte } from '../../../core/models/Index';
-import { BadgeComponent } from '../../../shared/badge/badge.component';
+import { BadgeComponent, VarianteBadge } from '../../../shared/badge/badge.component';
 import { BotonComponent } from '../../../shared/boton/boton.component';
 import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
@@ -50,8 +50,8 @@ export class AdminReportesPage implements OnInit {
     });
   }
 
-  getVarianteEstado(estado: string): any {
-    const mapa: Record<string, string> = {
+  getVarianteEstado(estado: string): VarianteBadge {
+    const mapa: Record<string, VarianteBadge> = {
       PENDIENTE: 'estado-pendiente', EN_REVISION: 'estado-revision',
       RESUELTO: 'estado-aceptada', DESCARTADO: 'estado-cancelada',
     };

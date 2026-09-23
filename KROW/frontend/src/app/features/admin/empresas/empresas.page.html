@@ -27,6 +27,8 @@
                 <span class="emp-card__nombre">{{ e.nombre }}</span>
                 @if (e.verificada) {
                   <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+                } @else {
+                  <app-badge variante="neutro">Sin verificar</app-badge>
                 }
               </div>
               <span class="emp-card__meta">
@@ -35,6 +37,9 @@
               @if (e.descripcion) {
                 <p class="emp-card__desc">{{ e.descripcion }}</p>
               }
+            </div>
+            <div class="emp-card__acciones">
+              <app-boton variante="secundario" tamanio="sm" [routerLink]="['/empresas', e.id_empresa]">Ver detalle</app-boton>
             </div>
           </div>
         }

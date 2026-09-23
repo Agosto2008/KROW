@@ -26,12 +26,15 @@ export class AdminCuentasPage implements OnInit {
   readonly termino = signal('');
   readonly porPagina = 15;
 
+  /** Texto del buscador visible (ngModel); lo envía `buscar()` al backend */
+  textoBusqueda = '';
+
   ngOnInit(): void {
     this.cargar();
   }
 
-  buscar(termino: string): void {
-    this.termino.set(termino.trim());
+  buscar(): void {
+    this.termino.set(this.textoBusqueda.trim());
     this.pagina.set(1);
     this.cargar();
   }

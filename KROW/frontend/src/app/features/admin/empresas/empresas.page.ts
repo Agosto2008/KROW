@@ -1,16 +1,18 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { EmpresaService } from '../../../core/api/empresa.service';
 import { Empresa } from '../../../core/models/Index';
 import { BadgeComponent } from '../../../shared/badge/badge.component';
+import { BotonComponent } from '../../../shared/boton/boton.component';
 import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-admin-empresas-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, BadgeComponent, SpinnerComponent, EmptyStateComponent],
+  imports: [CommonModule, FormsModule, RouterLink, BadgeComponent, BotonComponent, SpinnerComponent, EmptyStateComponent],
   templateUrl: './empresas.page.html',
   styleUrl: './empresas.page.css',
 })

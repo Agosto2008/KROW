@@ -1,11 +1,12 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { EmpresaService } from '../../../core/api/empresa.service';
 import { PropuestaService } from '../../../core/api/propuesta.service';
 import { ReporteService } from '../../../core/api/reporte.service';
-import { VerificacionEmpresaService } from '../../../core/api/verificacionEmpresa.service';
-import { Empresa, Propuesta, Reporte, VerificacionEmpresa } from '../../../core/models/Index';
+import { VerificacionEmpresaService, VerificacionConEmpresa } from '../../../core/api/verificacionEmpresa.service';
+import { Empresa, Propuesta, Reporte } from '../../../core/models/Index';
 import { BadgeComponent } from '../../../shared/badge/badge.component';
 import { BotonComponent } from '../../../shared/boton/boton.component';
 import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
@@ -27,7 +28,8 @@ export class AdminPanelPage implements OnInit {
   readonly empresas = signal<Empresa[]>([]);
   readonly propuestas = signal<Propuesta[]>([]);
   readonly reportes = signal<Reporte[]>([]);
-  readonly verificacionesPendientes = signal<VerificacionEmpresa[]>([]);
+  /** Cola global de pendientes: 1 petición con la empresa ya resuelta (Fase 2.7) */
+  readonly verificacionesPendientes = signal<VerificacionConEmpresa[]>([]);
   readonly cargando = signal(true);
 
   readonly tabActiva = signal<'pendientes' | 'verificadas' | 'stats'>('pendientes');
@@ -36,36 +38,28 @@ export class AdminPanelPage implements OnInit {
     this.cargarTodo();
   }
 
+  /**
+   * Fase 7.1: 4 peticiones EN PARALELO (forkJoin = Promise.all de RxJS).
+   * Sin setTimeout(500) y sin el N+1 de pedir verificaciones empresa por
+   * empresa: la cola global `?estado=PENDIENTE` trae todo en 1 query.
+   */
   private cargarTodo(): void {
-    let pendientes = 3;
-
-    this.empresaService.listar().subscribe({
-      next: (emps) => { this.empresas.set(emps); if (--pendientes === 0) this.cargando.set(false); },
-      error: () => { if (--pendientes === 0) this.cargando.set(false); },
+    forkJoin({
+      empresas: this.empresaService.listar(),
+      // estado: undefined anula el default 'ACTIVA' → total REAL de ofertas
+      propuestas: this.propuestaService.buscar({ por_pagina: 50, estado: undefined }),
+      reportes: this.reporteService.listar(),
+      pendientes: this.verificacionService.listarTodas('PENDIENTE'),
+    }).subscribe({
+      next: ({ empresas, propuestas, reportes, pendientes }) => {
+        this.empresas.set(empresas);
+        this.propuestas.set(propuestas.datos);
+        this.reportes.set(reportes);
+        this.verificacionesPendientes.set(pendientes);
+        this.cargando.set(false);
+      },
+      error: () => this.cargando.set(false),
     });
-
-    this.propuestaService.buscar({ por_pagina: 50 }).subscribe({
-      next: (res) => { this.propuestas.set(res.datos); if (--pendientes === 0) this.cargando.set(false); },
-      error: () => { if (--pendientes === 0) this.cargando.set(false); },
-    });
-
-    this.reporteService.listar().subscribe({
-      next: (reps) => { this.reportes.set(reps); if (--pendientes === 0) this.cargando.set(false); },
-      error: () => { if (--pendientes === 0) this.cargando.set(false); },
-    });
-
-    // Verificaciones pendientes: cargar por cada empresa
-    setTimeout(() => {
-      this.empresas().forEach((e) => {
-        this.verificacionService.listarPorEmpresa(e.id_empresa).subscribe({
-          next: (vs) => {
-            const pend = vs.filter((v) => v.estado === 'PENDIENTE');
-            this.verificacionesPendientes.update((lista) => [...lista, ...pend]);
-          },
-          error: () => {},
-        });
-      });
-    }, 500);
   }
 
   get totalEmpresas(): number { return this.empresas().length; }
@@ -75,8 +69,4 @@ export class AdminPanelPage implements OnInit {
   get totalReportes(): number { return this.reportes().length; }
 
   setTab(t: 'pendientes' | 'verificadas' | 'stats'): void { this.tabActiva.set(t); }
-
-  getEmpresaNombre(empresaId: number): string {
-    return this.empresas().find((e) => e.id_empresa === empresaId)?.nombre ?? 'Empresa';
-  }
 }

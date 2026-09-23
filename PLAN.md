@@ -23,8 +23,8 @@
 - [x] **Fase 3 — Frontend desde cero: cimientos** (completada y verificada: `tsc`=0, `ng build`=0, rutas en vivo 200, API agregada OK)
 - [x] **Fase 4 — Vistas públicas** (completada y verificada: `tsc`=0, `ng build`=0, backend `tsc`=0, rutas y API en vivo OK)
 - [x] **Fase 5 — Vistas usuario** (completada y verificada: `tsc`=0, `ng build`=0, backend `tsc`=0, flujos en vivo OK, seed restaurado)
-- [ ] Fase 6 — Vistas empresa
-- [ ] Fase 7 — Vistas admin
+- [x] **Fase 6 — Vistas empresa** (completada y verificada: `tsc`=0, `ng build`=0, backend `tsc`=0, 37/37 pruebas en vivo, seed restaurado)
+- [x] **Fase 7 — Vistas admin** (completada y verificada: `tsc`=0, `ng build`=0, backend `tsc`=0, 41/41 pruebas en vivo, seed restaurado)
 - [ ] Fase 8 — Pulido y cierre
 
 ### Verificación de Fase 0/1 (pruebas contra la API real)
@@ -213,15 +213,25 @@
 
 ---
 
-## FASE 7 — Vistas ADMIN (`features/admin/`)
+## FASE 7 — Vistas ADMIN (`features/admin/`) ✅ COMPLETADA
 
 | # | Vista | Notas |
 |---|---|---|
-| 7.1 | Panel: KPIs sin `setTimeout(500)` | cargas encadenadas con `Promise.all` |
-| 7.2 | Verificaciones: cola global pendiente + aprobar/rechazar con observación (1 petición) | Fase 2.7 |
-| 7.3 | Empresas: listado con acciones (ver detalle, estado de verificación) | hoy solo lectura |
-| 7.4 | Reportes: cola con filtros + transiciones (la UI de crear reporte está en Fases 4/5) | — |
-| 7.5 | Cuentas: **listado real paginado** con búsqueda (hoy: buscar por ID a ciegas) + activar/suspender | Fase 2.10 |
+| 7.1 | ✅ Panel: KPIs sin `setTimeout(500)` | 4 peticiones en paralelo con `forkJoin` (el `Promise.all` de RxJS) + cola global `?estado=PENDIENTE` en 1 query (antes: `setTimeout(500)` + 1 petición **por empresa** = N+1); propuestas con `estado: undefined` → total real de **todos** los estados |
+| 7.2 | ✅ Verificaciones: cola global pendiente + aprobar/rechazar con observación (1 petición) | Fase 2.7 — ya construida; verificada en vivo: aprobar → empresa `verificada=1` + notificación a la empresa, doble resolución → 409, observación registrada |
+| 7.3 | ✅ Empresas: listado con **acciones** — botón *Ver detalle* (→ `/empresas/:id`) y estado de verificación explícito (*Verificada* / *Sin verificar*) | antes solo lectura |
+| 7.4 | ✅ Reportes: cola con filtros por estado + transiciones (`PENDIENTE → EN_REVISION → RESUELTO/DESCARTADO`) con validación backend (400 enum / 404 id); `getVarianteEstado` tipado con `VarianteBadge` | la UI de crear reporte está en Fases 4/5 |
+| 7.5 | ✅ Cuentas: listado real paginado con búsqueda + activar/suspender/inactivar | Fase 2.10 · **BUG corregido**: el buscador leía el valor de un *input oculto* que siempre estaba vacío (lo que escribía el admin se perdía); ahora `[(ngModel)]` → `buscar()` → `GET /cuentas?buscar=` en el servidor |
+
+**Verificación de Fase 7** (23/09/2026): **41/41 pruebas OK**
+1. Frontend `tsc --noEmit` → **0**; `ng build` → **0**; backend `tsc --noEmit` → **0**.
+2. Panel (7.1): las 4 peticiones del `forkJoin` → `/empresas` = 3 (1 verificada); `/propuestas?pagina=1&por_pagina=50` → `total=7` con **todos** los estados (6 activas); `/reportes` → 1; `/verificaciones-empresa?estado=PENDIENTE` → 1 con `empresa_nombre` resuelto (1 query, sin N+1, sin `setTimeout`).
+3. Permisos: colas del admin sin token → **401**; `/cuentas` con token EMPRESA → **403**.
+4. Verificaciones (7.2): estado inventado → **400**; aprobar verificación 1 → **200** (TechLab queda `verificada=1` y su empresa recibe la notificación "Verificacion aprobada"); doble resolución → **409**; cola pendiente queda **vacía**; filtro APROBADA → 2 con la observación registrada.
+5. Reportes (7.4): filtros `?estado=` (PENDIENTE=1 → 0, EN_REVISION=0 → 1 tras la transición); transición → **200**; estado inventado → **400**; id inexistente → **404**; EMPRESA intentando transicionar → **403**.
+6. Cuentas (7.5): paginado `{total:7, porPagina:15}`; buscar "ana" → 1 (`ana@correo.com`, con `id_usuario` resuelto), "TechLab" → 1, sin resultados → 0; `rol=EMPRESA` → 3; suspender → **200** con el estado reflejado; reactivar → **200**; estado inventado → **400**; sin token → **401**.
+7. Rutas SPA → 200 en `/admin/panel`, `/admin/verificaciones`, `/admin/empresas`, `/admin/reportes`, `/admin/cuentas`.
+8. **Seed restaurado** tras las pruebas: 7 cuentas / 7 propuestas / 6 solicitudes / 3 mensajes / entrevista 1 **PROGRAMADA** / solicitud 2 **PENDIENTE** / 2 verificaciones (verificación 1 de vuelta a **PENDIENTE**, TechLab `verificada=0`) / 1 reporte **PENDIENTE** / 3 favoritos; scripts `.tmp-*` eliminados.
 
 ---
 

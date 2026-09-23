@@ -52,9 +52,9 @@
           <div class="admin__lista">
             @for (v of verificacionesPendientes(); track v.id_verificacion) {
               <div class="emp-item">
-                <div class="emp-item__avatar">{{ getEmpresaNombre(v.empresa_id).charAt(0) }}</div>
+                <div class="emp-item__avatar">{{ v.empresa_nombre.charAt(0) }}</div>
                 <div class="emp-item__info">
-                  <span class="emp-item__nombre">{{ getEmpresaNombre(v.empresa_id) }}</span>
+                  <span class="emp-item__nombre">{{ v.empresa_nombre }}</span>
                   <span class="emp-item__meta">Plan {{ v.tipo_verificacion }} · Solicitado {{ v.fecha | date:'dd/MM/yyyy' }}</span>
                 </div>
                 <app-badge variante="estado-pendiente">Pendiente</app-badge>
