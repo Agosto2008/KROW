@@ -1,0 +1,12 @@
+.adm-cta { padding: var(--esp-7) 0 var(--esp-9); }
+.adm-cta__contenedor { max-width: 800px; margin: 0 auto; padding: 0 var(--esp-5); }
+.adm-cta__titulo { font-size: 32px; margin: 0 0 4px 0; }
+.adm-cta__subtitulo { font-size: 14px; color: var(--gris-medio); margin: 0 0 var(--esp-5) 0; }
+.adm-cta__buscador { display: flex; gap: var(--esp-3); align-items: flex-end; margin-bottom: var(--esp-5); }
+.cta-card { display: flex; justify-content: space-between; align-items: center; gap: var(--esp-4); padding: var(--esp-5); background: var(--blanco-hueso); border: 1px solid var(--gris-borde); border-radius: var(--radio-md); flex-wrap: wrap; }
+.cta-card__info { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.cta-card__fila { display: flex; gap: var(--esp-2); align-items: center; margin-bottom: 4px; flex-wrap: wrap; }
+.cta-card__id { font-size: 15px; font-weight: 600; }
+.cta-card__correo { font-size: 14px; color: var(--gris-carbon); }
+.cta-card__meta { font-size: 12px; color: var(--gris-medio); }
+.cta-card__acciones { display: flex; gap: var(--esp-2); flex-wrap: wrap; }
