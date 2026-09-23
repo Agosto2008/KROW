@@ -6,6 +6,7 @@ import { empresaRepository } from '../repositories/EmpresaRepository';
 import { RolCuenta } from '../models/Cuenta';
 import { AppError } from '../utils/AppError';
 
+// configura la clave y duracion del token
 const JWT_SECRET = process.env.JWT_SECRET as string;
 const JWT_EXPIRES_IN: SignOptions['expiresIn'] =
     (process.env.JWT_EXPIRES_IN || '1h') as SignOptions['expiresIn'];
@@ -30,13 +31,15 @@ interface RegistroEmpresaInput {
 }
 
 export class AuthService {
+    // registra un nuevo usuario
     async registrarUsuario(data: RegistroUsuarioInput) {
         const existente = await cuentaRepository.findByCorreo(data.correo);
         if (existente) throw new AppError('El correo ya está registrado', 409);
 
+        // encripta la contraseña
         const passwordHash = await bcrypt.hash(data.password, 10);
 
-        // Transacción: si falla la creación del Usuario, se revierte también la Cuenta
+        // inicia una transaccion para crear la cuenta y el usuario
         const connection = await pool.getConnection();
         try {
             await connection.beginTransaction();
@@ -55,9 +58,11 @@ export class AuthService {
                 fecha_nacimiento: null,
             }, connection);
 
+            // confirma los cambios
             await connection.commit();
             return this.generarToken(idCuenta, 'USUARIO');
         } catch (error) {
+            // revierte los cambios si ocurre un error
             await connection.rollback();
             throw error;
         } finally {
@@ -65,12 +70,15 @@ export class AuthService {
         }
     }
 
+    // registra una nueva empresa
     async registrarEmpresa(data: RegistroEmpresaInput) {
         const existente = await cuentaRepository.findByCorreo(data.correo);
         if (existente) throw new AppError('El correo ya está registrado', 409);
 
+        // encripta la contraseña
         const passwordHash = await bcrypt.hash(data.password, 10);
 
+        // inicia una transaccion para crear la cuenta y la empresa
         const connection = await pool.getConnection();
         try {
             await connection.beginTransaction();
@@ -85,9 +93,11 @@ export class AuthService {
                 ubicacion: data.ubicacion ?? null,
             }, connection);
 
+            // confirma los cambios
             await connection.commit();
             return this.generarToken(idCuenta, 'EMPRESA');
         } catch (error) {
+            // revierte los cambios si ocurre un error
             await connection.rollback();
             throw error;
         } finally {
@@ -95,17 +105,35 @@ export class AuthService {
         }
     }
 
+    // inicia sesion
     async login(correo: string, password: string) {
         const cuenta = await cuentaRepository.findByCorreo(correo);
         if (!cuenta) throw new AppError('Credenciales inválidas', 401);
         if (cuenta.estado !== 'ACTIVA') throw new AppError('Cuenta no activa', 403);
 
+        // compara la contraseña ingresada con la almacenada
         const passwordValido = await bcrypt.compare(password, cuenta.password);
         if (!passwordValido) throw new AppError('Credenciales inválidas', 401);
 
         return this.generarToken(cuenta.id_cuenta, cuenta.rol);
     }
 
+    // devuelve el perfil (usuario/empresa) asociado a la cuenta autenticada,
+    // para el endpoint /me: así el front sabe quién es sin volver a pedir login
+    async obtenerPerfil(idCuenta: number, rol: RolCuenta) {
+        if (rol === 'USUARIO') {
+            const perfil = await usuarioRepository.findByCuentaId(idCuenta);
+            return { rol, perfil };
+        }
+        if (rol === 'EMPRESA') {
+            const perfil = await empresaRepository.findByCuentaId(idCuenta);
+            return { rol, perfil };
+        }
+        // ADMIN no tiene tabla de perfil propia
+        return { rol, perfil: null };
+    }
+
+    // genera el token de autenticacion
     private generarToken(idCuenta: number, rol: RolCuenta) {
         const token = jwt.sign({ id_cuenta: idCuenta, rol }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
         return { token, rol, id_cuenta: idCuenta };

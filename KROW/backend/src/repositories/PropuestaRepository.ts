@@ -12,6 +12,8 @@ interface FiltrosPropuesta {
 }
 
 export class PropuestaRepository {
+
+  //busca todas las propuestas y permite asignar filtros especificos sobre los mismos 
   async findAll(filtros: FiltrosPropuesta = {}): Promise<PropuestaRow[]> {
     let sql = 'SELECT * FROM Propuesta WHERE 1=1';
     const params: any[] = [];
@@ -25,11 +27,13 @@ export class PropuestaRepository {
     return rows;
   }
 
+  //busca una propuesta con filtros por medio de su ID 
   async findById(id: number): Promise<PropuestaRow | null> {
     const [rows] = await pool.query<PropuestaRow[]>('SELECT * FROM Propuesta WHERE id_propuesta = ?', [id]);
     return rows[0] ?? null;
   }
 
+  //crea una propuesta pero elimina ciertas asignaciones de manera opcional 
   async create(data: Omit<Propuesta, 'id_propuesta' | 'fecha_publicacion' | 'estado'>): Promise<number> {
     const [result] = await pool.query<ResultSetHeader>(
       `INSERT INTO Propuesta (empresa_id, nombre, descripcion, tipo, modalidad, pago, ubicacion, vacantes, fecha_vencimiento)
@@ -40,6 +44,7 @@ export class PropuestaRepository {
     return result.insertId;
   }
 
+  //permite actualizar campos de manera parcial 
   async update(id: number, data: Partial<Propuesta>): Promise<void> {
     const campos = Object.keys(data);
     if (campos.length === 0) return;
@@ -48,6 +53,7 @@ export class PropuestaRepository {
     await pool.query(`UPDATE Propuesta SET ${setClause} WHERE id_propuesta = ?`, [...valores, id]);
   }
 
+  //borra las propuestas independiente a si tienen filtro asignado o no 
   async delete(id: number): Promise<void> {
     await pool.query('DELETE FROM Propuesta WHERE id_propuesta = ?', [id]);
   }

@@ -1,0 +1,10 @@
+.form-page { padding: var(--esp-7) 0 var(--esp-9); }
+.form-page__contenedor { max-width: 780px; margin: 0 auto; padding: 0 var(--esp-5); }
+.form-page__volver { display: inline-block; font-size: 13px; color: var(--gris-medio); margin-bottom: var(--esp-4); }
+.form-page__volver:hover { color: var(--negro-puro); }
+.form-page__titulo { font-size: 32px; margin: 0 0 4px 0; }
+.form-page__subtitulo { font-size: 14px; color: var(--gris-medio); margin: 0 0 var(--esp-6) 0; }
+.form-page__form { display: flex; flex-direction: column; gap: var(--esp-4); }
+.form-page__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--esp-4); }
+.form-page__acciones { display: flex; justify-content: flex-end; gap: var(--esp-3); padding-top: var(--esp-5); border-top: 1px solid var(--gris-borde); }
+@media (max-width: 600px) { .form-page__grid { grid-template-columns: 1fr; } }

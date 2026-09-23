@@ -1,0 +1,32 @@
+<section class="guardados">
+  <div class="guardados__contenedor">
+    <header class="guardados__cabecera">
+      <h1 class="guardados__titulo">Ofertas guardadas</h1>
+      <p class="guardados__subtitulo">{{ propuestas().length }} ofertas guardadas</p>
+    </header>
+
+    @if (cargando()) {
+      <app-spinner mensaje="Cargando guardados..." />
+    } @else if (propuestas().length === 0) {
+      <app-empty-state
+        titulo="Sin ofertas guardadas"
+        mensaje="Guarda ofertas para revisarlas más tarde."
+      >
+        <a routerLink="/propuestas" class="enlace-primario">Explorar ofertas</a>
+      </app-empty-state>
+    } @else {
+      <div class="guardados__grid">
+        @for (propuesta of propuestas(); track propuesta.id_propuesta) {
+          <app-propuesta-card
+            [propuesta]="propuesta"
+            [empresaNombre]="nombreEmpresa(propuesta.empresa_id)"
+            [empresaFotografia]="fotoEmpresa(propuesta.empresa_id)"
+            [empresaVerificada]="verifEmpresa(propuesta.empresa_id)"
+            [esFavorito]="true"
+            (toggleFavorito)="onQuitar($event)"
+          />
+        }
+      </div>
+    }
+  </div>
+</section>

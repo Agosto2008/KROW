@@ -42,6 +42,7 @@ app.use('/api/verificaciones-empresa', verificacionEmpresaRoutes);
 app.use('/api/reportes', reporteRoutes);
 
 app.use(rutaNoEncontrada);
-app.use(errorHandler); // siempre al final
+app.use(errorHandler); 
 
 export default app;
+// configura el servidor, las rutas y el manejo de errores

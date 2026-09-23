@@ -1,12 +1,19 @@
 import { Router } from 'express';
 import { cuentaService } from '../services/CuentaService';
 import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
+import { AppError } from '../utils/AppError';
 
 const router = Router();
 
+//se obtiene una cuenta por medio de su ID
+//solo el dueño de la cuenta o un ADMIN pueden verla
 router.get('/:id', verificarToken, async (req, res, next) => {
   try {
-    res.json(await cuentaService.obtenerPorId(Number(req.params.id)));
+    const id = Number(req.params.id);
+    if (req.user!.rol !== 'ADMIN' && req.user!.id_cuenta !== id) {
+      throw new AppError('No tienes permiso para ver esta cuenta', 403);
+    }
+    res.json(await cuentaService.obtenerPorId(id));
   } catch (error) { next(error); }
 });
 

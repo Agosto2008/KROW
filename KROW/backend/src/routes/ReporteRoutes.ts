@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { reporteService } from '../services/ReporteService';
 import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
+import { obtenerUsuarioIdDelToken } from '../utils/resolverPerfil';
 
 const router = Router();
 
@@ -9,9 +10,10 @@ router.get('/', verificarToken, verificarRol('ADMIN'), async (req, res, next) =>
   catch (error) { next(error); }
 });
 
-router.post('/', verificarToken, async (req, res, next) => {
+router.post('/', verificarToken, verificarRol('USUARIO'), async (req, res, next) => {
   try {
-    const id = await reporteService.crear(req.body);
+    const usuarioId = await obtenerUsuarioIdDelToken(req);
+    const id = await reporteService.crear({ ...req.body, usuario_id: usuarioId });
     res.status(201).json({ id_reporte: id });
   } catch (error) { next(error); }
 });
