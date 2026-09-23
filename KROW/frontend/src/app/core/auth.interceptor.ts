@@ -13,3 +13,5 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req);
 };
+
+// Agrega el token de autenticación a las solicitudes de la API.

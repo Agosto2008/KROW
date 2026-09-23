@@ -14,3 +14,4 @@ import { ToastComponent } from './shared/toast/toast.component';
 export class App {
   protected readonly title = signal('KROW');
 }
+// Componente principal de la aplicación.
