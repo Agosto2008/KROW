@@ -13,7 +13,7 @@ export interface Cuenta {
 }
 
 /**
- * GET /cuentas (ADMIN) → cuenta con el perfil ya resuelto en la misma query.
+ * GET /cuentas (ADMIN) = cuenta con el perfil ya resuelto en la misma query.
  * Un ADMIN no tiene perfil, por eso los ids de perfil son opcionales.
  */
 export interface CuentaResumen extends Cuenta {
