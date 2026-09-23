@@ -1,15 +1,41 @@
 import bcrypt from 'bcryptjs';
-import jwt, { SignOptions } from 'jsonwebtoken'; import { pool } from '../database/Conexion';
+import jwt from 'jsonwebtoken'; import { pool } from '../database/Conexion';
 import { cuentaRepository } from '../repositories/CuentaRepository';
 import { usuarioRepository } from '../repositories/UsuarioRepository';
 import { empresaRepository } from '../repositories/EmpresaRepository';
 import { RolCuenta } from '../models/Cuenta';
 import { AppError } from '../utils/AppError';
+import { env } from '../config/env';
 
-// configura la clave y duracion del token
-const JWT_SECRET = process.env.JWT_SECRET as string;
-const JWT_EXPIRES_IN: SignOptions['expiresIn'] =
-    (process.env.JWT_EXPIRES_IN || '1h') as SignOptions['expiresIn'];
+// ---- validacion de entrada de registro (lanza AppError 400) ----
+const RE_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function correoValido(correo: unknown): string {
+    if (typeof correo !== 'string' || !RE_CORREO.test(correo.trim())) {
+        throw new AppError('El correo no tiene un formato valido', 400);
+    }
+    return correo.trim().toLowerCase();
+}
+
+function passwordValida(password: unknown): string {
+    if (typeof password !== 'string' || password.length < 8) {
+        throw new AppError('La contraseña debe tener al menos 8 caracteres', 400);
+    }
+    if (password.length > 72) {
+        throw new AppError('La contraseña no puede superar 72 caracteres', 400);
+    }
+    return password;
+}
+
+function campoObligatorio(valor: unknown, nombre: string, max = 80): string {
+    if (typeof valor !== 'string' || !valor.trim()) {
+        throw new AppError(`El campo "${nombre}" es obligatorio`, 400);
+    }
+    if (valor.trim().length > max) {
+        throw new AppError(`El campo "${nombre}" no puede superar ${max} caracteres`, 400);
+    }
+    return valor.trim();
+}
 
 interface RegistroUsuarioInput {
     correo: string;
@@ -33,22 +59,27 @@ interface RegistroEmpresaInput {
 export class AuthService {
     // registra un nuevo usuario
     async registrarUsuario(data: RegistroUsuarioInput) {
-        const existente = await cuentaRepository.findByCorreo(data.correo);
+        const correoLimpio = correoValido(data.correo);
+        const passwordLimpia = passwordValida(data.password);
+        const primerNombre = campoObligatorio(data.primer_nombre, 'primer_nombre');
+        const primerApellido = campoObligatorio(data.primer_apellido, 'primer_apellido');
+
+        const existente = await cuentaRepository.findByCorreo(correoLimpio);
         if (existente) throw new AppError('El correo ya está registrado', 409);
 
         // encripta la contraseña
-        const passwordHash = await bcrypt.hash(data.password, 10);
+        const passwordHash = await bcrypt.hash(passwordLimpia, 10);
 
         // inicia una transaccion para crear la cuenta y el usuario
         const connection = await pool.getConnection();
         try {
             await connection.beginTransaction();
 
-            const idCuenta = await cuentaRepository.create(data.correo, passwordHash, 'USUARIO', connection);
+            const idCuenta = await cuentaRepository.create(correoLimpio, passwordHash, 'USUARIO', connection);
             await usuarioRepository.create({
                 cuenta_id: idCuenta,
-                primer_nombre: data.primer_nombre,
-                primer_apellido: data.primer_apellido,
+                primer_nombre: primerNombre,
+                primer_apellido: primerApellido,
                 segundo_nombre: data.segundo_nombre ?? null,
                 segundo_apellido: data.segundo_apellido ?? null,
                 telefono: data.telefono ?? null,
@@ -72,21 +103,25 @@ export class AuthService {
 
     // registra una nueva empresa
     async registrarEmpresa(data: RegistroEmpresaInput) {
-        const existente = await cuentaRepository.findByCorreo(data.correo);
+        const correoLimpio = correoValido(data.correo);
+        const passwordLimpia = passwordValida(data.password);
+        const nombreLimpio = campoObligatorio(data.nombre, 'nombre', 150);
+
+        const existente = await cuentaRepository.findByCorreo(correoLimpio);
         if (existente) throw new AppError('El correo ya está registrado', 409);
 
         // encripta la contraseña
-        const passwordHash = await bcrypt.hash(data.password, 10);
+        const passwordHash = await bcrypt.hash(passwordLimpia, 10);
 
         // inicia una transaccion para crear la cuenta y la empresa
         const connection = await pool.getConnection();
         try {
             await connection.beginTransaction();
 
-            const idCuenta = await cuentaRepository.create(data.correo, passwordHash, 'EMPRESA', connection);
+            const idCuenta = await cuentaRepository.create(correoLimpio, passwordHash, 'EMPRESA', connection);
             await empresaRepository.create({
                 cuenta_id: idCuenta,
-                nombre: data.nombre,
+                nombre: nombreLimpio,
                 descripcion: data.descripcion ?? null,
                 propuesta_empresa: null,
                 telefono: data.telefono ?? null,
@@ -106,16 +141,51 @@ export class AuthService {
     }
 
     // inicia sesion
+    // Un SOLO mensaje de error para "correo inexistente", "password mala" y
+    // "cuenta suspendida": asi no se puede averiguar que correos existen en la
+    // plataforma (enumeracion de cuentas) ni quien esta suspendido.
     async login(correo: string, password: string) {
-        const cuenta = await cuentaRepository.findByCorreo(correo);
-        if (!cuenta) throw new AppError('Credenciales inválidas', 401);
-        if (cuenta.estado !== 'ACTIVA') throw new AppError('Cuenta no activa', 403);
+        const mensaje = 'Correo o contraseña incorrectos';
+        const error = new AppError(mensaje, 401);
+
+        if (typeof correo !== 'string' || typeof password !== 'string' || !correo || !password) {
+            throw error;
+        }
+
+        const cuenta = await cuentaRepository.findByCorreo(correo.trim().toLowerCase());
+        if (!cuenta) throw error;
 
         // compara la contraseña ingresada con la almacenada
         const passwordValido = await bcrypt.compare(password, cuenta.password);
-        if (!passwordValido) throw new AppError('Credenciales inválidas', 401);
+        if (!passwordValido) throw error;
+
+        if (cuenta.estado !== 'ACTIVA') throw error;
 
         return this.generarToken(cuenta.id_cuenta, cuenta.rol);
+    }
+
+    // cambia la password de la cuenta autenticada:
+    // exige la actual (si no la saben, no la pueden cambiar aunque roben la sesion)
+    async cambiarPassword(idCuenta: number, passwordActual: unknown, passwordNueva: unknown) {
+        const cuenta = await cuentaRepository.findById(idCuenta);
+        if (!cuenta) throw new AppError('Cuenta no encontrada', 404);
+
+        if (typeof passwordActual !== 'string' || !passwordActual) {
+            throw new AppError('Debes indicar tu contraseña actual', 400);
+        }
+
+        const coincide = await bcrypt.compare(passwordActual, cuenta.password);
+        if (!coincide) throw new AppError('La contraseña actual no es correcta', 403);
+
+        const nueva = passwordValida(passwordNueva);
+        if (nueva === passwordActual) {
+            throw new AppError('La nueva contraseña debe ser distinta a la actual', 400);
+        }
+
+        const hash = await bcrypt.hash(nueva, 10);
+        await cuentaRepository.updatePassword(idCuenta, hash);
+
+        return { mensaje: 'Contraseña actualizada' };
     }
 
     // devuelve el perfil (usuario/empresa) asociado a la cuenta autenticada,
@@ -135,7 +205,7 @@ export class AuthService {
 
     // genera el token de autenticacion
     private generarToken(idCuenta: number, rol: RolCuenta) {
-        const token = jwt.sign({ id_cuenta: idCuenta, rol }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+        const token = jwt.sign({ id_cuenta: idCuenta, rol }, env.jwtSecret, { expiresIn: env.jwtExpiraEn });
         return { token, rol, id_cuenta: idCuenta };
     }
 }

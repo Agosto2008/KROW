@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { RolCuenta } from '../models/Cuenta';
+import { env } from '../config/env';
 
 export interface JwtPayload {
     id_cuenta: number;
@@ -24,7 +25,7 @@ export function verificarToken(req: Request, res: Response, next: NextFunction) 
 
     const token = header.split(' ')[1];
     try {
-        const payload = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+        const payload = jwt.verify(token, env.jwtSecret) as JwtPayload;
         req.user = payload;
         next();
     } catch {

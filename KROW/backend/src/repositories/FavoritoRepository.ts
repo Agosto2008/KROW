@@ -12,6 +12,29 @@ export class FavoritoRepository {
     return rows;
   }
 
+  //favoritos CON su propuesta y empresa ya resueltas en UNA query
+  //(el front antes tenia que pedir cada propuesta una por una: N+1)
+  async findByUsuarioConPropuesta(usuarioId: number): Promise<any[]> {
+    const [rows] = await pool.query<any[]>(
+      `SELECT f.id_favorito, f.fecha AS fecha_guardado, f.usuario_id,
+              p.*,
+              JSON_OBJECT(
+                'id_empresa', e.id_empresa, 'nombre', e.nombre, 'fotografia', e.fotografia,
+                'ubicacion', e.ubicacion, 'verificada', e.verificada
+              ) AS empresa
+         FROM Favorito f
+         INNER JOIN Propuesta p ON p.id_propuesta = f.propuesta_id
+         INNER JOIN Empresa e ON e.id_empresa = p.empresa_id
+        WHERE f.usuario_id = ?
+        ORDER BY f.fecha DESC`,
+      [usuarioId]
+    );
+    for (const fila of rows) {
+      if (fila.empresa) fila.empresa.verificada = Boolean(fila.empresa.verificada);
+    }
+    return rows;
+  }
+
   //devuelve si una propuesta esta marcada como favorita o no mediante boolean 
   async yaExiste(usuarioId: number, propuestaId: number): Promise<boolean> {
     const [rows] = await pool.query<RowDataPacket[]>(

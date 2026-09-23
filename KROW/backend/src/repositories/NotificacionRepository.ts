@@ -5,10 +5,13 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 interface NotificacionRow extends Notificacion, RowDataPacket { }
 
 export class NotificacionRepository {
-    
-    //busca las notificaciones de un usuario por medio de su ID 
-    async findByUsuario(usuarioId: number): Promise<NotificacionRow[]> {
-        const [rows] = await pool.query<NotificacionRow[]>('SELECT * FROM Notificacion WHERE usuario_id = ? ORDER BY fecha DESC', [usuarioId]);
+
+    //notificaciones de una cuenta (USUARIO o EMPRESA), mas recientes primero
+    async findByCuenta(cuentaId: number): Promise<NotificacionRow[]> {
+        const [rows] = await pool.query<NotificacionRow[]>(
+            'SELECT * FROM Notificacion WHERE cuenta_id = ? ORDER BY fecha DESC',
+            [cuentaId]
+        );
         return rows;
     }
 
@@ -18,23 +21,32 @@ export class NotificacionRepository {
         return rows[0] ?? null;
     }
 
-    //crea una nueva notificacion con su respectivo id y el nombre del emisor 
-    async create(usuarioId: number, titulo: string, mensaje: string, tipo: TipoNotificacion): Promise<number> {
+    //crea una notificacion para la cuenta destinataria
+    async create(cuentaId: number, titulo: string, mensaje: string, tipo: TipoNotificacion): Promise<number> {
         const [result] = await pool.query<ResultSetHeader>(
-            'INSERT INTO Notificacion (usuario_id, titulo, mensaje, tipo) VALUES (?, ?, ?, ?)',
-            [usuarioId, titulo, mensaje, tipo]
+            'INSERT INTO Notificacion (cuenta_id, titulo, mensaje, tipo) VALUES (?, ?, ?, ?)',
+            [cuentaId, titulo, mensaje, tipo]
         );
         return result.insertId;
     }
 
-    //marca una notificacion especifica como no leida si asi se necesita 
+    //marca una notificacion especifica como leida
     async marcarLeida(id: number): Promise<void> {
         await pool.query('UPDATE Notificacion SET leida = TRUE WHERE id_notificacion = ?', [id]);
     }
 
-    //marca todas las notificaciones de un solo usuario como leidas 
-    async marcarTodasLeidas(usuarioId: number): Promise<void> {
-        await pool.query('UPDATE Notificacion SET leida = TRUE WHERE usuario_id = ?', [usuarioId]);
+    //marca todas las notificaciones de una cuenta como leidas
+    async marcarTodasLeidas(cuentaId: number): Promise<void> {
+        await pool.query('UPDATE Notificacion SET leida = TRUE WHERE cuenta_id = ?', [cuentaId]);
+    }
+
+    //contador de no leidas (para la campana del navbar)
+    async contarNoLeidas(cuentaId: number): Promise<number> {
+        const [rows] = await pool.query<RowDataPacket[]>(
+            'SELECT COUNT(*) AS total FROM Notificacion WHERE cuenta_id = ? AND leida = FALSE',
+            [cuentaId]
+        );
+        return rows[0].total;
     }
 }
 

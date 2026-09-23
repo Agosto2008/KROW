@@ -226,10 +226,14 @@ CREATE TABLE Entrevista (
 -- ==========================================
 -- TABLA NOTIFICACION
 -- ==========================================
+-- "cuenta_id" es el destinatario generico: sirve tanto para USUARIO como para
+-- EMPRESA (la version anterior tenia usuario_id y las empresas nunca recibian
+-- nada). Usuario y Empresa apuntan a Cuenta, asi que con una sola columna se
+-- notifica a cualquiera de los dos lados.
 
 CREATE TABLE Notificacion (
     id_notificacion INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
+    cuenta_id INT NOT NULL,
     titulo VARCHAR(150),
     mensaje TEXT,
     tipo ENUM(
@@ -242,9 +246,9 @@ CREATE TABLE Notificacion (
     ),
     leida BOOLEAN DEFAULT FALSE,
     fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_notificacion_usuario
-        FOREIGN KEY(usuario_id)
-        REFERENCES Usuario(id_usuario)
+    CONSTRAINT fk_notificacion_cuenta
+        FOREIGN KEY(cuenta_id)
+        REFERENCES Cuenta(id_cuenta)
         ON DELETE CASCADE
 );
 

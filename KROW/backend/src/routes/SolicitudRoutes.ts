@@ -4,6 +4,7 @@ import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
 import {
   obtenerUsuarioIdDelToken,
   verificarPropietarioUsuario,
+  verificarPropietarioEmpresa,
   verificarPropietarioPropuesta,
   verificarParticipanteSolicitud,
 } from '../utils/resolverPerfil';
@@ -16,6 +17,16 @@ router.get('/usuario/:usuarioId', verificarToken, async (req, res, next) => {
   try {
     await verificarPropietarioUsuario(req, Number(req.params.usuarioId));
     res.json(await solicitudService.listarPorUsuario(Number(req.params.usuarioId)));
+  } catch (error) { next(error); }
+});
+
+//obtiene TODAS las solicitudes de las ofertas de una empresa
+//con datos del candidato y de la propuesta ya resueltos (1 query)
+//solo la propia empresa (o un ADMIN) puede verlas
+router.get('/empresa/:empresaId', verificarToken, verificarRol('EMPRESA', 'ADMIN'), async (req, res, next) => {
+  try {
+    await verificarPropietarioEmpresa(req, Number(req.params.empresaId));
+    res.json(await solicitudService.listarPorEmpresa(Number(req.params.empresaId)));
   } catch (error) { next(error); }
 });
 

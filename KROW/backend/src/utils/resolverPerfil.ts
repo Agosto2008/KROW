@@ -97,12 +97,12 @@ export async function verificarParticipanteEntrevista(req: Request, entrevistaId
 }
 
 // Para rutas tipo /notificaciones/:id donde solo el dueño (o un ADMIN) puede leer/modificar
+// (la notificacion ahora apunta a una cuenta: sirve para usuario y empresa)
 export async function verificarPropietarioNotificacion(req: Request, idNotificacion: number): Promise<void> {
     if (req.user!.rol === 'ADMIN') return;
     const notificacion = await notificacionRepository.findById(idNotificacion);
     if (!notificacion) throw new AppError('Notificación no encontrada', 404);
-    const idUsuarioToken = await obtenerUsuarioIdDelToken(req);
-    if (idUsuarioToken !== notificacion.usuario_id) {
+    if (notificacion.cuenta_id !== req.user!.id_cuenta) {
         throw new AppError('No tienes permiso para modificar esta notificación', 403);
     }
 }

@@ -1,0 +1,29 @@
+<div class="campo" [class.campo--error]="error">
+  @if (etiqueta) {
+    <label class="campo__etiqueta" [attr.for]="idCampo">
+      {{ etiqueta }}
+      @if (requerido) {
+        <span class="campo__requerido" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+  <select
+    class="campo__select"
+    [id]="idCampo"
+    [disabled]="deshabilitado"
+    [value]="valor"
+    [attr.aria-required]="requerido ? 'true' : null"
+    [attr.aria-invalid]="error ? 'true' : null"
+    [attr.aria-describedby]="error ? idError : null"
+    (change)="onCambio($any($event.target).value)"
+    (blur)="onBlur()"
+  >
+    <option value="" disabled>{{ placeholder }}</option>
+    @for (op of opciones; track op.valor) {
+      <option [value]="op.valor">{{ op.etiqueta }}</option>
+    }
+  </select>
+  @if (error) {
+    <span class="campo__error" [id]="idError" role="alert">{{ error }}</span>
+  }
+</div>

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { favoritoService } from '../services/FavoritoService';
-import { verificarToken } from '../middlewares/AuthMiddlewares';
+import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
 import { obtenerUsuarioIdDelToken, verificarPropietarioUsuario } from '../utils/resolverPerfil';
 
 const router = Router();
@@ -16,7 +16,8 @@ router.get('/usuario/:usuarioId', verificarToken, async (req, res, next) => {
 
 //alterna opciones, es decir se puede agregar un favorito o eliminarlo si ya existe
 //el usuario_id NUNCA se toma del body: se deriva del token
-router.post('/toggle', verificarToken, async (req, res, next) => {
+//solo los USUARIO tienen favoritos (una EMPRESA recibia antes un 404 confuso)
+router.post('/toggle', verificarToken, verificarRol('USUARIO'), async (req, res, next) => {
   try {
     const usuarioId = await obtenerUsuarioIdDelToken(req);
     const resultado = await favoritoService.alternar(usuarioId, req.body.propuesta_id);

@@ -1,0 +1,98 @@
+<section class="pagina">
+  <div class="pagina__contenedor">
+    <header class="pagina__cabecera">
+      <div>
+        <h1 class="pagina__titulo">Empresas</h1>
+        <p class="pagina__subtitulo">
+          {{ total() }} empresas en KROW. Conoce quién está detrás de cada oferta.
+        </p>
+      </div>
+    </header>
+
+    <div class="empresas__filtros">
+      <input
+        type="search"
+        class="empresas__buscador"
+        placeholder="Buscar empresa, sector o ciudad..."
+        aria-label="Buscar empresas"
+        [value]="busqueda()"
+        (input)="aplicarBusqueda($event)"
+      />
+      <button
+        type="button"
+        class="empresas__toggle"
+        [class.empresas__toggle--activo]="soloVerificadas()"
+        [attr.aria-pressed]="soloVerificadas()"
+        (click)="toggleVerificadas()"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+        </svg>
+        Solo verificadas
+      </button>
+    </div>
+
+    @if (cargando()) {
+      <app-spinner mensaje="Cargando empresas..." />
+    } @else if (empresas().length === 0) {
+      <app-empty-state
+        titulo="Sin resultados"
+        mensaje="No encontramos empresas que coincidan con tu búsqueda."
+      />
+    } @else {
+      <div class="empresas__grid">
+        @for (empresa of empresas(); track empresa.id_empresa) {
+          <a class="empresa-card" [routerLink]="['/empresas', empresa.id_empresa]">
+            <div class="empresa-card__cabecera">
+              <app-avatar-empresa [fotografia]="empresa.fotografia" tamanio="md" />
+              <div class="empresa-card__info">
+                <h3 class="empresa-card__nombre">{{ empresa.nombre }}</h3>
+                @if (empresa.verificada) {
+                  <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+                } @else {
+                  <app-badge variante="neutro">Sin verificar</app-badge>
+                }
+              </div>
+            </div>
+
+            @if (empresa.descripcion) {
+              <p class="empresa-card__descripcion">{{ empresa.descripcion }}</p>
+            }
+
+            @if (empresa.ubicacion) {
+              <span class="empresa-card__ubicacion">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                {{ empresa.ubicacion }}
+              </span>
+            }
+          </a>
+        }
+      </div>
+
+      @if (totalPaginas() > 1) {
+        <nav class="empresas__paginacion" aria-label="Paginación de empresas">
+          <app-boton
+            variante="secundario"
+            tamanio="sm"
+            [disabled]="pagina() === 1"
+            (click)="cambiarPagina(-1)"
+          >
+            ← Anterior
+          </app-boton>
+          <span class="empresas__pagina">Página {{ pagina() }} de {{ totalPaginas() }}</span>
+          <app-boton
+            variante="secundario"
+            tamanio="sm"
+            [disabled]="pagina() === totalPaginas()"
+            (click)="cambiarPagina(1)"
+          >
+            Siguiente →
+          </app-boton>
+        </nav>
+      }
+    }
+  </div>
+</section>

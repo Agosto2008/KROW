@@ -8,7 +8,8 @@ export type TipoNotificacion =
 
 export interface Notificacion {
   id_notificacion: number;
-  usuario_id: number;
+  /** Destinatario: cuenta de un USUARIO o de una EMPRESA */
+  cuenta_id: number;
   titulo: string | null;
   mensaje: string | null;
   tipo: TipoNotificacion | null;

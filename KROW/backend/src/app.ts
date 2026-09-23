@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import helmet from 'helmet';
 
+import { env } from './config/env';
 import authRoutes from './routes/AuthRoutes';
 import cuentaRoutes from './routes/CuentaRoutes';
 import usuarioRoutes from './routes/UsuarioRoutes';
@@ -19,12 +20,15 @@ import reporteRoutes from './routes/ReporteRoutes';
 
 import { errorHandler, rutaNoEncontrada } from './middlewares/ErrorMiddleware';
 
-dotenv.config();
-
 const app = express();
 
-app.use(cors({ origin: process.env.CORS_ORIGIN || 'http://localhost:4200' }));
-app.use(express.json());
+// Cabeceras de seguridad (CSP, X-Frame-Options, etc.)
+app.use(helmet());
+
+// Acepta una lista de origenes separados por coma en CORS_ORIGIN
+const origenes = env.corsOrigen.split(',').map((o) => o.trim());
+app.use(cors({ origin: origenes }));
+app.use(express.json({ limit: '1mb' }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/cuentas', cuentaRoutes);

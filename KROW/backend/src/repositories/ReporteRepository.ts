@@ -16,6 +16,12 @@ export class ReporteRepository {
     return rows;
   }
 
+  //busca un reporte por su id (para no responder "actualizado" a ids inexistentes)
+  async findById(id: number): Promise<ReporteRow | null> {
+    const [rows] = await pool.query<ReporteRow[]>('SELECT * FROM Reporte WHERE id_reporte = ?', [id]);
+    return rows[0] ?? null;
+  }
+
   //crea un reporte asignando el motivo, la descripcion y el id del usuario que lo genero 
   async create(data: Pick<Reporte, 'usuario_id' | 'motivo' | 'descripcion'> & Partial<Reporte>): Promise<number> {
     const [result] = await pool.query<ResultSetHeader>(

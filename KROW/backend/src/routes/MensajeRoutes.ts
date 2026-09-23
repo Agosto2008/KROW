@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { mensajeService } from '../services/MensajeService';
-import { verificarToken } from '../middlewares/AuthMiddlewares';
+import { verificarToken, verificarRol } from '../middlewares/AuthMiddlewares';
 import { verificarParticipanteConversacion } from '../utils/resolverPerfil';
 
 const router = Router();
@@ -17,7 +17,8 @@ router.get('/conversacion/:conversacionId', verificarToken, async (req, res, nex
 //crea o envia un mensaje nuevo
 //el "emisor" NUNCA se toma del body (cualquiera podria mandar mensajes fingiendo ser la
 //empresa o el usuario contrario): se deriva de quien realmente participa en la conversacion
-router.post('/', verificarToken, async (req, res, next) => {
+//solo USUARIO/EMPRESA pueden escribir: antes un ADMIN se insertaba como emisor='EMPRESA'
+router.post('/', verificarToken, verificarRol('USUARIO', 'EMPRESA'), async (req, res, next) => {
     try {
         const { conversacion_id, contenido } = req.body;
         const emisor = await verificarParticipanteConversacion(req, conversacion_id);

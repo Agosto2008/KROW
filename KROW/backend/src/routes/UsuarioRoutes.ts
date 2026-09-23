@@ -1,13 +1,34 @@
 import { Router } from 'express';
 import { usuarioService } from '../services/UsuarioService';
 import { verificarToken } from '../middlewares/AuthMiddlewares';
-import { verificarPropietarioUsuario } from '../utils/resolverPerfil';
+import { verificarPropietarioUsuario, obtenerUsuarioIdDelToken } from '../utils/resolverPerfil';
 
 const router = Router();
 
 //busca un usuario por medio de su ID
+//solo el dueo (o un ADMIN) ven el perfil COMPLETO; cualquier otro autenticado
+//recibe una version publica (sin telefono, direccion ni fecha de nacimiento)
 router.get('/:id', verificarToken, async (req, res, next) => {
-    try { res.json(await usuarioService.obtenerPorId(Number(req.params.id))); }
+    try {
+        const id = Number(req.params.id);
+        const esPropietario =
+            req.user!.rol === 'ADMIN' ||
+            (await obtenerUsuarioIdDelToken(req)) === id;
+
+        const usuario = await usuarioService.obtenerPorId(id);
+        if (esPropietario) return res.json(usuario);
+
+        const { telefono, direccion, fecha_nacimiento, ...publico } = usuario;
+        res.json(publico);
+    }
+    catch (error) { next(error); }
+});
+
+//PERFIL PUBLICO del candidato: nombre + CV resumido, sin telefono/direccion/
+//fecha_nacimiento. Pensado para que la EMPRESA conozca a un postulante.
+//Cualquier autenticado puede verlo: no contiene datos sensibles.
+router.get('/:id/publico', verificarToken, async (req, res, next) => {
+    try { res.json(await usuarioService.obtenerPublico(Number(req.params.id))); }
     catch (error) { next(error); }
 });
 

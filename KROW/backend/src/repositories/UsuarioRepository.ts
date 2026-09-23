@@ -1,9 +1,16 @@
 import { pool } from '../database/Conexion';
 import { Usuario } from '../models/Usuario';
 import { ResultSetHeader, RowDataPacket, Pool, PoolConnection } from 'mysql2/promise';
+import { actualizarDinamico } from '../utils/actualizarDinamico';
 
 interface UsuarioRow extends Usuario, RowDataPacket { }
 type DbClient = Pool | PoolConnection;
+
+// PROHIBIDO: cuenta_id (re-apuntar el perfil a otra cuenta).
+const COLUMNAS_EDITABLES = [
+    'primer_nombre', 'segundo_nombre', 'primer_apellido', 'segundo_apellido',
+    'telefono', 'fotografia', 'descripcion_personal', 'direccion', 'fecha_nacimiento',
+] as const;
 
 export class UsuarioRepository {
 
@@ -16,6 +23,22 @@ export class UsuarioRepository {
     //busca una usuario utilizando el id de su cuenta 
     async findByCuentaId(cuentaId: number): Promise<UsuarioRow | null> {
         const [rows] = await pool.query<UsuarioRow[]>('SELECT * FROM Usuario WHERE cuenta_id = ?', [cuentaId]);
+        return rows[0] ?? null;
+    }
+
+    //PERFIL PUBLICO del candidato: solo lo que una empresa puede ver
+    //(sin telefono, direccion ni fecha de nacimiento)
+    async findPublico(id: number): Promise<any | null> {
+        const [rows] = await pool.query<any[]>(
+            `SELECT u.id_usuario, u.primer_nombre, u.segundo_nombre, u.primer_apellido, u.segundo_apellido,
+                    u.fotografia, u.descripcion_personal,
+                    c.perfil_profesional, c.idiomas, c.habilidades, c.certificaciones, c.portafolio,
+                    c.campo_laboral, c.campo_estudiantil, c.fecha_actualizacion AS curriculum_actualizado
+               FROM Usuario u
+          LEFT JOIN Curriculum c ON c.usuario_id = u.id_usuario
+              WHERE u.id_usuario = ?`,
+            [id]
+        );
         return rows[0] ?? null;
     }
 
@@ -32,13 +55,9 @@ export class UsuarioRepository {
         return result.insertId;
     }
 
-    // Update dinámico: solo arma el SET con los campos que realmente llegan en "data"
+    // Update dinámico con whitelist: solo columnas editables; el resto se ignora
     async update(id: number, data: Partial<Usuario>): Promise<void> {
-        const campos = Object.keys(data);
-        if (campos.length === 0) return;
-        const setClause = campos.map((c) => `${c} = ?`).join(', ');
-        const valores = campos.map((c) => (data as any)[c]);
-        await pool.query(`UPDATE Usuario SET ${setClause} WHERE id_usuario = ?`, [...valores, id]);
+        await actualizarDinamico('Usuario', 'id_usuario', id, data, COLUMNAS_EDITABLES);
     }
 
     //borra a un usuario por medio de su id

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authService } from '../services/AuthService';
 import { verificarToken } from '../middlewares/AuthMiddlewares';
+import { limitarIntentos, limpiarIntentos } from '../middlewares/RateLimit';
 
 const router = Router();
 
@@ -24,11 +25,28 @@ router.post('/registro/empresa', async (req, res, next) => {
     }
 });
 
-//este metodo maneja el inicio de sesion 
-router.post('/login', async (req, res, next) => {
+//este metodo maneja el inicio de sesion
+//limitado contra fuerza bruta (10 intentos / 15 min por IP+correo)
+router.post('/login', limitarIntentos, async (req, res, next) => {
     try {
         const { correo, password } = req.body;
         const resultado = await authService.login(correo, password);
+        limpiarIntentos(req); // login exitoso: reinicia el contador
+        res.json(resultado);
+    } catch (error) {
+        next(error);
+    }
+});
+
+//cambia la password de la cuenta autenticada
+//requiere la password actual (nadie puede cambiarsela sin conocerla)
+router.post('/cambiar-password', verificarToken, async (req, res, next) => {
+    try {
+        const resultado = await authService.cambiarPassword(
+            req.user!.id_cuenta,
+            req.body.password_actual,
+            req.body.password_nueva
+        );
         res.json(resultado);
     } catch (error) {
         next(error);

@@ -5,6 +5,13 @@ import { AppError } from '../utils/AppError';
 
 const router = Router();
 
+//LISTADO de cuentas para el admin: busqueda, filtros y paginacion en el servidor
+//(antes solo se podia buscar una cuenta a ciegas por ID numerico)
+router.get('/', verificarToken, verificarRol('ADMIN'), async (req, res, next) => {
+  try { res.json(await cuentaService.listar(req.query)); }
+  catch (error) { next(error); }
+});
+
 //se obtiene una cuenta por medio de su ID
 //solo el dueño de la cuenta o un ADMIN pueden verla
 router.get('/:id', verificarToken, async (req, res, next) => {

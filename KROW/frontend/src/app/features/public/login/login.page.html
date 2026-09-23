@@ -1,0 +1,47 @@
+<div class="auth">
+  <div class="auth__panel">
+    <app-logo enlace="/" tamanio="lg" variante="oscuro" />
+
+    <h1 class="auth__titulo">Inicia sesión</h1>
+    <p class="auth__subtitulo">Accede a tu cuenta de KROW</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth__form" novalidate>
+      <app-campo-input
+        etiqueta="Correo electrónico"
+        tipo="email"
+        placeholder="tu@correo.com"
+        autocomplete="email"
+        [requerido]="true"
+        [error]="errorCorreo"
+        formControlName="correo"
+      />
+
+      <app-campo-input
+        etiqueta="Contraseña"
+        tipo="password"
+        placeholder="••••••••"
+        autocomplete="current-password"
+        [requerido]="true"
+        [error]="errorPassword"
+        formControlName="password"
+      />
+
+      <app-boton
+        variante="primario"
+        tamanio="lg"
+        tipo="submit"
+        [bloque]="true"
+        [cargando]="cargando()"
+      >
+        Iniciar sesión
+      </app-boton>
+    </form>
+
+    <p class="auth__pie">
+      ¿No tienes cuenta?
+      <a routerLink="/registro/usuario">Regístrate como usuario</a>
+      o
+      <a routerLink="/registro/empresa">como empresa</a>
+    </p>
+  </div>
+</div>

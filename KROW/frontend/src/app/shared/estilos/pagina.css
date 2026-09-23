@@ -1,0 +1,51 @@
+/* ============================================
+   Shell de páginas internas (lista / detalle)
+   Compartido por solicitudes, guardados y notificaciones
+   --------------------------------------------
+   Antes cada página hacía `@import` de la CSS de otra
+   página; ahora todos importan este archivo vía `styleUrls`,
+   sin acoplamiento entre features.
+   ============================================ */
+
+.pagina {
+  padding: var(--esp-7) 0 var(--esp-9);
+}
+
+.pagina__contenedor {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 var(--esp-5);
+}
+
+.pagina__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--esp-4);
+  margin-bottom: var(--esp-5);
+}
+
+.pagina__titulo {
+  font-size: 32px;
+  margin: 0 0 4px 0;
+}
+
+.pagina__subtitulo {
+  font-size: 14px;
+  color: var(--gris-medio);
+  margin: 0;
+}
+
+.enlace-primario {
+  display: inline-block;
+  margin-top: var(--esp-3);
+  padding: 10px 20px;
+  background: var(--negro-puro);
+  color: var(--blanco-perla);
+  border-radius: var(--radio-md);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.enlace-primario:hover { opacity: 0.9; }

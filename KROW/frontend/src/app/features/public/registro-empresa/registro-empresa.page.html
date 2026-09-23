@@ -1,0 +1,72 @@
+<div class="auth">
+  <div class="auth__panel">
+    <app-logo enlace="/" tamanio="lg" variante="oscuro" />
+
+    <h1 class="auth__titulo">Registra tu empresa</h1>
+    <p class="auth__subtitulo">Publica ofertas y encuentra talento joven</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth__form" novalidate>
+      <app-campo-input
+        etiqueta="Nombre de la empresa"
+        [requerido]="true"
+        [error]="errorDe('nombre')"
+        formControlName="nombre"
+      />
+
+      <app-campo-input
+        etiqueta="Correo electrónico"
+        tipo="email"
+        placeholder="contacto@empresa.com"
+        autocomplete="email"
+        [requerido]="true"
+        [error]="errorDe('correo')"
+        formControlName="correo"
+      />
+
+      <app-campo-input
+        etiqueta="Contraseña"
+        tipo="password"
+        placeholder="Mínimo 6 caracteres"
+        autocomplete="new-password"
+        [requerido]="true"
+        [error]="errorDe('password')"
+        formControlName="password"
+      />
+
+      <app-campo-textarea
+        etiqueta="Descripción"
+        placeholder="Cuéntanos brevemente sobre tu empresa..."
+        [filas]="3"
+        formControlName="descripcion"
+      />
+
+      <div class="auth__grid">
+        <app-campo-input
+          etiqueta="Teléfono"
+          tipo="tel"
+          placeholder="+34 600 000 000"
+          formControlName="telefono"
+        />
+        <app-campo-input
+          etiqueta="Ubicación"
+          placeholder="Madrid, España"
+          formControlName="ubicacion"
+        />
+      </div>
+
+      <app-boton
+        variante="primario"
+        tamanio="lg"
+        tipo="submit"
+        [bloque]="true"
+        [cargando]="cargando()"
+      >
+        Crear cuenta de empresa
+      </app-boton>
+    </form>
+
+    <p class="auth__pie">
+      ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>
+    </p>
+  </div>
+</div>

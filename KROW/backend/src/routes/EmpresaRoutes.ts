@@ -6,8 +6,19 @@ import { verificarPropietarioEmpresa } from '../utils/resolverPerfil';
 const router = Router();
 
 //lista todas las empresas
+//con ?buscar= o ?pagina= pagina en el servidor (respuesta {datos,total,...})
+//sin parametros devuelve la lista plana (compatibilidad con el front actual)
 router.get('/', async (req, res, next) => {
-  try { res.json(await empresaService.listar()); }
+  try {
+    const conPaginacion = req.query.buscar !== undefined || req.query.pagina !== undefined;
+    res.json(conPaginacion ? await empresaService.buscar(req.query) : await empresaService.listar());
+  }
+  catch (error) { next(error); }
+});
+
+//empresa + sus propuestas ACTIVAS (vista publica de detalle, 1 query)
+router.get('/:id/con-propuestas', async (req, res, next) => {
+  try { res.json(await empresaService.obtenerConPropuestas(Number(req.params.id))); }
   catch (error) { next(error); }
 });
 

@@ -1,0 +1,11 @@
+/* Guardados: el shell (.pagina*) llega por `styleUrls` desde shared/estilos/pagina.css */
+
+.guardados__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--esp-4);
+}
+
+@media (max-width: 800px) {
+  .guardados__grid { grid-template-columns: 1fr; }
+}

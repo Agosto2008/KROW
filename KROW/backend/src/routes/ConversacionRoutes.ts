@@ -5,6 +5,14 @@ import { verificarParticipanteSolicitud, verificarParticipanteConversacion } fro
 
 const router = Router();
 
+//SIDEBAR DE CHATS: todas las conversaciones de la cuenta autenticada
+//con la otra parte, la propuesta, el ultimo mensaje y los no leidos (1 query)
+router.get('/', verificarToken, async (req, res, next) => {
+  try {
+    res.json(await conversacionService.listarPropias(req.user!.id_cuenta, req.user!.rol));
+  } catch (error) { next(error); }
+});
+
 //muestra la conversacion asociada a una solicitud
 //solo el usuario o la empresa que participan en esa solicitud (o un ADMIN) pueden verla
 router.get('/solicitud/:solicitudId', verificarToken, async (req, res, next) => {

@@ -1,0 +1,49 @@
+/* Perfil de empresa: el shell (.pagina*) llega por `styleUrls`
+   desde shared/estilos/pagina.css. */
+
+.empresa-detalle__volver {
+  display: inline-block;
+  margin-bottom: var(--esp-5);
+  font-size: 14px;
+  color: var(--gris-carbon);
+  text-decoration: none;
+}
+
+.empresa-detalle__volver:hover { color: var(--negro-puro); text-decoration: underline; }
+
+.empresa-detalle__cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-4);
+  margin-bottom: var(--esp-6);
+}
+
+.empresa-detalle__info { display: flex; flex-direction: column; gap: var(--esp-2); }
+
+.empresa-detalle__badges { display: flex; gap: var(--esp-2); flex-wrap: wrap; }
+
+.empresa-detalle__bloque { margin-bottom: var(--esp-6); }
+
+.empresa-detalle__subtitulo {
+  font-family: var(--fuente-cuerpo);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gris-medio);
+  margin: 0 0 var(--esp-3) 0;
+}
+
+.empresa-detalle__texto {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--gris-carbon);
+  margin: 0;
+  white-space: pre-line;
+}
+
+.empresa-detalle__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--esp-4);
+}

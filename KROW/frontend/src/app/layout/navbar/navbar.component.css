@@ -1,0 +1,194 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--blanco-perla);
+  border-bottom: 1px solid var(--gris-borde);
+  backdrop-filter: blur(8px);
+}
+
+.navbar__contenedor {
+  max-width: var(--ancho-max);
+  margin: 0 auto;
+  padding: 0 var(--esp-5);
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-5);
+}
+
+/* ---------- Enlaces ---------- */
+
+.navbar__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  flex: 1;
+  justify-content: center;
+}
+
+.navbar__enlace {
+  padding: 8px 14px;
+  border-radius: var(--radio-sm);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gris-carbon);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--trans-rapida), color var(--trans-rapida);
+}
+
+.navbar__enlace:hover {
+  background: var(--blanco-hueso);
+  color: var(--negro-puro);
+}
+
+.navbar__enlace--activo {
+  background: var(--blanco-hueso);
+  color: var(--negro-puro);
+  font-weight: 600;
+}
+
+/* ---------- Acciones ---------- */
+
+.navbar__acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+}
+
+.navbar__sesion { display: flex; align-items: center; gap: var(--esp-2); }
+
+.navbar__icono {
+  position: relative;
+  background: transparent;
+  border: none;
+  padding: 8px;
+  border-radius: var(--radio-sm);
+  color: var(--gris-carbon);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--trans-rapida), color var(--trans-rapida);
+}
+
+.navbar__icono:hover {
+  background: var(--blanco-hueso);
+  color: var(--negro-puro);
+}
+
+/* Contador de no leídas de la campana */
+.navbar__contador {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: var(--error);
+  color: var(--blanco-puro);
+  border-radius: var(--radio-pill);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+/* ---------- Usuario ---------- */
+
+.navbar__usuario {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-2);
+  padding: 5px 12px 5px 6px;
+  border-radius: var(--radio-pill);
+  background: var(--blanco-hueso);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--trans-rapida);
+}
+
+.navbar__usuario:hover { background: var(--gris-suave); }
+
+.navbar__usuario-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--negro-puro);
+  color: var(--blanco-perla);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.navbar__usuario-texto {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.navbar__usuario-nombre {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--negro-puro);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navbar__usuario-rol {
+  font-size: 10px;
+  color: var(--gris-medio);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- Hamburguesa ---------- */
+
+.navbar__hamburguesa {
+  display: none;
+  background: transparent;
+  border: 1px solid var(--gris-borde);
+  padding: 8px;
+  border-radius: var(--radio-sm);
+  color: var(--negro-puro);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar__hamburguesa:hover { background: var(--blanco-hueso); }
+
+/* ---------- Móvil ---------- */
+
+@media (max-width: 900px) {
+  .navbar__contenedor { flex-wrap: wrap; }
+
+  .navbar__hamburguesa { display: flex; }
+
+  .navbar__sesion { display: none; }
+
+  .navbar__nav {
+    display: none;
+    order: 3;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: var(--esp-2) 0 var(--esp-3);
+    border-top: 1px solid var(--gris-borde);
+    margin-top: var(--esp-2);
+  }
+
+  .navbar__nav--abierto { display: flex; }
+
+  .navbar__enlace { padding: 12px 14px; border-radius: var(--radio-md); }
+
+  /* en móvil los botones de sesión van al final del menú desplegado */
+  .navbar__usuario-texto { display: none; }
+}

@@ -1,4 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:3000/api',
+  // Ruta relativa: en produccion el servidor (o un reverse proxy) debe
+  // enrutar /api hacia el backend Express.
+  apiUrl: '/api',
 };

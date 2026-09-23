@@ -1,8 +1,9 @@
 import { favoritoRepository } from '../repositories/FavoritoRepository';
 
 export class FavoritoService {
+  // favoritos CON propuesta y empresa resueltas (1 query, sin N+1)
   async listar(usuarioId: number) {
-    return favoritoRepository.findByUsuario(usuarioId);
+    return favoritoRepository.findByUsuarioConPropuesta(usuarioId);
   }
 
   // Toggle: si ya existe lo quita, si no lo agrega. Útil para un botón de "❤" en el front

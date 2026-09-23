@@ -9,19 +9,19 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./pages/landing/landing.page').then((m) => m.LandingPage),
+      import('./features/public/landing/landing.page').then((m) => m.LandingPage),
     title: 'KROW — Tu primer trabajo no debería ser una lotería',
   },
   {
     path: 'login',
     loadComponent: () =>
-      import('./pages/login/login.page').then((m) => m.LoginPage),
+      import('./features/public/login/login.page').then((m) => m.LoginPage),
     title: 'Iniciar sesión — KROW',
   },
   {
     path: 'registro/usuario',
     loadComponent: () =>
-      import('./pages/registro-usuario/registro-usuario.page').then(
+      import('./features/public/registro-usuario/registro-usuario.page').then(
         (m) => m.RegistroUsuarioPage
       ),
     title: 'Registro de usuario — KROW',
@@ -29,7 +29,7 @@ export const routes: Routes = [
   {
     path: 'registro/empresa',
     loadComponent: () =>
-      import('./pages/registro-empresa/registro-empresa.page').then(
+      import('./features/public/registro-empresa/registro-empresa.page').then(
         (m) => m.RegistroEmpresaPage
       ),
     title: 'Registro de empresa — KROW',
@@ -37,16 +37,30 @@ export const routes: Routes = [
   {
     path: 'propuestas',
     loadComponent: () =>
-      import('./pages/explorar/explorar.page').then((m) => m.ExplorarPage),
+      import('./features/public/explorar/explorar.page').then((m) => m.ExplorarPage),
     title: 'Explorar ofertas — KROW',
   },
   {
     path: 'propuestas/:id',
     loadComponent: () =>
-      import('./pages/propuesta-detalle/propuesta-detalle.page').then(
+      import('./features/public/propuesta-detalle/propuesta-detalle.page').then(
         (m) => m.PropuestaDetallePage
       ),
     title: 'Detalle de oferta — KROW',
+  },
+  {
+    path: 'empresas',
+    loadComponent: () =>
+      import('./features/public/empresas/empresas.page').then((m) => m.EmpresasPage),
+    title: 'Empresas — KROW',
+  },
+  {
+    path: 'empresas/:id',
+    loadComponent: () =>
+      import('./features/public/empresa-detalle/empresa-detalle.page').then(
+        (m) => m.EmpresaDetallePage
+      ),
+    title: 'Perfil de empresa — KROW',
   },
 
   // ============================================
@@ -56,14 +70,14 @@ export const routes: Routes = [
     path: 'usuario/perfil',
     canActivate: [authGuard, roleGuard(['USUARIO'])],
     loadComponent: () =>
-      import('./pages/usuario/perfil/perfil.page').then((m) => m.PerfilPage),
+      import('./features/usuario/perfil/perfil.page').then((m) => m.PerfilPage),
     title: 'Mi perfil — KROW',
   },
   {
     path: 'usuario/curriculum',
     canActivate: [authGuard, roleGuard(['USUARIO'])],
     loadComponent: () =>
-      import('./pages/usuario/curriculum/curriculum.page').then(
+      import('./features/usuario/curriculum/curriculum.page').then(
         (m) => m.CurriculumPage
       ),
     title: 'Mi currículum — KROW',
@@ -72,7 +86,7 @@ export const routes: Routes = [
     path: 'usuario/solicitudes',
     canActivate: [authGuard, roleGuard(['USUARIO'])],
     loadComponent: () =>
-      import('./pages/usuario/solicitudes/solicitudes.page').then(
+      import('./features/usuario/solicitudes/solicitudes.page').then(
         (m) => m.SolicitudesPage
       ),
     title: 'Mis solicitudes — KROW',
@@ -81,7 +95,7 @@ export const routes: Routes = [
     path: 'usuario/guardados',
     canActivate: [authGuard, roleGuard(['USUARIO'])],
     loadComponent: () =>
-      import('./pages/usuario/guardados/guardados.page').then(
+      import('./features/usuario/guardados/guardados.page').then(
         (m) => m.GuardadosPage
       ),
     title: 'Ofertas guardadas — KROW',
@@ -90,7 +104,7 @@ export const routes: Routes = [
     path: 'usuario/notificaciones',
     canActivate: [authGuard, roleGuard(['USUARIO'])],
     loadComponent: () =>
-      import('./pages/usuario/notificaciones/notificaciones.page').then(
+      import('./features/usuario/notificaciones/notificaciones.page').then(
         (m) => m.NotificacionesPage
       ),
     title: 'Notificaciones — KROW',
@@ -99,7 +113,7 @@ export const routes: Routes = [
     path: 'usuario/mensajes',
     canActivate: [authGuard, roleGuard(['USUARIO'])],
     loadComponent: () =>
-      import('./pages/usuario/mensajes/mensajes.page').then(
+      import('./features/usuario/mensajes/mensajes.page').then(
         (m) => m.MensajesPage
       ),
     title: 'Mensajes — KROW',
@@ -112,7 +126,7 @@ export const routes: Routes = [
     path: 'empresa/panel',
     canActivate: [authGuard, roleGuard(['EMPRESA'])],
     loadComponent: () =>
-      import('./pages/empresa/panel/panel.page').then(
+      import('./features/empresa/panel/panel.page').then(
         (m) => m.EmpresaPanelPage
       ),
     title: 'Panel de empresa — KROW',
@@ -121,7 +135,7 @@ export const routes: Routes = [
     path: 'empresa/propuestas/nueva',
     canActivate: [authGuard, roleGuard(['EMPRESA'])],
     loadComponent: () =>
-      import('./pages/empresa/propuesta-form/propuesta-form.page').then(
+      import('./features/empresa/propuesta-form/propuesta-form.page').then(
         (m) => m.PropuestaFormPage
       ),
     title: 'Nueva oferta — KROW',
@@ -130,7 +144,7 @@ export const routes: Routes = [
     path: 'empresa/propuestas/:id/editar',
     canActivate: [authGuard, roleGuard(['EMPRESA'])],
     loadComponent: () =>
-      import('./pages/empresa/propuesta-form/propuesta-form.page').then(
+      import('./features/empresa/propuesta-form/propuesta-form.page').then(
         (m) => m.PropuestaFormPage
       ),
     title: 'Editar oferta — KROW',
@@ -139,7 +153,7 @@ export const routes: Routes = [
     path: 'empresa/solicitudes',
     canActivate: [authGuard, roleGuard(['EMPRESA'])],
     loadComponent: () =>
-      import('./pages/empresa/solicitudes/solicitudes.page').then(
+      import('./features/empresa/solicitudes/solicitudes.page').then(
         (m) => m.EmpresaSolicitudesPage
       ),
     title: 'Solicitudes recibidas — KROW',
@@ -148,7 +162,7 @@ export const routes: Routes = [
     path: 'empresa/entrevistas',
     canActivate: [authGuard, roleGuard(['EMPRESA'])],
     loadComponent: () =>
-      import('./pages/empresa/entrevistas/entrevistas.page').then(
+      import('./features/empresa/entrevistas/entrevistas.page').then(
         (m) => m.EmpresaEntrevistasPage
       ),
     title: 'Entrevistas — KROW',
@@ -157,7 +171,7 @@ export const routes: Routes = [
     path: 'empresa/verificacion',
     canActivate: [authGuard, roleGuard(['EMPRESA'])],
     loadComponent: () =>
-      import('./pages/empresa/verificacion/verificacion.page').then(
+      import('./features/empresa/verificacion/verificacion.page').then(
         (m) => m.EmpresaVerificacionPage
       ),
     title: 'Verificación — KROW',
@@ -166,10 +180,21 @@ export const routes: Routes = [
     path: 'empresa/mensajes',
     canActivate: [authGuard, roleGuard(['EMPRESA'])],
     loadComponent: () =>
-      import('./pages/empresa/mensajes/mensajes.page').then(
+      import('./features/empresa/mensajes/mensajes.page').then(
         (m) => m.EmpresaMensajesPage
       ),
     title: 'Mensajes — KROW',
+  },
+  {
+    // misma bandeja que el candidato: Notificacion se resuelve por token,
+    // así que el componente sirve para ambos roles
+    path: 'empresa/notificaciones',
+    canActivate: [authGuard, roleGuard(['EMPRESA'])],
+    loadComponent: () =>
+      import('./features/usuario/notificaciones/notificaciones.page').then(
+        (m) => m.NotificacionesPage
+      ),
+    title: 'Notificaciones — KROW',
   },
 
   // ============================================
@@ -179,14 +204,14 @@ export const routes: Routes = [
     path: 'admin/panel',
     canActivate: [authGuard, roleGuard(['ADMIN'])],
     loadComponent: () =>
-      import('./pages/admin/panel/panel.page').then((m) => m.AdminPanelPage),
+      import('./features/admin/panel/panel.page').then((m) => m.AdminPanelPage),
     title: 'Panel de administración — KROW',
   },
   {
     path: 'admin/verificaciones',
     canActivate: [authGuard, roleGuard(['ADMIN'])],
     loadComponent: () =>
-      import('./pages/admin/verificaciones/verificaciones.page').then(
+      import('./features/admin/verificaciones/verificaciones.page').then(
         (m) => m.AdminVerificacionesPage
       ),
     title: 'Verificaciones — KROW',
@@ -195,7 +220,7 @@ export const routes: Routes = [
     path: 'admin/empresas',
     canActivate: [authGuard, roleGuard(['ADMIN'])],
     loadComponent: () =>
-      import('./pages/admin/empresas/empresas.page').then(
+      import('./features/admin/empresas/empresas.page').then(
         (m) => m.AdminEmpresasPage
       ),
     title: 'Empresas — KROW',
@@ -204,7 +229,7 @@ export const routes: Routes = [
     path: 'admin/reportes',
     canActivate: [authGuard, roleGuard(['ADMIN'])],
     loadComponent: () =>
-      import('./pages/admin/reportes/reportes.page').then(
+      import('./features/admin/reportes/reportes.page').then(
         (m) => m.AdminReportesPage
       ),
     title: 'Reportes — KROW',
@@ -213,7 +238,7 @@ export const routes: Routes = [
     path: 'admin/cuentas',
     canActivate: [authGuard, roleGuard(['ADMIN'])],
     loadComponent: () =>
-      import('./pages/admin/cuentas/cuentas.page').then(
+      import('./features/admin/cuentas/cuentas.page').then(
         (m) => m.AdminCuentasPage
       ),
     title: 'Cuentas — KROW',

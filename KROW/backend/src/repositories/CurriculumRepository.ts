@@ -1,8 +1,15 @@
 import { pool } from '../database/Conexion';
 import { Curriculum } from '../models/Curriculum';
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { actualizarDinamico } from '../utils/actualizarDinamico';
 
 interface CurriculumRow extends Curriculum, RowDataPacket { }
+
+// PROHIBIDO: usuario_id (mover el CV a otro usuario), id_curriculum.
+const COLUMNAS_EDITABLES = [
+    'perfil_profesional', 'campo_laboral', 'campo_estudiantil', 'fortalezas',
+    'debilidades', 'idiomas', 'habilidades', 'certificaciones', 'portafolio',
+] as const;
 
 export class CurriculumRepository {
 
@@ -25,13 +32,9 @@ export class CurriculumRepository {
         return result.insertId;
     }
 
-    //este metodo actualiza el estado del curriculum de un usuario 
+    //este metodo actualiza el curriculum de un usuario (solo columnas de la whitelist)
     async update(usuarioId: number, data: Partial<Curriculum>): Promise<void> {
-        const campos = Object.keys(data);
-        if (campos.length === 0) return;
-        const setClause = campos.map((c) => `${c} = ?`).join(', ');
-        const valores = campos.map((c) => (data as any)[c]);
-        await pool.query(`UPDATE Curriculum SET ${setClause} WHERE usuario_id = ?`, [...valores, usuarioId]);
+        await actualizarDinamico('Curriculum', 'usuario_id', usuarioId, data, COLUMNAS_EDITABLES);
     }
 }
 

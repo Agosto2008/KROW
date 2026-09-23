@@ -6,6 +6,16 @@ import { obtenerEmpresaIdDelToken, verificarPropietarioEmpresa } from '../utils/
 
 const router = Router();
 
+//COLA DEL ADMIN: TODAS las verificaciones con el nombre de la empresa resuelto
+//(1 query; ?estado=PENDIENTE filtra la cola de revision)
+router.get('/', verificarToken, verificarRol('ADMIN'), async (req, res, next) => {
+    try {
+        const estado = typeof req.query.estado === 'string' ? req.query.estado : undefined;
+        res.json(await verificacionEmpresaService.listarTodas(estado));
+    } catch (error) { next(error); }
+});
+
+//historial de verificaciones de UNA empresa (la propia empresa o un ADMIN)
 router.get('/empresa/:empresaId', verificarToken, async (req, res, next) => {
     try {
         await verificarPropietarioEmpresa(req, Number(req.params.empresaId));

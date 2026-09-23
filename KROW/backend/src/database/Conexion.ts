@@ -1,12 +1,10 @@
 import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import { env } from '../config/env';
 
 // Pool de conexiones: reutiliza conexiones existentes para evitar
 // abrir y cerrar una conexión nueva en cada consulta.
-// La configuración se obtiene desde DATABASE_URL del archivo .env.
-export const pool = mysql.createPool(process.env.DATABASE_URL!);
+// La configuración se obtiene desde DATABASE_URL (validada en config/env.ts).
+export const pool = mysql.createPool(env.databaseUrl);
 
 export async function testConnection(): Promise<void> {
     try {

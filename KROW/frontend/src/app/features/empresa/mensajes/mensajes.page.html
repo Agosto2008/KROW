@@ -1,0 +1,80 @@
+<section class="chat">
+  @if (cargando()) {
+    <app-spinner mensaje="Cargando conversaciones..." />
+  } @else if (conversaciones().length === 0) {
+    <div class="chat__vacio">
+      <app-empty-state
+        titulo="Sin conversaciones"
+        mensaje="Aquí aparecerán los chats con candidatos aceptados."
+      />
+    </div>
+  } @else {
+    <div class="chat__contenedor">
+      <aside class="chat__sidebar">
+        <h2 class="chat__sidebar-titulo">Conversaciones</h2>
+        <div class="chat__lista">
+          @for (c of conversaciones(); track c.id_conversacion) {
+            <button
+              type="button"
+              class="chat__conv"
+              [class.chat__conv--activa]="conversacionActiva()?.id_conversacion === c.id_conversacion"
+              (click)="abrirConversacion(c)"
+            >
+              <span class="chat__conv-avatar"></span>
+              <div class="chat__conv-info">
+                <span class="chat__conv-titulo">{{ nombreParte(c) }}</span>
+                <span class="chat__conv-fecha">
+                  {{ (c.ultimo_fecha || c.fecha_creacion) | date:'dd/MM/yyyy' }}
+                </span>
+              </div>
+              @if (c.no_leidos > 0) {
+                <span class="chat__conv-no-leidos">{{ c.no_leidos }}</span>
+              }
+            </button>
+          }
+        </div>
+      </aside>
+
+      <main class="chat__area">
+        @if (conversacionActiva(); as conv) {
+          <header class="chat__area-cabecera">
+            <span class="chat__area-titulo">{{ conv.propuesta_nombre }}</span>
+            <span class="chat__area-subtitulo">{{ nombreParte(conv) }}</span>
+          </header>
+
+          <div class="chat__mensajes" #scrollMensajes>
+            @if (cargandoMensajes()) {
+              <app-spinner [tamanio]="20" />
+            } @else {
+              @for (m of mensajes(); track m.id_mensaje) {
+                <div [class]="'msg msg--' + (m.emisor === 'EMPRESA' ? 'yo' : 'otro')">
+                  <div class="msg__burbuja">{{ m.contenido }}</div>
+                  <span class="msg__fecha">{{ m.fecha_envio | date:'HH:mm' }}</span>
+                </div>
+              }
+            }
+          </div>
+
+          <div class="chat__input">
+            <textarea
+              class="chat__textarea"
+              placeholder="Escribe un mensaje..."
+              aria-label="Escribe un mensaje"
+              [(ngModel)]="nuevoMensaje"
+              (keydown)="onEnter($event)"
+              rows="1"
+            ></textarea>
+            <app-boton
+              variante="primario"
+              tamanio="sm"
+              [cargando]="enviando()"
+              (click)="enviar()"
+            >
+              Enviar
+            </app-boton>
+          </div>
+        }
+      </main>
+    </div>
+  }
+</section>

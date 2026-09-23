@@ -1,0 +1,124 @@
+/* Directorio de empresas: el shell (.pagina*) llega por `styleUrls`
+   desde shared/estilos/pagina.css. */
+
+.empresas__filtros {
+  display: flex;
+  gap: var(--esp-3);
+  margin-bottom: var(--esp-5);
+  flex-wrap: wrap;
+}
+
+.empresas__buscador {
+  flex: 1;
+  min-width: 240px;
+  font-family: var(--fuente-cuerpo);
+  font-size: 14px;
+  padding: 10px 14px;
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-md);
+  background: var(--blanco-puro);
+  color: var(--negro-puro);
+}
+
+.empresas__buscador:focus {
+  outline: none;
+  border-color: var(--negro-puro);
+  box-shadow: 0 0 0 3px rgba(11, 11, 11, 0.06);
+}
+
+.empresas__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font-family: var(--fuente-cuerpo);
+  font-size: 14px;
+  font-weight: 500;
+  background: var(--blanco-puro);
+  color: var(--gris-carbon);
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-md);
+  cursor: pointer;
+  transition: all var(--trans-rapida);
+}
+
+.empresas__toggle:hover { border-color: var(--gris-carbon); }
+
+.empresas__toggle--activo {
+  background: var(--negro-puro);
+  color: var(--blanco-perla);
+  border-color: var(--negro-puro);
+}
+
+.empresas__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--esp-4);
+}
+
+.empresa-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-3);
+  padding: var(--esp-5);
+  background: var(--blanco-perla);
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-lg);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--trans-rapida), box-shadow var(--trans-rapida);
+}
+
+.empresa-card:hover {
+  border-color: var(--gris-carbon);
+  box-shadow: var(--sombra-md);
+}
+
+.empresa-card__cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-3);
+}
+
+.empresa-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.empresa-card__nombre {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--negro-puro);
+}
+
+.empresa-card__descripcion {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gris-carbon);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.empresa-card__ubicacion {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--gris-medio);
+}
+
+.empresas__paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-4);
+  margin-top: var(--esp-6);
+  font-size: 14px;
+  color: var(--gris-medio);
+}

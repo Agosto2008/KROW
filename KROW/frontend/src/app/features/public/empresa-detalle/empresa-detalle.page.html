@@ -1,0 +1,60 @@
+@if (cargando()) {
+  <app-spinner mensaje="Cargando empresa..." />
+} @else if (!empresa()) {
+  <app-empty-state titulo="Empresa no encontrada" mensaje="La empresa que buscas no existe." />
+} @else {
+  <section class="pagina">
+    <div class="pagina__contenedor">
+      <a routerLink="/empresas" class="empresa-detalle__volver">← Volver a empresas</a>
+
+      <header class="empresa-detalle__cabecera">
+        <app-avatar-empresa [fotografia]="empresa()!.fotografia" tamanio="lg" />
+        <div class="empresa-detalle__info">
+          <h1 class="pagina__titulo">{{ empresa()!.nombre }}</h1>
+          <div class="empresa-detalle__badges">
+            @if (empresa()!.verificada) {
+              <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+            } @else {
+              <app-badge variante="neutro">Sin verificar</app-badge>
+            }
+            @if (empresa()!.ubicacion) {
+              <app-badge variante="neutro">{{ empresa()!.ubicacion }}</app-badge>
+            }
+          </div>
+        </div>
+      </header>
+
+      @if (empresa()!.descripcion) {
+        <section class="empresa-detalle__bloque">
+          <h2 class="empresa-detalle__subtitulo">Sobre la empresa</h2>
+          <p class="empresa-detalle__texto">{{ empresa()!.descripcion }}</p>
+        </section>
+      }
+
+      <section class="empresa-detalle__bloque">
+        <h2 class="empresa-detalle__subtitulo">
+          Ofertas activas ({{ empresa()!.propuestas.length }})
+        </h2>
+
+        @if (empresa()!.propuestas.length === 0) {
+          <app-empty-state
+            titulo="Sin ofertas activas"
+            mensaje="Esta empresa no tiene publicadas ofertas en este momento."
+          />
+        } @else {
+          <div class="empresa-detalle__grid">
+            @for (propuesta of empresa()!.propuestas; track propuesta.id_propuesta) {
+              <app-propuesta-card
+                [propuesta]="propuesta"
+                [empresaNombre]="empresa()!.nombre"
+                [empresaFotografia]="empresa()!.fotografia ?? null"
+                [empresaVerificada]="empresa()!.verificada"
+                [esFavorito]="false"
+              />
+            }
+          </div>
+        }
+      </section>
+    </div>
+  </section>
+}

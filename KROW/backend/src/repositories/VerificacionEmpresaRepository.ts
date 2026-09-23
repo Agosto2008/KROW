@@ -12,6 +12,31 @@ export class VerificacionEmpresaRepository {
         return rows;
     }
 
+    //COLA DEL ADMIN: todas las verificaciones con el nombre de la empresa ya
+    //resuelto (antes el admin tenia que conocer el empresa_id a mano y el front
+    //hacia N peticiones)
+    async findAll(estado?: string): Promise<any[]> {
+        let sql = `SELECT v.*, e.nombre AS empresa_nombre, e.fotografia AS empresa_fotografia,
+                          e.ubicacion AS empresa_ubicacion, e.verificada
+                     FROM VerificacionEmpresa v
+                     INNER JOIN Empresa e ON e.id_empresa = v.empresa_id`;
+        const params: any[] = [];
+        if (estado) { sql += ' WHERE v.estado = ?'; params.push(estado); }
+        sql += ' ORDER BY v.fecha DESC';
+        const [rows] = await pool.query<any[]>(sql, params);
+        for (const fila of rows) fila.verificada = Boolean(fila.verificada);
+        return rows;
+    }
+
+    //existe ya una verificacion PENDIENTE para esta empresa?
+    async tienePendiente(empresaId: number): Promise<boolean> {
+        const [rows] = await pool.query<RowDataPacket[]>(
+            "SELECT id_verificacion FROM VerificacionEmpresa WHERE empresa_id = ? AND estado = 'PENDIENTE' LIMIT 1",
+            [empresaId]
+        );
+        return rows.length > 0;
+    }
+
 async findById(id: number): Promise<VerificacionRow | null> {
     const [rows] = await pool.query<VerificacionRow[]>('SELECT * FROM VerificacionEmpresa WHERE id_verificacion = ?', [id]);
     return rows[0] ?? null;

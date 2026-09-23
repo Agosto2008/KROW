@@ -8,6 +8,16 @@ export class EmpresaService {
     return empresaRepository.findAll();
   }
 
+  // listado publico con busqueda + paginacion en el servidor
+  async buscar(query: Record<string, any>) {
+    return empresaRepository.buscar({
+      buscar: typeof query.buscar === 'string' ? query.buscar.slice(0, 150) : undefined,
+      pagina: Number(query.pagina) || 1,
+      porPagina: Number(query.por_pagina) || 12,
+      verificadas: query.verificadas === 'true' ? true : undefined,
+    });
+  }
+
   // obtiene una empresa por su id
   async obtenerPorId(id: number) {
     const empresa = await empresaRepository.findById(id);
@@ -18,8 +28,22 @@ export class EmpresaService {
     return empresa;
   }
 
-  // actualiza los datos de una empresa
+  // empresa + sus propuestas ACTIVAS (detalle publico, 1 query)
+  async obtenerConPropuestas(id: number) {
+    const { empresa, propuestas } = await empresaRepository.findByIdConPropuestas(id);
+    if (!empresa) throw new AppError('Empresa no encontrada', 404);
+    return { ...empresa, propuestas };
+  }
+
+  // actualiza los datos de una empresa (solo columnas de la whitelist)
   async actualizar(id: number, data: Partial<Empresa>) {
+    const empresa = await empresaRepository.findById(id);
+    if (!empresa) throw new AppError('Empresa no encontrada', 404);
+
+    if (data.nombre !== undefined && (typeof data.nombre !== 'string' || !data.nombre.trim())) {
+      throw new AppError('El campo "nombre" no puede estar vacio', 400);
+    }
+
     await empresaRepository.update(id, data);
   }
 }

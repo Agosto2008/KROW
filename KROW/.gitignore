@@ -1,3 +1,7 @@
 node_modules/
 .env
 .angular
+
+# builds de producción
+dist/
+build/
