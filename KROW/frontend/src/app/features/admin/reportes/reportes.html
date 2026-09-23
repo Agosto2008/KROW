@@ -1,0 +1,28 @@
+<div class="page-head">
+    <h1>Reportes</h1>
+    <select [(ngModel)]="filtro" (ngModelChange)="cargar()">
+        <option value="">Todos los estados</option>
+        @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+    </select>
+</div>
+
+<div class="grid">
+    @for (r of reportes(); track r.id_reporte) {
+    <div class="card">
+        <div class="row">
+            <strong>{{ r.motivo }}</strong>
+            <span class="fecha">{{ r.fecha | date:'short' }}</span>
+        </div>
+        <p>{{ r.descripcion }}</p>
+        <div class="row">
+            <span class="tag">{{ r.estado }}</span>
+            <select #sel>
+                @for (e of estados; track e) { <option [value]="e">{{ e }}</option> }
+            </select>
+            <button class="btn" (click)="cambiarEstadoDesdeSelect(r.id_reporte, sel.value)">Actualizar</button>
+        </div>
+    </div>
+    } @empty {
+    <div class="card empty">Sin reportes.</div>
+    }
+</div>

@@ -1,229 +1,46 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/auth.guard';
-import { roleGuard } from './core/role.guard';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
+import { MainLayout } from './shared/layouts/main-layout/main-layout';
 
 export const routes: Routes = [
-  // ============================================
-  // Públicas
-  // ============================================
-  {
-    path: '',
-    loadComponent: () =>
-      import('./pages/landing/landing.page').then((m) => m.LandingPage),
-    title: 'KROW — Tu primer trabajo no debería ser una lotería',
-  },
-  {
-    path: 'login',
-    loadComponent: () =>
-      import('./pages/login/login.page').then((m) => m.LoginPage),
-    title: 'Iniciar sesión — KROW',
-  },
-  {
-    path: 'registro/usuario',
-    loadComponent: () =>
-      import('./pages/registro-usuario/registro-usuario.page').then(
-        (m) => m.RegistroUsuarioPage
-      ),
-    title: 'Registro de usuario — KROW',
-  },
-  {
-    path: 'registro/empresa',
-    loadComponent: () =>
-      import('./pages/registro-empresa/registro-empresa.page').then(
-        (m) => m.RegistroEmpresaPage
-      ),
-    title: 'Registro de empresa — KROW',
-  },
-  {
-    path: 'propuestas',
-    loadComponent: () =>
-      import('./pages/explorar/explorar.page').then((m) => m.ExplorarPage),
-    title: 'Explorar ofertas — KROW',
-  },
-  {
-    path: 'propuestas/:id',
-    loadComponent: () =>
-      import('./pages/propuesta-detalle/propuesta-detalle.page').then(
-        (m) => m.PropuestaDetallePage
-      ),
-    title: 'Detalle de oferta — KROW',
-  },
+    // Auth: público
+    { path: 'login', loadComponent: () => import('./features/auth/login/login').then(m => m.Login) },
+    { path: 'registro/usuario', loadComponent: () => import('./features/auth/registro-usuario/registro-usuario').then(m => m.RegistroUsuario) },
+    { path: 'registro/empresa', loadComponent: () => import('./features/auth/registro-empresa/registro-empresa').then(m => m.RegistroEmpresa) },
+    {
+        path: '',
+        component: MainLayout,
+        canActivate: [authGuard],
+        children: [
+            { path: '', redirectTo: 'propuestas', pathMatch: 'full' },
 
-  // ============================================
-  // Usuario (rol USUARIO)
-  // ============================================
-  {
-    path: 'usuario/perfil',
-    canActivate: [authGuard, roleGuard(['USUARIO'])],
-    loadComponent: () =>
-      import('./pages/usuario/perfil/perfil.page').then((m) => m.PerfilPage),
-    title: 'Mi perfil — KROW',
-  },
-  {
-    path: 'usuario/curriculum',
-    canActivate: [authGuard, roleGuard(['USUARIO'])],
-    loadComponent: () =>
-      import('./pages/usuario/curriculum/curriculum.page').then(
-        (m) => m.CurriculumPage
-      ),
-    title: 'Mi currículum — KROW',
-  },
-  {
-    path: 'usuario/solicitudes',
-    canActivate: [authGuard, roleGuard(['USUARIO'])],
-    loadComponent: () =>
-      import('./pages/usuario/solicitudes/solicitudes.page').then(
-        (m) => m.SolicitudesPage
-      ),
-    title: 'Mis solicitudes — KROW',
-  },
-  {
-    path: 'usuario/guardados',
-    canActivate: [authGuard, roleGuard(['USUARIO'])],
-    loadComponent: () =>
-      import('./pages/usuario/guardados/guardados.page').then(
-        (m) => m.GuardadosPage
-      ),
-    title: 'Ofertas guardadas — KROW',
-  },
-  {
-    path: 'usuario/notificaciones',
-    canActivate: [authGuard, roleGuard(['USUARIO'])],
-    loadComponent: () =>
-      import('./pages/usuario/notificaciones/notificaciones.page').then(
-        (m) => m.NotificacionesPage
-      ),
-    title: 'Notificaciones — KROW',
-  },
-  {
-    path: 'usuario/mensajes',
-    canActivate: [authGuard, roleGuard(['USUARIO'])],
-    loadComponent: () =>
-      import('./pages/usuario/mensajes/mensajes.page').then(
-        (m) => m.MensajesPage
-      ),
-    title: 'Mensajes — KROW',
-  },
+            // Propuestas (público dentro de la sesión)
+            { path: 'propuestas', loadComponent: () => import('./features/propuestas/propuesta-list/propuesta-list').then(m => m.PropuestaList) },
+            { path: 'propuestas/nueva', canActivate: [roleGuard('EMPRESA')], loadComponent: () => import('./features/propuestas/propuesta-form/propuesta-form').then(m => m.PropuestaForm) },
+            { path: 'propuestas/:id/editar', canActivate: [roleGuard('EMPRESA')], loadComponent: () => import('./features/propuestas/propuesta-form/propuesta-form').then(m => m.PropuestaForm) },
+            { path: 'propuestas/:id', loadComponent: () => import('./features/propuestas/propuesta-detail/propuesta-detail').then(m => m.PropuestaDetail) },
 
-  // ============================================
-  // Empresa (rol EMPRESA)
-  // ============================================
-  {
-    path: 'empresa/panel',
-    canActivate: [authGuard, roleGuard(['EMPRESA'])],
-    loadComponent: () =>
-      import('./pages/empresa/panel/panel.page').then(
-        (m) => m.EmpresaPanelPage
-      ),
-    title: 'Panel de empresa — KROW',
-  },
-  {
-    path: 'empresa/propuestas/nueva',
-    canActivate: [authGuard, roleGuard(['EMPRESA'])],
-    loadComponent: () =>
-      import('./pages/empresa/propuesta-form/propuesta-form.page').then(
-        (m) => m.PropuestaFormPage
-      ),
-    title: 'Nueva oferta — KROW',
-  },
-  {
-    path: 'empresa/propuestas/:id/editar',
-    canActivate: [authGuard, roleGuard(['EMPRESA'])],
-    loadComponent: () =>
-      import('./pages/empresa/propuesta-form/propuesta-form.page').then(
-        (m) => m.PropuestaFormPage
-      ),
-    title: 'Editar oferta — KROW',
-  },
-  {
-    path: 'empresa/solicitudes',
-    canActivate: [authGuard, roleGuard(['EMPRESA'])],
-    loadComponent: () =>
-      import('./pages/empresa/solicitudes/solicitudes.page').then(
-        (m) => m.EmpresaSolicitudesPage
-      ),
-    title: 'Solicitudes recibidas — KROW',
-  },
-  {
-    path: 'empresa/entrevistas',
-    canActivate: [authGuard, roleGuard(['EMPRESA'])],
-    loadComponent: () =>
-      import('./pages/empresa/entrevistas/entrevistas.page').then(
-        (m) => m.EmpresaEntrevistasPage
-      ),
-    title: 'Entrevistas — KROW',
-  },
-  {
-    path: 'empresa/verificacion',
-    canActivate: [authGuard, roleGuard(['EMPRESA'])],
-    loadComponent: () =>
-      import('./pages/empresa/verificacion/verificacion.page').then(
-        (m) => m.EmpresaVerificacionPage
-      ),
-    title: 'Verificación — KROW',
-  },
-  {
-    path: 'empresa/mensajes',
-    canActivate: [authGuard, roleGuard(['EMPRESA'])],
-    loadComponent: () =>
-      import('./pages/empresa/mensajes/mensajes.page').then(
-        (m) => m.EmpresaMensajesPage
-      ),
-    title: 'Mensajes — KROW',
-  },
+            // Empresa
+            { path: 'mi-empresa', canActivate: [roleGuard('EMPRESA')], loadComponent: () => import('./features/empresa/perfil-empresa/perfil-empresa').then(m => m.PerfilEmpresa) },
+            { path: 'mis-propuestas', canActivate: [roleGuard('EMPRESA')], loadComponent: () => import('./features/empresa/mis-propuestas/mis-propuestas').then(m => m.MisPropuestas) },
 
-  // ============================================
-  // Admin (rol ADMIN)
-  // ============================================
-  {
-    path: 'admin/panel',
-    canActivate: [authGuard, roleGuard(['ADMIN'])],
-    loadComponent: () =>
-      import('./pages/admin/panel/panel.page').then((m) => m.AdminPanelPage),
-    title: 'Panel de administración — KROW',
-  },
-  {
-    path: 'admin/verificaciones',
-    canActivate: [authGuard, roleGuard(['ADMIN'])],
-    loadComponent: () =>
-      import('./pages/admin/verificaciones/verificaciones.page').then(
-        (m) => m.AdminVerificacionesPage
-      ),
-    title: 'Verificaciones — KROW',
-  },
-  {
-    path: 'admin/empresas',
-    canActivate: [authGuard, roleGuard(['ADMIN'])],
-    loadComponent: () =>
-      import('./pages/admin/empresas/empresas.page').then(
-        (m) => m.AdminEmpresasPage
-      ),
-    title: 'Empresas — KROW',
-  },
-  {
-    path: 'admin/reportes',
-    canActivate: [authGuard, roleGuard(['ADMIN'])],
-    loadComponent: () =>
-      import('./pages/admin/reportes/reportes.page').then(
-        (m) => m.AdminReportesPage
-      ),
-    title: 'Reportes — KROW',
-  },
-  {
-    path: 'admin/cuentas',
-    canActivate: [authGuard, roleGuard(['ADMIN'])],
-    loadComponent: () =>
-      import('./pages/admin/cuentas/cuentas.page').then(
-        (m) => m.AdminCuentasPage
-      ),
-    title: 'Cuentas — KROW',
-  },
+            // Usuario
+            { path: 'mi-perfil', canActivate: [roleGuard('USUARIO')], loadComponent: () => import('./features/usuario/perfil-usuario/perfil-usuario').then(m => m.PerfilUsuario) },
+            { path: 'mi-curriculum', canActivate: [roleGuard('USUARIO')], loadComponent: () => import('./features/usuario/curriculum-form/curriculum-form').then(m => m.CurriculumForm) },
+            { path: 'mis-solicitudes', canActivate: [roleGuard('USUARIO')], loadComponent: () => import('./features/solicitudes/solicitud.list/solicitud-list').then(m => m.SolicitudList) },
+            { path: 'favoritos', canActivate: [roleGuard('USUARIO')], loadComponent: () => import('./features/favoritos/favoritos-list/favorito-list').then(m => m.FavoritoList) },
 
-  // ============================================
-  // 404
-  // ============================================
-  {
-    path: '**',
-    redirectTo: '',
-  },
+            // Mensajería y notificaciones (cualquier rol)
+            { path: 'conversaciones/:solicitudId', loadComponent: () => import('./features/mensajes/conversacion-view/conversacion-view').then(m => m.ConversacionView) },
+            { path: 'notificaciones', loadComponent: () => import('./features/notificaciones/notificacion-list/notificacion-list').then(m => m.NotificacionList) },
+
+            // Admin
+            { path: 'admin/verificaciones', canActivate: [roleGuard('ADMIN')], loadComponent: () => import('./features/admin/verificaciones/verificaciones').then(m => m.Verificaciones) },
+            { path: 'admin/reportes', canActivate: [roleGuard('ADMIN')], loadComponent: () => import('./features/admin/reportes/reportes').then(m => m.Reportes) },
+            { path: 'admin', canActivate: [roleGuard('ADMIN')], loadComponent: () => import('./features/admin/dashboard/dashboard').then(m => m.Dashboard) },
+        ]
+    },
+
+    { path: '**', redirectTo: 'propuestas' }
 ];

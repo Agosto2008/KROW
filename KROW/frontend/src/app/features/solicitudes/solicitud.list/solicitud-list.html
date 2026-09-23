@@ -1,0 +1,27 @@
+<h1>Mis solicitudes</h1>
+
+@if (cargando()) {
+<p>Cargando...</p>
+} @else if (solicitudes().length === 0) {
+<div class="card empty">No has aplicado a ninguna propuesta todavía.</div>
+} @else {
+<div class="grid cards">
+    @for (s of solicitudes(); track s.id_solicitud) {
+    <div class="card solicitud">
+        <div class="row">
+            <span class="tag" [class.ok]="s.estado === 'ACEPTADA'" [class.no]="s.estado === 'RECHAZADA'">
+                {{ s.estado }}
+            </span>
+            <span class="fecha">{{ s.fecha | date:'short' }}</span>
+        </div>
+        <p class="prop">Propuesta #{{ s.propuesta_id }}</p>
+        @if (s.comentario_empresa) {
+        <p class="coment"><strong>Comentario:</strong> {{ s.comentario_empresa }}</p>
+        }
+        @if (s.estado === 'ACEPTADA') {
+        <button class="btn" (click)="irAConversacion(s.id_solicitud)">Ir a conversación</button>
+        }
+    </div>
+    }
+</div>
+}

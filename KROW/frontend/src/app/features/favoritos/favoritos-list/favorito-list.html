@@ -1,0 +1,17 @@
+<h1>Mis favoritos</h1>
+
+@if (cargando()) {
+<p>Cargando...</p>
+} @else if (propuestas().length === 0) {
+<div class="card empty">Aún no has guardado propuestas.</div>
+} @else {
+<div class="grid cards">
+    @for (p of propuestas(); track p.id_propuesta) {
+    <div class="card">
+        <h3><a [routerLink]="['/propuestas', p.id_propuesta]">{{ p.nombre }}</a></h3>
+        <p class="desc">{{ p.tipo }} · {{ p.modalidad }}</p>
+        <button class="btn btn-secondary" (click)="quitar(p.id_propuesta)">Quitar de favoritos</button>
+    </div>
+    }
+</div>
+}

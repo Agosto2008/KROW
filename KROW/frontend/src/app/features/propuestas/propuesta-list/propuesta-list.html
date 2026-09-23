@@ -1,0 +1,51 @@
+<div class="page-head">
+    <h1>Propuestas</h1>
+    @if (auth.rol() === 'EMPRESA') {
+    <a class="btn" routerLink="/propuestas/nueva">+ Nueva propuesta</a>
+    }
+</div>
+
+<div class="card filters">
+    <div>
+        <label>Tipo</label>
+        <select [(ngModel)]="tipo" (ngModelChange)="cargar()">
+            <option value="">Todos</option>
+            @for (t of tipos; track t) { <option [value]="t">{{ t }}</option> }
+        </select>
+    </div>
+    <div>
+        <label>Modalidad</label>
+        <select [(ngModel)]="modalidad" (ngModelChange)="cargar()">
+            <option value="">Todas</option>
+            @for (m of modalidades; track m) { <option [value]="m">{{ m }}</option> }
+        </select>
+    </div>
+</div>
+
+@if (cargando()) {
+<p>Cargando propuestas...</p>
+} @else if (propuestas().length === 0) {
+<div class="card empty">No hay propuestas con esos filtros.</div>
+} @else {
+<div class="grid cards">
+    @for (p of propuestas(); track p.id_propuesta) {
+    <div class="card propuesta">
+        <div class="row">
+            <span class="tag">{{ p.tipo }}</span>
+            <span class="tag alt">{{ p.modalidad }}</span>
+            @if (auth.rol() === 'USUARIO') {
+            <button class="fav" (click)="toggleFavorito(p.id_propuesta, $event)" title="Favorito">♥</button>
+            }
+        </div>
+        <h3><a [routerLink]="['/propuestas', p.id_propuesta]">{{ p.nombre }}</a></h3>
+        <p class="desc">{{ p.descripcion | slice:0:140 }}...</p>
+        <div class="meta">
+            <span>📍 {{ p.ubicacion || 'Remoto' }}</span>
+            <span>💼 {{ p.vacantes }} vacantes</span>
+            <span>💰 {{ p.pago ? ('Q' + p.pago) : 'No pagada' }}</span>
+        </div>
+        <span class="estado">{{ p.estado }}</span>
+    </div>
+    }
+</div>
+}

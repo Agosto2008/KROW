@@ -1,0 +1,23 @@
+@if (cargando()) {
+<p>Cargando...</p>
+} @else if (!conversacion()) {
+<div class="card">No hay conversación para esta solicitud.</div>
+} @else {
+<div class="card chat">
+    <div class="mensajes">
+        @for (m of mensajes(); track m.id_mensaje) {
+        <div class="msg" [class.mio]="esMio(m)">
+            <span class="burbuja">{{ m.contenido }}</span>
+            <span class="hora">{{ m.fecha_envio | date:'shortTime' }}</span>
+        </div>
+        } @empty {
+        <p class="empty-chat">Sin mensajes. ¡Escribe el primero!</p>
+        }
+    </div>
+
+    <div class="input-row">
+        <input [(ngModel)]="nuevo" placeholder="Escribe un mensaje..." (keyup.enter)="enviar()" />
+        <button class="btn" (click)="enviar()" [disabled]="!nuevo.trim()">Enviar</button>
+    </div>
+</div>
+}

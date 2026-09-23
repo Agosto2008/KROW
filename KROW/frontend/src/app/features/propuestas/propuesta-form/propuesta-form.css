@@ -1,0 +1,13 @@
+.form-card {
+    max-width: 720px;
+}
+
+.two-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.actions {
+    margin-top: 10px;
+}

@@ -1,0 +1,24 @@
+<h1>Verificaciones pendientes</h1>
+
+@if (cargando()) {
+<p>Cargando...</p>
+} @else if (hayPendientes()) {
+<div class="card empty">No hay verificaciones pendientes.</div>
+} @else {
+@for (emp of empresas(); track emp.id_empresa) {
+@if (solicitudesPorEmpresa()[emp.id_empresa]?.length) {
+<div class="card">
+    <h2>{{ emp.nombre }}</h2>
+    @for (v of solicitudesPorEmpresa()[emp.id_empresa]; track v.id_verificacion) {
+    <div class="verif-row">
+        <span>Solicita: <strong>{{ v.tipo_verificacion }}</strong></span>
+        <div class="acciones">
+            <button class="btn" (click)="resolver(v.id_verificacion, true)">Aprobar</button>
+            <button class="btn btn-secondary" (click)="resolver(v.id_verificacion, false)">Rechazar</button>
+        </div>
+    </div>
+    }
+</div>
+}
+}
+}

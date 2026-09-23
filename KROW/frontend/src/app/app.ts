@@ -1,16 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { NavbarComponent } from './shader/navbar/navbar.component';
-import { FooterComponent } from './footer/footer.component';
-import { ToastComponent } from './shader/toast/toast.component';
 
 @Component({
   selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, NavbarComponent, FooterComponent, ToastComponent],
-  templateUrl: './app.html',
-  styleUrl: './app.css',
+  imports: [RouterOutlet],
+  template: `<router-outlet />`
 })
-export class App {
-  protected readonly title = signal('KROW');
-}
+export class App { }

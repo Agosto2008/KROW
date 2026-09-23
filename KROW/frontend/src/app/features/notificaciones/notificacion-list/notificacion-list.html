@@ -1,0 +1,25 @@
+<div class="page-head">
+    <h1>Notificaciones</h1>
+    <button class="btn btn-secondary" (click)="marcarTodas()">Marcar todas como leídas</button>
+</div>
+
+@if (cargando()) {
+<p>Cargando...</p>
+} @else if (notifs().length === 0) {
+<div class="card empty">Sin notificaciones.</div>
+} @else {
+<div class="grid">
+    @for (n of notifs(); track n.id_notificacion) {
+    <div class="card notif" [class.no-leida]="!n.leida">
+        <div class="row">
+            <strong>{{ n.titulo }}</strong>
+            <span class="fecha">{{ n.fecha | date:'short' }}</span>
+        </div>
+        <p>{{ n.mensaje }}</p>
+        @if (!n.leida) {
+        <button class="btn btn-secondary" (click)="marcarLeida(n.id_notificacion)">Marcar leída</button>
+        }
+    </div>
+    }
+</div>
+}

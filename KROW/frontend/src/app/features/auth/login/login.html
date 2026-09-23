@@ -1,0 +1,27 @@
+<div class="auth-wrap">
+    <form class="card auth-card" (submit)="onSubmit(); $event.preventDefault()">
+        <h1>Iniciar sesión</h1>
+        <p class="sub">Bienvenido de nuevo a KROW</p>
+
+        <div class="field">
+            <label>Correo</label>
+            <input type="email" [(ngModel)]="correo" name="correo" required />
+        </div>
+
+        <div class="field">
+            <label>Contraseña</label>
+            <input type="password" [(ngModel)]="password" name="password" required />
+        </div>
+
+        @if (error()) { <p class="error">{{ error() }}</p> }
+
+        <button class="btn" type="submit" [disabled]="cargando()">
+            {{ cargando() ? 'Entrando...' : 'Entrar' }}
+        </button>
+
+        <div class="links">
+            <a routerLink="/registro/usuario">Crear cuenta de usuario</a>
+            <a routerLink="/registro/empresa">Registrar empresa</a>
+        </div>
+    </form>
+</div>

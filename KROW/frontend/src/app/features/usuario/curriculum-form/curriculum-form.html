@@ -1,0 +1,26 @@
+<div class="card form-card">
+    <h1>Mi curriculum</h1>
+
+    @if (cargando()) {
+    <p>Cargando...</p>
+    } @else {
+    <div class="field"><label>Perfil profesional</label><textarea rows="3"
+            [(ngModel)]="form.perfil_profesional"></textarea></div>
+    <div class="field"><label>Campo laboral</label><textarea rows="3" [(ngModel)]="form.campo_laboral"></textarea></div>
+    <div class="field"><label>Campo estudiantil</label><textarea rows="3"
+            [(ngModel)]="form.campo_estudiantil"></textarea></div>
+    <div class="two-cols">
+        <div class="field"><label>Fortalezas</label><textarea rows="3" [(ngModel)]="form.fortalezas"></textarea></div>
+        <div class="field"><label>Debilidades</label><textarea rows="3" [(ngModel)]="form.debilidades"></textarea></div>
+    </div>
+    <div class="field"><label>Idiomas</label><input [(ngModel)]="form.idiomas" /></div>
+    <div class="field"><label>Habilidades</label><textarea rows="3" [(ngModel)]="form.habilidades"></textarea></div>
+    <div class="field"><label>Certificaciones</label><textarea rows="3" [(ngModel)]="form.certificaciones"></textarea>
+    </div>
+    <div class="field"><label>Portafolio (URL)</label><input [(ngModel)]="form.portafolio" /></div>
+
+    @if (guardado()) { <p class="ok">✅ Curriculum guardado</p> }
+
+    <button class="btn" (click)="guardar()">Guardar</button>
+    }
+</div>

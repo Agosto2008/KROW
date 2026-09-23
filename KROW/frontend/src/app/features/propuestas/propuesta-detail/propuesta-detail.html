@@ -1,0 +1,38 @@
+@if (cargando()) {
+<p>Cargando...</p>
+} @else if (!propuesta()) {
+<div class="card">Propuesta no encontrada.</div>
+} @else {
+@let p = propuesta()!;
+<div class="card detail">
+    <div class="row">
+        <span class="tag">{{ p.tipo }}</span>
+        <span class="tag alt">{{ p.modalidad }}</span>
+        <span class="estado">{{ p.estado }}</span>
+    </div>
+
+    <h1>{{ p.nombre }}</h1>
+    <p class="desc">{{ p.descripcion }}</p>
+
+    <div class="info-grid">
+        <div><strong>Ubicación:</strong> {{ p.ubicacion || 'No especificada' }}</div>
+        <div><strong>Vacantes:</strong> {{ p.vacantes }}</div>
+        <div><strong>Pago:</strong> {{ p.pago ? ('Q' + p.pago) : 'No remunerado' }}</div>
+        <div><strong>Publicada:</strong> {{ p.fecha_publicacion | date:'mediumDate' }}</div>
+        @if (p.fecha_vencimiento) {
+        <div><strong>Vence:</strong> {{ p.fecha_vencimiento | date:'mediumDate' }}</div>
+        }
+    </div>
+
+    @if (mensaje()) { <p class="msg">{{ mensaje() }}</p> }
+
+    @if (auth.rol() === 'USUARIO') {
+    <div class="actions">
+        <button class="btn" (click)="aplicar()">Aplicar a esta propuesta</button>
+        <button class="btn btn-secondary" (click)="toggleFavorito()">♥ Favorito</button>
+    </div>
+    }
+
+    <a routerLink="/propuestas" class="back">← Volver</a>
+</div>
+}

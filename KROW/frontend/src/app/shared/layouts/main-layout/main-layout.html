@@ -1,0 +1,60 @@
+<header class="navbar">
+    <a class="brand" routerLink="/">
+        <span class="brand-mark">K</span>
+        <span>KROW</span>
+    </a>
+
+    <nav>
+        <a routerLink="/propuestas" routerLinkActive="active">Propuestas</a>
+
+        @if (auth.rol() === 'USUARIO') {
+        <a routerLink="/mis-solicitudes" routerLinkActive="active">Mis solicitudes</a>
+        <a routerLink="/favoritos" routerLinkActive="active">Favoritos</a>
+        <a routerLink="/mi-curriculum" routerLinkActive="active">Mi CV</a>
+        <a routerLink="/mi-perfil" routerLinkActive="active">Mi perfil</a>
+        }
+
+        @if (auth.rol() === 'EMPRESA') {
+        <a routerLink="/mis-propuestas" routerLinkActive="active">Mis propuestas</a>
+        <a routerLink="/mi-empresa" routerLinkActive="active">Mi empresa</a>
+        }
+
+        @if (auth.rol() === 'ADMIN') {
+        <a routerLink="/admin" routerLinkActive="active">Panel</a>
+        <a routerLink="/admin/verificaciones" routerLinkActive="active">Verificaciones</a>
+        <a routerLink="/admin/reportes" routerLinkActive="active">Reportes</a>
+        }
+    </nav>
+
+    <div class="right">
+        @if (auth.rol() !== 'ADMIN') {
+        <a routerLink="/notificaciones" class="icon-btn" title="Notificaciones">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+        </a>
+        }
+
+        <div class="user-chip">
+            <span class="avatar">{{ inicial() }}</span>
+            <div class="user-info">
+                <span class="rol">{{ etiquetaRol() }}</span>
+            </div>
+        </div>
+
+        <button class="btn-ghost" (click)="cerrarSesion()" title="Cerrar sesión">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+        </button>
+    </div>
+</header>
+
+<main>
+    <router-outlet />
+</main>

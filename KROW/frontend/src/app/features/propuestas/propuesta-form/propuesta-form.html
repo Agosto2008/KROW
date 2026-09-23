@@ -1,0 +1,45 @@
+<div class="card form-card">
+    <h1>{{ editando() ? 'Editar propuesta' : 'Nueva propuesta' }}</h1>
+
+    <form (submit)="onSubmit(); $event.preventDefault()">
+        <div class="field"><label>Nombre</label><input [(ngModel)]="form.nombre" name="nombre" required /></div>
+        <div class="field"><label>Descripción</label><textarea rows="5" [(ngModel)]="form.descripcion" name="desc"
+                required></textarea></div>
+
+        <div class="two-cols">
+            <div class="field">
+                <label>Tipo</label>
+                <select [(ngModel)]="form.tipo" name="tipo">
+                    @for (t of tipos; track t) { <option [value]="t">{{ t }}</option> }
+                </select>
+            </div>
+            <div class="field">
+                <label>Modalidad</label>
+                <select [(ngModel)]="form.modalidad" name="mod">
+                    @for (m of modalidades; track m) { <option [value]="m">{{ m }}</option> }
+                </select>
+            </div>
+        </div>
+
+        <div class="two-cols">
+            <div class="field"><label>Pago (opcional)</label><input type="number" [(ngModel)]="form.pago" name="pago" />
+            </div>
+            <div class="field"><label>Vacantes</label><input type="number" min="1" [(ngModel)]="form.vacantes"
+                    name="vac" required /></div>
+        </div>
+
+        <div class="two-cols">
+            <div class="field"><label>Ubicación</label><input [(ngModel)]="form.ubicacion" name="ubi" /></div>
+            <div class="field"><label>Fecha de vencimiento</label><input type="date"
+                    [(ngModel)]="form.fecha_vencimiento" name="fv" /></div>
+        </div>
+
+        @if (error()) { <p class="error">{{ error() }}</p> }
+
+        <div class="actions">
+            <button class="btn" type="submit" [disabled]="cargando()">
+                {{ cargando() ? 'Guardando...' : (editando() ? 'Guardar cambios' : 'Publicar') }}
+            </button>
+        </div>
+    </form>
+</div>

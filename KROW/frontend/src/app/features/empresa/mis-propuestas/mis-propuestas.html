@@ -1,0 +1,36 @@
+<div class="page-head">
+    <h1>Mis propuestas</h1>
+    <a class="btn" routerLink="/propuestas/nueva">+ Nueva</a>
+</div>
+
+@if (cargando()) {
+<p>Cargando...</p>
+} @else if (propuestas().length === 0) {
+<div class="card empty">Aún no has publicado propuestas.</div>
+} @else {
+<table class="table card">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+            <th>Vacantes</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (p of propuestas(); track p.id_propuesta) {
+        <tr>
+            <td><a [routerLink]="['/propuestas', p.id_propuesta]">{{ p.nombre }}</a></td>
+            <td>{{ p.tipo }}</td>
+            <td><span class="estado">{{ p.estado }}</span></td>
+            <td>{{ p.vacantes }}</td>
+            <td class="acciones">
+                <a class="btn btn-secondary" [routerLink]="['/propuestas', p.id_propuesta, 'editar']">Editar</a>
+                <button class="btn btn-secondary" (click)="eliminar(p.id_propuesta)">Eliminar</button>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+}
