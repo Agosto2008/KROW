@@ -1,0 +1,18 @@
+<a
+  [routerLink]="enlace"
+  class="logo"
+  [class.logo--claro]="variante === 'claro'"
+  [class.logo--oscuro]="variante === 'oscuro'"
+  [class.logo--sm]="tamanio === 'sm'"
+  [class.logo--md]="tamanio === 'md'"
+  [class.logo--lg]="tamanio === 'lg'"
+  aria-label="KROW — Inicio"
+>
+  <img
+    src="logo-krow.png"
+    alt="KROW"
+    class="logo__img"
+    onerror="this.style.display='none'"
+  />
+  <span class="logo__texto">KROW</span>
+</a>

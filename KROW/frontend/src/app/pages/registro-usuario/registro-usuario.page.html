@@ -1,0 +1,70 @@
+<div class="auth">
+  <div class="auth__panel">
+    <app-logo enlace="/" tamanio="lg" variante="oscuro" />
+
+    <h1 class="auth__titulo">Crea tu cuenta</h1>
+    <p class="auth__subtitulo">Empieza a buscar tu primera oportunidad</p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth__form">
+      <div class="auth__grid">
+        <app-campo-input
+          etiqueta="Primer nombre"
+          [requerido]="true"
+          formControlName="primer_nombre"
+        />
+        <app-campo-input
+          etiqueta="Segundo nombre"
+          formControlName="segundo_nombre"
+        />
+        <app-campo-input
+          etiqueta="Primer apellido"
+          [requerido]="true"
+          formControlName="primer_apellido"
+        />
+        <app-campo-input
+          etiqueta="Segundo apellido"
+          formControlName="segundo_apellido"
+        />
+      </div>
+
+      <app-campo-input
+        etiqueta="Correo electrónico"
+        tipo="email"
+        placeholder="tu@correo.com"
+        autocomplete="email"
+        [requerido]="true"
+        formControlName="correo"
+      />
+
+      <app-campo-input
+        etiqueta="Contraseña"
+        tipo="password"
+        placeholder="Mínimo 6 caracteres"
+        autocomplete="new-password"
+        [requerido]="true"
+        formControlName="password"
+      />
+
+      <app-campo-input
+        etiqueta="Teléfono (opcional)"
+        tipo="tel"
+        placeholder="+34 600 000 000"
+        formControlName="telefono"
+      />
+
+      <app-boton
+        variante="primario"
+        tamanio="lg"
+        tipo="submit"
+        [bloque]="true"
+        [cargando]="cargando()"
+      >
+        Crear cuenta
+      </app-boton>
+    </form>
+
+    <p class="auth__pie">
+      ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>
+    </p>
+  </div>
+</div>

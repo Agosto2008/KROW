@@ -1,0 +1,38 @@
+<section class="form-page">
+  <div class="form-page__contenedor">
+    <a routerLink="/empresa/panel" class="form-page__volver">← Volver al panel</a>
+
+    <h1 class="form-page__titulo">
+      {{ esEdicion() ? 'Editar oferta' : 'Nueva oferta' }}
+    </h1>
+    <p class="form-page__subtitulo">Publica una oportunidad para jóvenes talentos</p>
+
+    @if (cargando()) {
+      <app-spinner />
+    } @else {
+      <form [formGroup]="form" class="form-page__form" (ngSubmit)="guardar()">
+        <app-campo-input etiqueta="Título de la oferta" [requerido]="true" formControlName="nombre" placeholder="Ej: Desarrollador/a Junior" />
+        <app-campo-textarea etiqueta="Descripción" [filas]="5" [requerido]="true" formControlName="descripcion" placeholder="Describe las responsabilidades, requisitos y lo que ofrece la posición" />
+
+        <div class="form-page__grid">
+          <app-campo-select etiqueta="Tipo" [opciones]="tipos" formControlName="tipo" [requerido]="true" />
+          <app-campo-select etiqueta="Modalidad" [opciones]="modalidades" formControlName="modalidad" [requerido]="true" />
+          <app-campo-input etiqueta="Pago mensual (€)" tipo="number" formControlName="pago" />
+          <app-campo-input etiqueta="Ubicación" formControlName="ubicacion" placeholder="Madrid, España" />
+          <app-campo-input etiqueta="Vacantes" tipo="number" formControlName="vacantes" [requerido]="true" />
+          <app-campo-input etiqueta="Fecha de vencimiento" tipo="date" formControlName="fecha_vencimiento" />
+          @if (esEdicion()) {
+            <app-campo-select etiqueta="Estado" [opciones]="estados" formControlName="estado" />
+          }
+        </div>
+
+        <div class="form-page__acciones">
+          <app-boton variante="secundario" (click)="guardar()" [disabled]="guardando()">Cancelar</app-boton>
+          <app-boton variante="primario" tipo="submit" [cargando]="guardando()">
+            {{ esEdicion() ? 'Guardar cambios' : 'Publicar oferta' }}
+          </app-boton>
+        </div>
+      </form>
+    }
+  </div>
+</section>

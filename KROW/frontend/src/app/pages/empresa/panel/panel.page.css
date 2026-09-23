@@ -1,0 +1,50 @@
+.panel { padding: var(--esp-7) 0 var(--esp-9); }
+.panel__contenedor { max-width: 1000px; margin: 0 auto; padding: 0 var(--esp-5); }
+
+.panel__cabecera {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: var(--esp-4); padding-bottom: var(--esp-5);
+  border-bottom: 1px solid var(--gris-borde); margin-bottom: var(--esp-4);
+  flex-wrap: wrap;
+}
+.panel__empresa { display: flex; gap: var(--esp-4); align-items: center; }
+.panel__avatar {
+  width: 56px; height: 56px; background: var(--negro-puro); color: var(--blanco-perla);
+  border-radius: var(--radio-md); display: flex; align-items: center; justify-content: center;
+  font-family: var(--fuente-titulo); font-size: 22px; font-weight: 600;
+}
+.panel__nombre-fila { display: flex; align-items: center; gap: var(--esp-3); flex-wrap: wrap; }
+.panel__nombre { font-size: 26px; margin: 0; }
+.panel__meta { font-size: 13px; color: var(--gris-medio); margin: 4px 0 0 0; }
+
+.panel__tabs { display: flex; gap: var(--esp-4); border-bottom: 1px solid var(--gris-borde); margin-bottom: var(--esp-5); }
+.panel__tab {
+  background: transparent; border: none; padding: 12px 4px; font-size: 14px;
+  color: var(--gris-medio); font-weight: 500; border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: all var(--trans-rapida);
+}
+.panel__tab:hover { color: var(--negro-puro); }
+.panel__tab--activa { color: var(--negro-puro); border-bottom-color: var(--negro-puro); }
+
+.panel__seccion-cabecera { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--esp-4); }
+.panel__seccion-titulo { font-size: 18px; font-family: var(--fuente-cuerpo); font-weight: 600; margin: 0 0 var(--esp-3) 0; }
+.panel__texto { font-size: 14px; color: var(--gris-carbon); line-height: 1.6; margin: 0 0 var(--esp-4) 0; }
+
+.panel__lista { display: flex; flex-direction: column; gap: var(--esp-3); }
+
+.oferta {
+  display: flex; justify-content: space-between; gap: var(--esp-4);
+  padding: var(--esp-4); background: var(--blanco-perla);
+  border: 1px solid var(--gris-borde); border-radius: var(--radio-md); flex-wrap: wrap;
+}
+.oferta__info { flex: 1; min-width: 0; }
+.oferta__titulo-fila { display: flex; gap: var(--esp-2); align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+.oferta__titulo { font-size: 15px; font-weight: 600; }
+.oferta__titulo:hover { text-decoration: underline; }
+.oferta__meta { font-size: 12px; color: var(--gris-medio); margin: 0; }
+.oferta__acciones { display: flex; gap: var(--esp-2); align-items: center; }
+
+.panel__perfil { padding-top: var(--esp-3); }
+
+.modal-form { display: flex; flex-direction: column; gap: var(--esp-3); }
+.modal-footer { display: flex; gap: var(--esp-3); justify-content: flex-end; }

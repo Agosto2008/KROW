@@ -1,0 +1,53 @@
+<a
+  class="card"
+  [routerLink]="['/propuestas', propuesta.id_propuesta]"
+>
+  <div class="card__cabecera">
+    <app-avatar-empresa [fotografia]="empresaFotografia" tamanio="md" />
+    <div class="card__info">
+      <h4 class="card__titulo">{{ propuesta.nombre }}</h4>
+      <div class="card__empresa">
+        <span class="card__empresa-nombre">{{ empresaNombre || 'Empresa' }}</span>
+        @if (empresaVerificada) {
+          <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+        }
+      </div>
+    </div>
+    <button
+      class="card__favorito"
+      [class.card__favorito--activo]="esFavorito"
+      (click)="onFavorito($event)"
+      [attr.aria-label]="esFavorito ? 'Quitar de guardados' : 'Guardar'"
+      type="button"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" [attr.fill]="esFavorito ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div class="card__badges">
+    <app-badge variante="tipo">{{ etiquetaTipo }}</app-badge>
+    <app-badge variante="modalidad">{{ etiquetaModalidad }}</app-badge>
+    <app-badge variante="neutro">{{ pagoTexto }}</app-badge>
+  </div>
+
+  <div class="card__meta">
+    @if (propuesta.ubicacion) {
+      <span class="card__meta-item">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        {{ propuesta.ubicacion }}
+      </span>
+    }
+    <span class="card__meta-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      {{ propuesta.fecha_publicacion | date:'dd/MM/yyyy' }}
+    </span>
+  </div>
+</a>

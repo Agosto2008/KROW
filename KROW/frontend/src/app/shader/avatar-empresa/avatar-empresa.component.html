@@ -1,0 +1,7 @@
+<div [class]="'avatar avatar--' + tamanio">
+  @if (fotografia) {
+    <img [src]="fotografia" alt="" class="avatar__img" />
+  } @else {
+    <span class="avatar__placeholder"></span>
+  }
+</div>

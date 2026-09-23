@@ -1,0 +1,52 @@
+<section class="verif-admin">
+  <div class="verif-admin__contenedor">
+    <header class="verif-admin__cabecera">
+      <h1 class="verif-admin__titulo">Verificaciones</h1>
+      <p class="verif-admin__subtitulo">Gestiona las solicitudes de verificación de empresas</p>
+    </header>
+
+    <nav class="verif-admin__tabs">
+      <button class="filtro" [class.filtro--activo]="filtro() === 'PENDIENTE'" (click)="setFiltro('PENDIENTE')">Pendientes</button>
+      <button class="filtro" [class.filtro--activo]="filtro() === 'APROBADA'" (click)="setFiltro('APROBADA')">Aprobadas</button>
+      <button class="filtro" [class.filtro--activo]="filtro() === 'RECHAZADA'" (click)="setFiltro('RECHAZADA')">Rechazadas</button>
+      <button class="filtro" [class.filtro--activo]="filtro() === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
+    </nav>
+
+    @if (cargando()) {
+      <app-spinner />
+    } @else if (filtradas.length === 0) {
+      <app-empty-state titulo="Sin verificaciones" mensaje="No hay verificaciones con este filtro." />
+    } @else {
+      <div class="verif-admin__lista">
+        @for (v of filtradas; track v.id_verificacion) {
+          <div class="vcard">
+            <div class="vcard__avatar">{{ nombreEmpresa(v).charAt(0) }}</div>
+            <div class="vcard__info">
+              <span class="vcard__nombre">{{ nombreEmpresa(v) }}</span>
+              <span class="vcard__meta">Plan {{ v.tipo_verificacion }} · {{ v.fecha | date:'dd/MM/yyyy' }}</span>
+              @if (v.observacion) { <span class="vcard__obs">💬 {{ v.observacion }}</span> }
+            </div>
+            <app-badge [variante]="getVarianteEstado(v.estado)">{{ v.estado }}</app-badge>
+            @if (v.estado === 'PENDIENTE') {
+              <div class="vcard__acciones">
+                <app-boton variante="primario" tamanio="sm" (click)="abrirResolver(v, 'APROBADA')">Aprobar</app-boton>
+                <app-boton variante="peligro" tamanio="sm" (click)="abrirResolver(v, 'RECHAZADA')">Rechazar</app-boton>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<app-modal [abierto]="modalAbierto()" [titulo]="accion() === 'APROBADA' ? 'Aprobar verificación' : 'Rechazar verificación'" (cerrar)="cerrarModal()">
+  <div class="resolver">
+    <app-campo-input etiqueta="Administrador" [(ngModel)]="administrador" placeholder="Tu nombre" />
+    <app-campo-textarea etiqueta="Observación (opcional)" [filas]="4" [(ngModel)]="observacion" placeholder="Motivo o comentario" />
+  </div>
+  <div modalFooter class="modal-footer">
+    <app-boton variante="secundario" (click)="cerrarModal()">Cancelar</app-boton>
+    <app-boton [variante]="accion() === 'APROBADA' ? 'primario' : 'peligro'" (click)="confirmar()">Confirmar</app-boton>
+  </div>
+</app-modal>

@@ -1,0 +1,25 @@
+<div class="campo" [class.campo--error]="error">
+  @if (etiqueta) {
+    <label class="campo__etiqueta">
+      {{ etiqueta }}
+      @if (requerido) {
+        <span class="campo__requerido" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+  <select
+    class="campo__select"
+    [disabled]="deshabilitado"
+    [value]="valor"
+    (change)="onCambio($any($event.target).value)"
+    (blur)="onBlur()"
+  >
+    <option value="" disabled>{{ placeholder }}</option>
+    @for (op of opciones; track op.valor) {
+      <option [value]="op.valor">{{ op.etiqueta }}</option>
+    }
+  </select>
+  @if (error) {
+    <span class="campo__error">{{ error }}</span>
+  }
+</div>
