@@ -9,7 +9,7 @@
   margin: 0 auto;
   padding: var(--esp-7) var(--esp-5) var(--esp-6);
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: var(--esp-6);
 }
 

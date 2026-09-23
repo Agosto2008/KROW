@@ -62,6 +62,19 @@ export const routes: Routes = [
       ),
     title: 'Perfil de empresa — KROW',
   },
+  {
+    // 8.1: páginas estáticas mínimas (antes inexistentes)
+    path: 'soporte',
+    loadComponent: () =>
+      import('./features/public/soporte/soporte.page').then((m) => m.SoportePage),
+    title: 'Soporte y contacto — KROW',
+  },
+  {
+    path: 'terminos',
+    loadComponent: () =>
+      import('./features/public/terminos/terminos.page').then((m) => m.TerminosPage),
+    title: 'Términos y condiciones — KROW',
+  },
 
   // ============================================
   // Usuario (rol USUARIO)

@@ -7,6 +7,12 @@ export class PropuestaService {
     // obtiene las propuestas aplicando los filtros recibidos
     // con ?buscar= o ?pagina= usa la paginacion del servidor
     async listar(filtros: Record<string, any>) {
+        // estado invalido en el filtro → 400 (mismo criterio que /reportes
+        // y /verificaciones-empresa: antes devolvia 200 con lista rara)
+        if (filtros.estado && !['ACTIVA', 'PAUSADA', 'CERRADA', 'VENCIDA'].includes(filtros.estado)) {
+            throw new AppError('estado no valido', 400);
+        }
+
         const conPaginacion =
             filtros.buscar !== undefined || filtros.pagina !== undefined;
 

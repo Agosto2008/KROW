@@ -4,7 +4,10 @@ import { AppError } from '../utils/AppError';
 
 export class ReporteService {
   // obtiene los reportes y puede filtrarlos por estado
+  // (estado invalido → 400, igual que la cola de verificaciones)
   async listar(estado?: EstadoReporte) {
+    const estados: EstadoReporte[] = ['PENDIENTE', 'EN_REVISION', 'RESUELTO', 'DESCARTADO'];
+    if (estado && !estados.includes(estado)) throw new AppError('estado no valido', 400);
     return reporteRepository.findAll(estado);
   }
 
