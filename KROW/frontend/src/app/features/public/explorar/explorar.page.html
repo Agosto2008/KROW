@@ -2,14 +2,12 @@
   <div class="explorar__contenedor">
     <header class="explorar__cabecera">
       <h1 class="explorar__titulo">Explorar ofertas</h1>
-      <p class="explorar__subtitulo">
-        {{ total() }} ofertas disponibles
-      </p>
+      <p class="explorar__subtitulo">{{ total() }} ofertas disponibles</p>
     </header>
 
     <div class="explorar__filtros">
       <div class="explorar__buscador">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="7"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
@@ -22,28 +20,19 @@
         />
       </div>
 
-      <div class="explorar__tabs">
-        <button
-          class="tab"
-          [class.tab--activo]="filtroTipo() === 'TODOS'"
-          (click)="setTipo('TODOS')"
-        >
-          Todo
-        </button>
-        <button
-          class="tab"
-          [class.tab--activo]="filtroTipo() === 'TRABAJO'"
-          (click)="setTipo('TRABAJO')"
-        >
-          Trabajos
-        </button>
-        <button
-          class="tab"
-          [class.tab--activo]="filtroTipo() === 'PRACTICA'"
-          (click)="setTipo('PRACTICA')"
-        >
-          Prácticas
-        </button>
+      <div class="explorar__tabs" role="tablist" aria-label="Filtrar por tipo">
+        @for (tab of tabs; track tab.clave) {
+          <button
+            type="button"
+            role="tab"
+            class="tab"
+            [class.tab--activo]="filtroTipo() === tab.clave"
+            [attr.aria-selected]="filtroTipo() === tab.clave"
+            (click)="setTipo(tab.clave)"
+          >
+            {{ tab.etiqueta }}
+          </button>
+        }
       </div>
 
       <select
@@ -61,14 +50,22 @@
 
     @if (cargando()) {
       <app-spinner mensaje="Cargando ofertas..." />
-    } @else if (propuestasFiltradas.length === 0) {
+    } @else if (propuestas().length === 0) {
       <app-empty-state
         titulo="Sin ofertas"
         mensaje="No encontramos ofertas que coincidan con tu búsqueda."
-      />
+      >
+        @if (hayFiltros()) {
+          <button type="button" class="explorar__limpiar" (click)="limpiarFiltros()">
+            Limpiar filtros
+          </button>
+        } @else {
+          <a routerLink="/empresas" class="explorar__limpiar">Ver empresas</a>
+        }
+      </app-empty-state>
     } @else {
       <div class="explorar__grid">
-        @for (propuesta of propuestasFiltradas; track propuesta.id_propuesta) {
+        @for (propuesta of propuestas(); track propuesta.id_propuesta) {
           <app-propuesta-card
             [propuesta]="propuesta"
             [empresaNombre]="propuesta.empresa?.nombre ?? ''"

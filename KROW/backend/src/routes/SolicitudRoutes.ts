@@ -50,10 +50,16 @@ router.post('/', verificarToken, verificarRol('USUARIO'), async (req, res, next)
 });
 
 //esta ruta permite cambiar el estado de una solicitud
-//solo la empresa dueña de la propuesta asociada (o un ADMIN) puede resolverla
-router.patch('/:id/estado', verificarToken, verificarRol('EMPRESA', 'ADMIN'), async (req, res, next) => {
+//solo la empresa dueña de la propuesta asociada (o un ADMIN) puede resolverla;
+//el candidato dueño solo puede CANCELAR la suya (no puede aceptarse a sí mismo)
+router.patch('/:id/estado', verificarToken, verificarRol('EMPRESA', 'ADMIN', 'USUARIO'), async (req, res, next) => {
   try {
     await verificarParticipanteSolicitud(req, Number(req.params.id));
+
+    if (req.user!.rol === 'USUARIO' && req.body.estado !== 'CANCELADA') {
+      return res.status(403).json({ mensaje: 'Como candidato solo puedes cancelar tu solicitud' });
+    }
+
     await solicitudService.cambiarEstado(Number(req.params.id), req.body.estado, req.body.comentario_empresa);
     res.json({ mensaje: 'Estado de solicitud actualizado' });
   } catch (error) { next(error); }

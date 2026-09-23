@@ -22,7 +22,7 @@ export class EntrevistaRepository {
   //TODAS las entrevistas del candidato, con propuesta y empresa resueltas (1 query)
   async findByUsuario(usuarioId: number): Promise<any[]> {
     const [rows] = await pool.query<any[]>(
-      `SELECT en.*, p.nombre AS propuesta_nombre, p.tipo AS propuesta_tipo,
+      `SELECT en.*, p.id_propuesta, p.nombre AS propuesta_nombre, p.tipo AS propuesta_tipo,
               JSON_OBJECT(
                 'id_empresa', e.id_empresa, 'nombre', e.nombre, 'fotografia', e.fotografia,
                 'verificada', e.verificada

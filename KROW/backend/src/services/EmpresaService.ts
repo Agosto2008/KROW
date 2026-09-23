@@ -1,4 +1,5 @@
 import { empresaRepository } from '../repositories/EmpresaRepository';
+import { verificacionEmpresaRepository } from '../repositories/VerificacionEmpresaRepository';
 import { Empresa } from '../models/Empresa';
 import { AppError } from '../utils/AppError';
 
@@ -28,11 +29,25 @@ export class EmpresaService {
     return empresa;
   }
 
-  // empresa + sus propuestas ACTIVAS (detalle publico, 1 query)
+  // empresa + sus propuestas ACTIVAS (detalle publico, sin N+1)
+  // + ultima verificacion (nivel) si la tiene
   async obtenerConPropuestas(id: number) {
     const { empresa, propuestas } = await empresaRepository.findByIdConPropuestas(id);
     if (!empresa) throw new AppError('Empresa no encontrada', 404);
-    return { ...empresa, propuestas };
+
+    const verificacion = await verificacionEmpresaRepository.findUltima(id);
+
+    return {
+      ...empresa,
+      propuestas,
+      verificacion: verificacion
+        ? {
+            tipo_verificacion: verificacion.tipo_verificacion,
+            estado: verificacion.estado,
+            fecha: verificacion.fecha,
+          }
+        : null,
+    };
   }
 
   // actualiza los datos de una empresa (solo columnas de la whitelist)

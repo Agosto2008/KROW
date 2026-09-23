@@ -1,0 +1,66 @@
+/* Mis entrevistas: el shell (.pagina*) llega por `styleUrls`
+   desde shared/estilos/pagina.css. Aqui solo lo propio de la lista. */
+
+.ents__lista { display: flex; flex-direction: column; gap: var(--esp-4); }
+
+.ent-card {
+  display: flex; flex-direction: column; gap: var(--esp-3);
+  padding: var(--esp-5);
+  background: var(--blanco-perla);
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-md);
+}
+
+.ent-card__cabecera {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: var(--esp-4);
+}
+
+.ent-card__titulos { display: flex; flex-direction: column; gap: 4px; }
+
+.ent-card__oferta {
+  font-size: 16px; font-weight: 600; color: var(--negro-puro);
+  text-decoration: none;
+}
+.ent-card__oferta:hover { text-decoration: underline; }
+
+.ent-card__empresa {
+  display: inline-flex; align-items: center; gap: var(--esp-2);
+  font-size: 13px; color: var(--gris-carbon);
+}
+
+.ent-card__grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--esp-3);
+  padding: var(--esp-3) 0;
+  border-top: 1px solid var(--gris-suave);
+  border-bottom: 1px solid var(--gris-suave);
+}
+
+.ent-card__dato { display: flex; flex-direction: column; gap: 2px; }
+
+.ent-card__clave {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--gris-medio);
+}
+
+.ent-card__valor { font-size: 14px; color: var(--negro-puro); }
+
+.ent-card__enlace {
+  display: inline-flex; align-items: center; gap: var(--esp-2);
+  align-self: flex-start;
+  padding: 8px 14px;
+  background: var(--negro-puro); color: var(--blanco-perla);
+  border: none; border-radius: var(--radio-md);
+  font-family: var(--fuente-cuerpo); font-size: 13px; font-weight: 500;
+  cursor: pointer;
+}
+.ent-card__enlace:hover { opacity: 0.9; }
+
+.ent-card__obs {
+  margin: 0; font-size: 13px; line-height: 1.6; color: var(--gris-carbon);
+}
+
+.ent-card__acciones {
+  display: flex; justify-content: flex-end; gap: var(--esp-3);
+}

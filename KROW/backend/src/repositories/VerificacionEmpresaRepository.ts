@@ -12,6 +12,17 @@ export class VerificacionEmpresaRepository {
         return rows;
     }
 
+    //ULTIMA verificacion de una empresa (cualquier estado): se usa en el
+    //detalle publico /empresas/:id/con-propuestas para mostrar el nivel
+    //(PLATA / PLATINO / DIAMANTE) junto al sello "verificada".
+    async findUltima(empresaId: number): Promise<VerificacionRow | null> {
+        const [rows] = await pool.query<VerificacionRow[]>(
+            'SELECT * FROM VerificacionEmpresa WHERE empresa_id = ? ORDER BY fecha DESC LIMIT 1',
+            [empresaId]
+        );
+        return rows[0] ?? null;
+    }
+
     //COLA DEL ADMIN: todas las verificaciones con el nombre de la empresa ya
     //resuelto (antes el admin tenia que conocer el empresa_id a mano y el front
     //hacia N peticiones)

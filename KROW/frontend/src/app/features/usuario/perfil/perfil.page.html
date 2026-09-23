@@ -63,14 +63,14 @@
   >
     <form [formGroup]="form" class="modal-form">
       <div class="modal-grid">
-        <app-campo-input etiqueta="Primer nombre" formControlName="primer_nombre" [requerido]="true" />
+        <app-campo-input etiqueta="Primer nombre" formControlName="primer_nombre" [requerido]="true" [error]="errorDe('primer_nombre')" />
         <app-campo-input etiqueta="Segundo nombre" formControlName="segundo_nombre" />
-        <app-campo-input etiqueta="Primer apellido" formControlName="primer_apellido" [requerido]="true" />
+        <app-campo-input etiqueta="Primer apellido" formControlName="primer_apellido" [requerido]="true" [error]="errorDe('primer_apellido')" />
         <app-campo-input etiqueta="Segundo apellido" formControlName="segundo_apellido" />
       </div>
-      <app-campo-input etiqueta="Teléfono" tipo="tel" formControlName="telefono" />
+      <app-campo-input etiqueta="Teléfono" tipo="tel" formControlName="telefono" [error]="errorDe('telefono')" />
       <app-campo-input etiqueta="Dirección" formControlName="direccion" />
-      <app-campo-input etiqueta="Fecha de nacimiento" tipo="date" formControlName="fecha_nacimiento" />
+      <app-campo-input etiqueta="Fecha de nacimiento" tipo="date" formControlName="fecha_nacimiento" [error]="errorDe('fecha_nacimiento')" />
       <app-campo-textarea etiqueta="Sobre mí" [filas]="4" formControlName="descripcion_personal" />
     </form>
     <div modalFooter class="modal-footer">

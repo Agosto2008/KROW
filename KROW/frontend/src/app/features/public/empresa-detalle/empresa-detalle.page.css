@@ -22,6 +22,35 @@
 
 .empresa-detalle__badges { display: flex; gap: var(--esp-2); flex-wrap: wrap; }
 
+/* Reportar empresa (Fase 5.8) */
+.empresa-detalle__reportar {
+  display: block;
+  margin-top: var(--esp-6);
+  padding: 0;
+  background: none;
+  border: none;
+  font-family: var(--fuente-cuerpo);
+  font-size: 13px;
+  color: var(--error);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.empresa-detalle__reportar:hover { color: var(--negro-puro); }
+
+.reporte__ayuda {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gris-carbon);
+  margin: 0 0 var(--esp-4) 0;
+}
+
+.empresa-detalle__verif {
+  font-size: 13px;
+  color: var(--gris-medio);
+  margin: var(--esp-1) 0 0 0;
+}
+
 .empresa-detalle__bloque { margin-bottom: var(--esp-6); }
 
 .empresa-detalle__subtitulo {

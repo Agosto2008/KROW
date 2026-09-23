@@ -61,6 +61,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         { etiqueta: 'Empresas', ruta: '/empresas' },
         { etiqueta: 'Guardados', ruta: '/usuario/guardados' },
         { etiqueta: 'Solicitudes', ruta: '/usuario/solicitudes' },
+        { etiqueta: 'Entrevistas', ruta: '/usuario/entrevistas' },
         { etiqueta: 'Mensajes', ruta: '/usuario/mensajes' },
       ];
     }

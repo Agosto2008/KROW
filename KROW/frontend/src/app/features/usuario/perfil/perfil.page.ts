@@ -2,7 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsuarioService } from '../../../core/api/usuario.service';
-import { TokenStorageService } from '../../../core/token-storage.service';
+import { AuthService } from '../../../core/api/auth.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { Usuario } from '../../../core/models/Index';
 import { CampoInputComponent } from '../../../shared/campo-input/campo-input.component';
@@ -21,7 +21,7 @@ import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
 export class PerfilPage implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly usuarioService = inject(UsuarioService);
-  private readonly tokenStorage = inject(TokenStorageService);
+  private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
 
   readonly usuario = signal<Usuario | null>(null);
@@ -41,8 +41,14 @@ export class PerfilPage implements OnInit {
   });
 
   ngOnInit(): void {
-    const id = this.tokenStorage.obtenerIdCuenta();
-    if (!id) return;
+    // id_usuario (NO id_cuenta): el backend compara contra el usuario del token.
+    // En el seed Ana es cuenta_id=2 pero usuario_id=1; usar la cuenta cargaría
+    // el perfil de Luis y guardaría con 403.
+    const id = this.auth.idUsuario();
+    if (!id) {
+      this.cargando.set(false);
+      return;
+    }
     this.usuarioService.obtenerPorId(id).subscribe({
       next: (u) => {
         this.usuario.set(u);
@@ -87,6 +93,19 @@ export class PerfilPage implements OnInit {
     const u = this.usuario();
     if (!u) return '';
     return `${u.primer_nombre.charAt(0)}${u.primer_apellido.charAt(0)}`.toUpperCase();
+  }
+
+  /**
+   * Error visible del campo (solo tras tocarlo), para pasarlo al
+   * `app-campo-input` via `[error]` — accesibilidad + usuario lo ve.
+   */
+  errorDe(control: string): string {
+    const c = this.form.get(control);
+    if (!c || !c.touched) return '';
+    if (c.hasError('required')) return 'Este campo es obligatorio';
+    if (c.hasError('minlength')) return 'Demasiado corto';
+    if (c.hasError('pattern')) return 'Formato no válido';
+    return '';
   }
 
   get nombreCompleto(): string {

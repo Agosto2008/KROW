@@ -22,6 +22,7 @@ export interface Entrevista {
 
 /** GET /entrevistas/usuario/:id → lo que ve el candidato */
 export interface EntrevistaConPropuesta extends Entrevista {
+  id_propuesta: number;
   propuesta_nombre: string;
   propuesta_tipo: TipoPropuesta;
   empresa: EmpresaResumen;

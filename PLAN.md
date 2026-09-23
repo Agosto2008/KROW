@@ -21,8 +21,8 @@
 - [x] **Fase 1 — Seguridad backend** (completada y verificada con pruebas reales)
 - [x] **Fase 2 — Endpoints agregados** (completada y verificada, incluye migración Notificacion)
 - [x] **Fase 3 — Frontend desde cero: cimientos** (completada y verificada: `tsc`=0, `ng build`=0, rutas en vivo 200, API agregada OK)
-- [ ] Fase 4 — Vistas públicas
-- [ ] Fase 5 — Vistas usuario
+- [x] **Fase 4 — Vistas públicas** (completada y verificada: `tsc`=0, `ng build`=0, backend `tsc`=0, rutas y API en vivo OK)
+- [x] **Fase 5 — Vistas usuario** (completada y verificada: `tsc`=0, `ng build`=0, backend `tsc`=0, flujos en vivo OK, seed restaurado)
 - [ ] Fase 6 — Vistas empresa
 - [ ] Fase 7 — Vistas admin
 - [ ] Fase 8 — Pulido y cierre
@@ -135,33 +135,53 @@
 
 ---
 
-## FASE 4 — Vistas públicas (nuevo árbol `features/public/`)
+## FASE 4 — Vistas públicas (nuevo árbol `features/public/`) ✅ COMPLETADA
 
 | # | Vista | Notas |
 |---|---|---|
-| 4.1 | **Landing**: hero, ofertas destacadas reales, stats **reales o honestas**, cómo funciona (3 pasos), tipos de oportunidad (prepráctica/práctica/pasantía/trabajo), CTA registro usuario/empresa | público joven: lenguaje cercano |
-| 4.2 | **Login** | con errores de formulario visibles |
-| 4.3 | **Registro usuario** y **registro empresa** (2 pasos o wizard corto) | sin `@import` del CSS del login |
-| 4.4 | **Explorar ofertas**: búsqueda + filtros (tipo, modalidad) **paginados en servidor**, favoritos, estados vacíos | Fase 2.9 |
-| 4.5 | **Detalle de oferta**: 1 petición (propuesta+empresa), empresa verificada destacada, aplicar, favorito, **reportar oferta** (Fase 2.14) | reemplaza el `*ngIf` mezclado |
-| 4.6 | **Listado de empresas** `/empresas` *(nueva)* | Fase 2.8 |
-| 4.7 | **Detalle de empresa** `/empresas/:id` *(nueva)*: ficha, verificación + nivel, sus ofertas activas | Fase 2.8 |
-| 4.8 | **404 real** (hoy redirige al home) | nuevo componente |
+| 4.1 | ✅ **Landing**: hero, ofertas destacadas reales (empresa embebida, sin N+1), **stats REALES** (totales de `GET /propuestas` y `GET /empresas` con `por_pagina=1`; antes decía `1.200+/340+/8.500+/92%`, todas falsas), **"Cómo funciona" (3 pasos)**, **tipos de oportunidad** (los 4 enums), **CTA candidato + CTA empresa** | público joven: lenguaje cercano |
+| 4.2 | ✅ **Login** con errores de formulario visibles (`[error]` conectado) | hecho en Fase 3.4 |
+| 4.3 | ✅ **Registro usuario** y **registro empresa** con errores visibles | sin `@import` del CSS del login (Fase 3.4) |
+| 4.4 | ✅ **Explorar ofertas**: búsqueda + filtros (5 tabs de tipo, modalidad) **paginados Y filtrados en el servidor** (antes el tipo se filtraba en cliente y la paginación mentía), favoritos, estados vacíos con "Limpiar filtros", lee `?tipo=` de la landing | Fase 2.9 |
+| 4.5 | ✅ **Detalle de oferta**: 1 petición (propuesta+empresa), empresa verificada destacada, aplicar, favorito, **reportar oferta** con modal | sin `*ngIf` mezclado |
+| 4.6 | ✅ **Listado de empresas** `/empresas`: búsqueda + "solo verificadas" + paginación servidor | Fase 2.8 |
+| 4.7 | ✅ **Detalle de empresa** `/empresas/:id`: ficha, **verificación + nivel** (`PLATA`/`PLATINO`/`DIAMANTE` + estado y fecha, nuevo `findUltima()` en `VerificacionEmpresaRepository`), sus ofertas activas | Fase 2.8 |
+| 4.8 | ✅ **404 real** (`features/public/no-encontrado/`): antes `path:'**' → redirectTo:''` redirigía al home | nuevo componente |
+
+**Verificación de Fase 4** (22/09/2026):
+1. Frontend `tsc --noEmit` → **0**; `ng build` → **0**; backend `tsc --noEmit` → **0**.
+2. Rutas SPA → 200 en `/`, `/propuestas`, `/propuestas?tipo=PRACTICA`, `/empresas`, `/empresas/2`, `/empresas/999`, `/login`, `/ruta-que-no-existe`, `/admin/panel`.
+3. `GET /empresas/2/con-propuestas` → GreenByte `verificada=1 nivel=DIAMANTE estado=APROBADA`; `/empresas/1` → TechLab `verificada=0 nivel=PLATINO estado=PENDIENTE`.
+4. Filtro de tipo **en el servidor**: `TRABAJO→1`, `PRACTICA→2`, `PASANTIA→2`, `PREPRACTICA→1`, cada uno devolviendo solo filas de ese tipo (antes los totales no cuadraban con lo mostrado).
+5. Stats reales de la landing: ofertas activas **6**, empresas **3**, verificadas **1** (cero números inventados en el HTML).
+6. Destacadas con `empresa` embebida en la fila (sin petición extra de empresas).
+7. El 404 ya **no redirige**: `path:'**'` carga `NoEncontradoPage`.
+8. `git status`: 13 modificados + `features/public/no-encontrado/` nuevo.
 
 ---
 
-## FASE 5 — Vistas USUARIO (`features/usuario/`)
+## FASE 5 — Vistas USUARIO (`features/usuario/`) ✅ COMPLETADA
 
 | # | Vista | Notas |
 |---|---|---|
-| 5.1 | Perfil (ver/editar) | id desde `/auth/me` |
-| 5.2 | Curriculum (form con errores visibles) | — |
-| 5.3 | Mis solicitudes (con nombre de oferta resuelto, cancelar solicitud) | Fase 2.3 |
-| 5.4 | Guardados (sin N+1) | Fase 2.2 |
-| 5.5 | **Mis entrevistas** *(nueva)*: ver entrevistas programadas, aceptar/rechazar, enlace/ubicación | Fase 2.5 |
-| 5.6 | Notificaciones (lista + campana del navbar) | Fase 2.13 |
-| 5.7 | Mensajes (sidebar de conversaciones real, sin N+1) | Fase 2.11 |
-| 5.8 | **Reportar empresa/oferta** desde cualquier vista *(nueva)* | Fase 2.14 |
+| 5.1 | ✅ Perfil (ver/editar) con **errores de formulario visibles** (`[error]` conectado) | **BUG corregido**: usaba `id_cuenta` donde el backend exige `id_usuario` → Ana (`cuenta=2, usuario=1`) cargaba el perfil de **Luis** y guardar daba 403. Ahora `auth.idUsuario()` |
+| 5.2 | ✅ Curriculum (form con errores visibles: `portafolio` URL, `perfil_profesional` máx 600; aviso si el 404 = "aún no tienes CV") | **BUG corregido**: mismo `id_cuenta` → con la cuenta salía **403** en el GET |
+| 5.3 | ✅ Mis solicitudes (nombre de oferta resuelto, **cancelar solicitud** con confirmación modal) | **Backend ajustado**: `PATCH /solicitudes/:id/estado` ahora acepta USUARIO pero **solo** con `CANCELADA` (403 si intenta otra cosa); el candidato solo cancela PENDIENTE/EN_REVISION |
+| 5.4 | ✅ Guardados (1 query con propuesta+empresa, quitar favorito) | Fase 2.2 |
+| 5.5 | ✅ **Mis entrevistas** *(nueva)* `/usuario/entrevistas`: fecha/hora/modalidad, enlace "Unirme", ubicación, observaciones; **aceptar** cambios (REPROGRAMADA→PROGRAMADA) y **rechazar** (→CANCELADA); ruta + enlace en navbar | Fase 2.5 · backend añadió `p.id_propuesta` al SELECT del candidato (para enlazar la oferta) |
+| 5.6 | ✅ Notificaciones (lista + campana del navbar) | Fase 2.13 |
+| 5.7 | ✅ Mensajes (sidebar con otro lado, oferta, último mensaje y no leídos en 1 query) | Fase 2.11 |
+| 5.8 | ✅ **Reportar empresa/oferta**: modal en `/propuestas/:id` (oferta) y **nuevo modal en `/empresas/:id`** (`empresa_id`) | Fase 2.14 |
+
+**Verificación de Fase 5** (22/09/2026):
+1. Frontend `tsc --noEmit` → **0**; `ng build` → **0**; backend `tsc --noEmit` → **0**.
+2. Login Ana → `GET /usuarios/1` → **Ana Perez, con teléfono** (ve SU perfil completo); control `GET /usuarios/2` → **Luis** (prueba de que confundir ids cargaba a otra persona).
+3. `GET /curriculums/usuario/1` → 200 con su CV (antes 403 con `id_cuenta`).
+4. `GET /entrevistas/usuario/1` → entrevista 1 con **`id_propuesta=1`**, empresa TechLab, enlace Jitsi.
+5. Cancelar solicitud 2 (PENDIENTE) como USUARIO → **200**; intentar `ACEPTADA` como USUARIO → **403**; sin token → **401**.
+6. `POST /reportes` con `empresa_id=1` → **201**; sin token → **401**.
+7. Rutas SPA → 200 en `/usuario/entrevistas`, `/usuario/solicitudes`, `/usuario/perfil`, `/usuario/curriculum`, `/usuario/guardados`, `/usuario/notificaciones`, `/usuario/mensajes`.
+8. **Seed restaurado** tras las pruebas: 7 cuentas / 7 propuestas / 6 solicitudes / 1 reporte / 3 favoritos (solicitud 2 de vuelta a PENDIENTE); `.tmp-seed.cjs` eliminado.
 
 ---
 

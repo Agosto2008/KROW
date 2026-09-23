@@ -1,0 +1,104 @@
+<section class="pagina">
+  <div class="pagina__contenedor">
+    <header class="pagina__cabecera">
+      <div>
+        <h1 class="pagina__titulo">Mis entrevistas</h1>
+        <p class="pagina__subtitulo">{{ entrevistas().length }} entrevistas</p>
+      </div>
+    </header>
+
+    @if (cargando()) {
+      <app-spinner mensaje="Cargando entrevistas..." />
+    } @else if (entrevistas().length === 0) {
+      <app-empty-state
+        titulo="Sin entrevistas"
+        mensaje="Cuando una empresa te seleccione, aquí verás tus entrevistas."
+      >
+        <a routerLink="/propuestas" class="enlace-primario">Explorar ofertas</a>
+      </app-empty-state>
+    } @else {
+      <div class="ents__lista">
+        @for (e of entrevistas(); track e.id_entrevista) {
+          <article class="ent-card">
+            <div class="ent-card__cabecera">
+              <div class="ent-card__titulos">
+                <a [routerLink]="['/propuestas', e.id_propuesta]" class="ent-card__oferta">
+                  {{ e.propuesta_nombre }}
+                </a>
+                <span class="ent-card__empresa">
+                  {{ e.empresa?.nombre ?? 'Empresa' }}
+                  @if (e.empresa?.verificada) {
+                    <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+                  }
+                </span>
+              </div>
+              <app-badge [variante]="getVarianteEstado(e.estado)">
+                {{ getEtiquetaEstado(e.estado) }}
+              </app-badge>
+            </div>
+
+            <div class="ent-card__grid">
+              <div class="ent-card__dato">
+                <span class="ent-card__clave">Fecha</span>
+                <span class="ent-card__valor">
+                  {{ e.fecha ? (e.fecha | date: 'dd/MM/yyyy') : 'Por confirmar' }}
+                </span>
+              </div>
+              <div class="ent-card__dato">
+                <span class="ent-card__clave">Hora</span>
+                <span class="ent-card__valor">{{ e.hora || '—' }}</span>
+              </div>
+              <div class="ent-card__dato">
+                <span class="ent-card__clave">Modalidad</span>
+                <span class="ent-card__valor">{{ getEtiquetaModalidad(e.modalidad) }}</span>
+              </div>
+              @if (e.ubicacion) {
+                <div class="ent-card__dato">
+                  <span class="ent-card__clave">Ubicación</span>
+                  <span class="ent-card__valor">{{ e.ubicacion }}</span>
+                </div>
+              }
+            </div>
+
+            @if (e.enlace && e.estado !== 'CANCELADA') {
+              <button type="button" class="ent-card__enlace" (click)="abrirEnlace(e.enlace!)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                Unirme a la entrevista
+              </button>
+            }
+
+            @if (e.observaciones) {
+              <p class="ent-card__obs">{{ e.observaciones }}</p>
+            }
+
+            @if (e.estado === 'PROGRAMADA' || e.estado === 'REPROGRAMADA') {
+              <div class="ent-card__acciones">
+                @if (e.estado === 'REPROGRAMADA') {
+                  <app-boton
+                    variante="primario"
+                    tamanio="sm"
+                    [cargando]="procesandoId() === e.id_entrevista"
+                    (click)="cambiarEstado(e.id_entrevista, 'PROGRAMADA', 'Entrevista confirmada')"
+                  >
+                    Aceptar cambios
+                  </app-boton>
+                }
+                <app-boton
+                  variante="peligro"
+                  tamanio="sm"
+                  [disabled]="procesandoId() !== null"
+                  (click)="cambiarEstado(e.id_entrevista, 'CANCELADA', 'Entrevista rechazada')"
+                >
+                  Rechazar
+                </app-boton>
+              </div>
+            }
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>

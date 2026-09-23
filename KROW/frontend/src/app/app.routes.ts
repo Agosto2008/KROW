@@ -101,6 +101,15 @@ export const routes: Routes = [
     title: 'Ofertas guardadas — KROW',
   },
   {
+    path: 'usuario/entrevistas',
+    canActivate: [authGuard, roleGuard(['USUARIO'])],
+    loadComponent: () =>
+      import('./features/usuario/entrevistas/entrevistas.page').then(
+        (m) => m.UsuarioEntrevistasPage
+      ),
+    title: 'Mis entrevistas — KROW',
+  },
+  {
     path: 'usuario/notificaciones',
     canActivate: [authGuard, roleGuard(['USUARIO'])],
     loadComponent: () =>
@@ -248,7 +257,12 @@ export const routes: Routes = [
   // 404
   // ============================================
   {
+    // 404 REAL: se muestra en la URL inexistente en vez de redirigir al home
     path: '**',
-    redirectTo: '',
+    loadComponent: () =>
+      import('./features/public/no-encontrado/no-encontrado.page').then(
+        (m) => m.NoEncontradoPage
+      ),
+    title: 'Página no encontrada — KROW',
   },
 ];

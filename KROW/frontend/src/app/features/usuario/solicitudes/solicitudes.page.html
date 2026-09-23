@@ -42,12 +42,47 @@
                 </p>
               }
             </div>
-            <app-badge [variante]="getVarianteEstado(solicitud.estado)">
-              {{ getEtiquetaEstado(solicitud.estado) }}
-            </app-badge>
+            <div class="solicitud__acciones">
+              <app-badge [variante]="getVarianteEstado(solicitud.estado)">
+                {{ getEtiquetaEstado(solicitud.estado) }}
+              </app-badge>
+              @if (puedeCancelar(solicitud.estado)) {
+                <button
+                  type="button"
+                  class="solicitud__cancelar"
+                  (click)="pedirCancelar(solicitud)"
+                >
+                  Cancelar
+                </button>
+              }
+            </div>
           </div>
         }
       </div>
     }
+
+    <!-- Confirmación de cancelación (sin vuelta atrás) -->
+    <app-modal
+      [abierto]="modalCancelarAbierto()"
+      titulo="Cancelar solicitud"
+      ancho="sm"
+      (cerrar)="cerrarModal()"
+    >
+      <p class="cancelar__texto">
+        Vas a cancelar tu solicitud a
+        <strong>{{ solicitudACancelarVisible?.propuesta_nombre }}</strong>.
+        La empresa ya no la verá como activa y esta oferta no aceptará
+        más postulaciones tuyas.
+      </p>
+
+      <div class="cancelar__acciones">
+        <app-boton variante="secundario" [disabled]="cancelando()" (click)="cerrarModal()">
+          Mantener solicitud
+        </app-boton>
+        <app-boton variante="peligro" [cargando]="cancelando()" (click)="confirmarCancelar()">
+          Sí, cancelar
+        </app-boton>
+      </div>
+    </app-modal>
   </div>
 </section>
