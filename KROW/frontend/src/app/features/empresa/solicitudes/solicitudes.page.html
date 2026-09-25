@@ -4,7 +4,7 @@
       <h1 class="emp-sol__titulo">Solicitudes recibidas</h1>
       <p class="emp-sol__subtitulo">{{ solicitudes().length }} solicitudes en {{ grupos().length }} ofertas</p>
     </header>
-
+ 
     @if (cargando()) {
       <app-spinner mensaje="Cargando solicitudes..." />
     } @else if (solicitudes().length === 0) {
@@ -60,7 +60,7 @@
     }
   </div>
 </section>
-
+ 
 <app-modal
   [abierto]="modalAbierto()"
   titulo="Comentario para el candidato"
@@ -74,10 +74,10 @@
   />
   <div class="modal-footer">
     <app-boton variante="secundario" (click)="cerrarModal()">Cancelar</app-boton>
-    <app-boton variante="primario" (click)="confirmarAccion()">Confirmar</app-boton>
+    <app-boton variante="primario" [cargando]="confirmando()" (click)="confirmarAccion()">Confirmar</app-boton>
   </div>
 </app-modal>
-
+ 
 <!-- Fase 6.3: perfil del candidato (nombre + CV + sus solicitudes) -->
 <app-modal
   [abierto]="modalPerfilAbierto()"
@@ -109,12 +109,12 @@
           }
         </div>
       </header>
-
+ 
       @if (perfilActual()!.perfil_profesional) {
         <h4 class="perfil__subtitulo">Perfil profesional</h4>
         <p class="perfil__texto">{{ perfilActual()!.perfil_profesional }}</p>
       }
-
+ 
       <div class="perfil__grid">
         @if (perfilActual()!.campo_laboral) {
           <div class="perfil__campo">
@@ -162,7 +162,7 @@
           CV actualizado: {{ perfilActual()!.curriculum_actualizado | date:'dd/MM/yyyy' }}
         </p>
       }
-
+ 
       <h4 class="perfil__subtitulo">Solicitudes a mis ofertas</h4>
       @if (solicitudesDelCandidato().length === 0) {
         <p class="perfil__texto">Sin solicitudes registradas.</p>
@@ -184,3 +184,5 @@
     <app-boton variante="secundario" (click)="cerrarPerfil()">Cerrar</app-boton>
   </div>
 </app-modal>
+ 
+ 

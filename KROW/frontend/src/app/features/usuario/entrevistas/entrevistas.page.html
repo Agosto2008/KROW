@@ -6,7 +6,7 @@
         <p class="pagina__subtitulo">{{ entrevistas().length }} entrevistas</p>
       </div>
     </header>
-
+ 
     @if (cargando()) {
       <app-spinner mensaje="Cargando entrevistas..." />
     } @else if (entrevistas().length === 0) {
@@ -26,8 +26,8 @@
                   {{ e.propuesta_nombre }}
                 </a>
                 <span class="ent-card__empresa">
-                  {{ e.empresa?.nombre ?? 'Empresa' }}
-                  @if (e.empresa?.verificada) {
+                  {{ e.empresa.nombre }}
+                  @if (e.empresa.verificada) {
                     <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
                   }
                 </span>
@@ -36,7 +36,7 @@
                 {{ getEtiquetaEstado(e.estado) }}
               </app-badge>
             </div>
-
+ 
             <div class="ent-card__grid">
               <div class="ent-card__dato">
                 <span class="ent-card__clave">Fecha</span>
@@ -59,7 +59,7 @@
                 </div>
               }
             </div>
-
+ 
             @if (e.enlace && e.estado !== 'CANCELADA') {
               <button type="button" class="ent-card__enlace" (click)="abrirEnlace(e.enlace!)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -69,11 +69,11 @@
                 Unirme a la entrevista
               </button>
             }
-
+ 
             @if (e.observaciones) {
               <p class="ent-card__obs">{{ e.observaciones }}</p>
             }
-
+ 
             @if (e.estado === 'PROGRAMADA' || e.estado === 'REPROGRAMADA') {
               <div class="ent-card__acciones">
                 @if (e.estado === 'REPROGRAMADA') {
@@ -102,3 +102,4 @@
     }
   </div>
 </section>
+ 

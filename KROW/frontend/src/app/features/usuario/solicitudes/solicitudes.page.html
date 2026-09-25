@@ -6,7 +6,7 @@
         <p class="pagina__subtitulo">{{ solicitudes().length }} solicitudes enviadas</p>
       </div>
     </header>
-
+ 
     @if (cargando()) {
       <app-spinner mensaje="Cargando solicitudes..." />
     } @else if (solicitudes().length === 0) {
@@ -28,8 +28,8 @@
                 {{ solicitud.propuesta_nombre }}
               </a>
               <span class="solicitud__empresa">
-                {{ solicitud.empresa?.nombre }}
-                @if (solicitud.empresa?.verificada) {
+                {{ solicitud.empresa.nombre }}
+                @if (solicitud.empresa.verificada) {
                   <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
                 }
               </span>
@@ -60,7 +60,7 @@
         }
       </div>
     }
-
+ 
     <!-- Confirmación de cancelación (sin vuelta atrás) -->
     <app-modal
       [abierto]="modalCancelarAbierto()"
@@ -74,7 +74,7 @@
         La empresa ya no la verá como activa y esta oferta no aceptará
         más postulaciones tuyas.
       </p>
-
+ 
       <div class="cancelar__acciones">
         <app-boton variante="secundario" [disabled]="cancelando()" (click)="cerrarModal()">
           Mantener solicitud
@@ -86,3 +86,5 @@
     </app-modal>
   </div>
 </section>
+ 
+ 

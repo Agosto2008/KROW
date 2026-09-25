@@ -7,7 +7,7 @@ import { ToastService } from '../../../shared/toast/toast.service';
 import { CampoInputComponent } from '../../../shared/campo-input/campo-input.component';
 import { BotonComponent } from '../../../shared/boton/boton.component';
 import { LogoComponent } from '../../../shared/logo/logo.component';
-
+ 
 @Component({
   selector: 'app-registro-usuario-page',
   standalone: true,
@@ -28,9 +28,9 @@ export class RegistroUsuarioPage {
   private readonly authService = inject(AuthService);
   private readonly toast = inject(ToastService);
   private readonly router = inject(Router);
-
+ 
   readonly cargando = signal(false);
-
+ 
   readonly form = this.fb.nonNullable.group({
     correo: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
@@ -40,13 +40,13 @@ export class RegistroUsuarioPage {
     segundo_apellido: [''],
     telefono: [''],
   });
-
+ 
   private enviado = false;
-
+ 
   errorDe(control: 'correo' | 'password' | 'primer_nombre' | 'primer_apellido'): string {
     const c = this.form.controls[control];
     if (!c.touched && !this.enviado) return '';
-
+ 
     if (control === 'correo') {
       if (c.hasError('required')) return 'El correo es obligatorio';
       if (c.hasError('email')) return 'Introduce un correo válido';
@@ -59,19 +59,23 @@ export class RegistroUsuarioPage {
     if (control === 'primer_apellido' && c.hasError('required')) return 'Obligatorio';
     return '';
   }
-
+ 
   onSubmit(): void {
     this.enviado = true;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-
+ 
     this.cargando.set(true);
     this.authService.registrarUsuario(this.form.getRawValue()).subscribe({
       next: () => {
         this.toast.exito('¡Cuenta creada! Bienvenido a KROW');
-        this.router.navigate(['/usuario/perfil']);
+        // trae el perfil de una vez: navbar y panel entran con los ids listos
+        this.authService.cargarSesion().subscribe({
+          complete: () => this.router.navigate(['/usuario/perfil']),
+          error: () => this.router.navigate(['/usuario/perfil']),
+        });
       },
       error: (err) => {
         this.cargando.set(false);
@@ -80,3 +84,5 @@ export class RegistroUsuarioPage {
     });
   }
 }
+ 
+ 

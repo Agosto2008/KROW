@@ -1,10 +1,10 @@
 <div class="auth">
   <div class="auth__panel">
     <app-logo enlace="/" tamanio="lg" variante="oscuro" />
-
+ 
     <h1 class="auth__titulo">Crea tu cuenta</h1>
     <p class="auth__subtitulo">Empieza a buscar tu primera oportunidad</p>
-
+ 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth__form" novalidate>
       <div class="auth__grid">
         <app-campo-input
@@ -28,7 +28,7 @@
           formControlName="segundo_apellido"
         />
       </div>
-
+ 
       <app-campo-input
         etiqueta="Correo electrónico"
         tipo="email"
@@ -38,7 +38,7 @@
         [error]="errorDe('correo')"
         formControlName="correo"
       />
-
+ 
       <app-campo-input
         etiqueta="Contraseña"
         tipo="password"
@@ -48,14 +48,14 @@
         [error]="errorDe('password')"
         formControlName="password"
       />
-
+ 
       <app-campo-input
         etiqueta="Teléfono (opcional)"
         tipo="tel"
-        placeholder="+34 600 000 000"
+        placeholder="+502"
         formControlName="telefono"
       />
-
+ 
       <app-boton
         variante="primario"
         tamanio="lg"
@@ -66,9 +66,11 @@
         Crear cuenta
       </app-boton>
     </form>
-
+ 
     <p class="auth__pie">
       ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>
     </p>
   </div>
 </div>
+ 
+ 

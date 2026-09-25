@@ -17,7 +17,7 @@ import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.com
 import { ModalComponent } from '../../../shared/modal/modal.component';
 import { CampoSelectComponent, OpcionSelect } from '../../../shared/campo-select/campo-select.component';
 import { CampoTextareaComponent } from '../../../shared/campo-textarea/campo-textarea.component';
-
+ 
 @Component({
   selector: 'app-propuesta-detalle-page',
   standalone: true,
@@ -46,24 +46,24 @@ export class PropuestaDetallePage implements OnInit {
   private readonly reporteService = inject(ReporteService);
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
-
+ 
   /** 1 sola petición: el backend devuelve propuesta + empresa embebida */
   readonly detalle = signal<PropuestaConEmpresa | null>(null);
   readonly cargando = signal(true);
   readonly esFavorito = signal(false);
   readonly yaPostulo = signal(false);
   readonly aplicando = signal(false);
-
-
+ 
+ 
   // modal de reporte (Fase 4.5)
   readonly modalReporteAbierto = signal(false);
   readonly enviandoReporte = signal(false);
   readonly motivosReporte: OpcionSelect[] = MOTIVOS_REPORTE;
-
+ 
   /** Estado plano del modal de reporte (two-way con ngModel) */
   motivoReporte: MotivoReporte = 'OFERTA_FALSA';
   detalleReporte = '';
-
+ 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (!id) {
@@ -72,7 +72,7 @@ export class PropuestaDetallePage implements OnInit {
     }
     this.cargar(id);
   }
-
+ 
   private cargar(id: number): void {
     this.propuestaService.obtenerPorId(id).subscribe({
       next: (detalle) => {
@@ -87,31 +87,31 @@ export class PropuestaDetallePage implements OnInit {
       },
     });
   }
-
+ 
   /** Favoritos + si ya postuló (solo si hay sesión de candidato) */
   private cargarEstadoUsuario(propuestaId: number): void {
     const idUsuario = this.auth.idUsuario();
     if (!idUsuario) return;
-
+ 
     this.favoritoService.listar(idUsuario).subscribe({
       next: (favs) => this.esFavorito.set(favs.some((f) => f.id_propuesta === propuestaId)),
       error: () => {},
     });
-
+ 
     this.solicitudService.listarPorUsuario(idUsuario).subscribe({
       next: (sols) => this.yaPostulo.set(sols.some((s) => s.propuesta_id === propuestaId)),
       error: () => {},
     });
   }
-
+ 
   get detalleData(): PropuestaConEmpresa | null {
     return this.detalle();
   }
-
+ 
   get empresa(): EmpresaEnDetalle | null {
     return this.detalle()?.empresa ?? null;
   }
-
+ 
   get etiquetaTipo(): string {
     const p = this.detalle();
     if (!p) return '';
@@ -123,16 +123,16 @@ export class PropuestaDetallePage implements OnInit {
     };
     return mapa[p.tipo] ?? p.tipo;
   }
-
+ 
   get pagoTexto(): string {
     const p = this.detalle();
     if (!p || p.pago == null) return 'No remunerado';
     return `${p.pago} €/mes`;
   }
-
+ 
   onAplicar(): void {
     const p = this.detalle();
-
+ 
     if (!this.auth.autenticado()) {
       this.toast.info('Inicia sesión como candidato para aplicar');
       this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
@@ -142,8 +142,8 @@ export class PropuestaDetallePage implements OnInit {
       this.toast.info('Solo los candidatos pueden postular a ofertas');
       return;
     }
-    if (!p) return;
-
+    if (!p || this.yaPostulo()) return;
+ 
     this.aplicando.set(true);
     this.solicitudService.aplicar(p.id_propuesta).subscribe({
       next: () => {
@@ -157,16 +157,16 @@ export class PropuestaDetallePage implements OnInit {
       },
     });
   }
-
+ 
   onToggleFavorito(): void {
     const p = this.detalle();
     if (!p) return;
-
+ 
     if (this.auth.rol() !== 'USUARIO') {
       this.toast.info('Inicia sesión como candidato para guardar ofertas');
       return;
     }
-
+ 
     this.favoritoService.alternar(p.id_propuesta).subscribe({
       next: (res) => {
         const ahoraFav = res.mensaje === 'agregado';
@@ -176,11 +176,11 @@ export class PropuestaDetallePage implements OnInit {
       error: () => this.toast.error('No se pudo actualizar'),
     });
   }
-
+ 
   // ============================================================
   // Reportar oferta (Fase 4.5 / 2.14)
   // ============================================================
-
+ 
   abrirReporte(): void {
     if (this.auth.rol() !== 'USUARIO') {
       this.toast.info('Inicia sesión como candidato para reportar ofertas');
@@ -190,22 +190,22 @@ export class PropuestaDetallePage implements OnInit {
     this.detalleReporte = '';
     this.modalReporteAbierto.set(true);
   }
-
+ 
   cerrarReporte(): void {
     if (this.enviandoReporte()) return;
     this.modalReporteAbierto.set(false);
   }
-
+ 
   enviarReporte(): void {
     const p = this.detalle();
     if (!p) return;
-
+ 
     const detalle = this.detalleReporte.trim();
     if (!detalle) {
       this.toast.error('Explica brevemente el motivo del reporte');
       return;
     }
-
+ 
     this.enviandoReporte.set(true);
     this.reporteService.crear({
       motivo: this.motivoReporte,
@@ -224,3 +224,5 @@ export class PropuestaDetallePage implements OnInit {
     });
   }
 }
+ 
+ 

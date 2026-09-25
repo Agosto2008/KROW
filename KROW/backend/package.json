@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "db:setup": "tsx src/database/configurar.ts setup",
+    "db:seed": "tsx src/database/configurar.ts seed"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +19,6 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.20.3",
-    "@types/prompt-sync": "^4.2.3",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2"
   },

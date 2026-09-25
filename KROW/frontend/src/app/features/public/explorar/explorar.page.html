@@ -4,7 +4,7 @@
       <h1 class="explorar__titulo">Explorar ofertas</h1>
       <p class="explorar__subtitulo">{{ total() }} ofertas disponibles</p>
     </header>
-
+ 
     <div class="explorar__filtros">
       <div class="explorar__buscador">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -19,7 +19,7 @@
           aria-label="Buscar ofertas"
         />
       </div>
-
+ 
       <div class="explorar__tabs" role="tablist" aria-label="Filtrar por tipo">
         @for (tab of tabs; track tab.clave) {
           <button
@@ -34,7 +34,7 @@
           </button>
         }
       </div>
-
+ 
       <select
         class="explorar__select"
         [value]="filtroModalidad()"
@@ -47,7 +47,7 @@
         <option value="HIBRIDO">Híbrido</option>
       </select>
     </div>
-
+ 
     @if (cargando()) {
       <app-spinner mensaje="Cargando ofertas..." />
     } @else if (propuestas().length === 0) {
@@ -68,15 +68,15 @@
         @for (propuesta of propuestas(); track propuesta.id_propuesta) {
           <app-propuesta-card
             [propuesta]="propuesta"
-            [empresaNombre]="propuesta.empresa?.nombre ?? ''"
-            [empresaFotografia]="propuesta.empresa?.fotografia ?? null"
-            [empresaVerificada]="propuesta.empresa?.verificada ?? false"
+            [empresaNombre]="propuesta.empresa.nombre"
+            [empresaFotografia]="propuesta.empresa.fotografia"
+            [empresaVerificada]="propuesta.empresa.verificada"
             [esFavorito]="esFavorito(propuesta.id_propuesta)"
             (toggleFavorito)="onToggleFavorito($event)"
           />
         }
       </div>
-
+ 
       @if (totalPaginas() > 1) {
         <nav class="explorar__paginacion" aria-label="Paginación de ofertas">
           <app-boton
@@ -101,3 +101,5 @@
     }
   </div>
 </section>
+ 
+ 

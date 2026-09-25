@@ -6,7 +6,7 @@
   <article class="detalle">
     <div class="detalle__contenedor">
       <a routerLink="/propuestas" class="detalle__volver">← Volver a ofertas</a>
-
+ 
       <header class="detalle__cabecera">
         <div class="detalle__cabecera-info">
           <app-avatar-empresa
@@ -40,7 +40,7 @@
           {{ esFavorito() ? 'Guardado' : 'Guardar' }}
         </button>
       </header>
-
+ 
       <div class="detalle__badges">
         <app-badge variante="tipo">{{ etiquetaTipo }}</app-badge>
         <app-badge variante="modalidad">{{ detalle()!.modalidad.toLowerCase() }}</app-badge>
@@ -49,12 +49,12 @@
           <app-badge variante="neutro">{{ detalle()!.ubicacion }}</app-badge>
         }
       </div>
-
+ 
       <section class="detalle__bloque">
         <h2 class="detalle__subtitulo">Descripción</h2>
         <p class="detalle__texto">{{ detalle()!.descripcion }}</p>
       </section>
-
+ 
       <section class="detalle__bloque">
         <h2 class="detalle__subtitulo">Detalles</h2>
         <div class="detalle__grid">
@@ -82,24 +82,25 @@
           }
         </div>
       </section>
-
+ 
       @if (empresa) {
         <section class="detalle__bloque">
           <h2 class="detalle__subtitulo">Sobre la empresa</h2>
           <p class="detalle__texto">{{ empresa.descripcion || 'Sin descripción.' }}</p>
         </section>
       }
-
+ 
       <div class="detalle__acciones">
         <app-boton
           variante="primario"
           tamanio="lg"
+          [disabled]="yaPostulo()"
           [cargando]="aplicando()"
           (click)="onAplicar()"
         >
           {{ yaPostulo() ? 'Ya te has postulado' : 'Aplicar a esta oferta' }}
         </app-boton>
-
+ 
         <button type="button" class="detalle__reportar" (click)="abrirReporte()">
           Reportar esta oferta
         </button>
@@ -107,7 +108,7 @@
     </div>
   </article>
 }
-
+ 
 <!-- Modal de reporte (Fase 4.5) -->
 <app-modal
   [abierto]="modalReporteAbierto()"
@@ -118,14 +119,14 @@
     El reporte llega al equipo de moderación de KROW. Tu identidad no se
     muestra a la empresa.
   </p>
-
+ 
   <app-campo-select
     etiqueta="Motivo"
     [requerido]="true"
     [opciones]="motivosReporte"
     [(ngModel)]="motivoReporte"
   />
-
+ 
   <app-campo-textarea
     etiqueta="Cuéntanos qué ocurrió"
     [filas]="4"
@@ -133,7 +134,7 @@
     [(ngModel)]="detalleReporte"
     placeholder="Describe brevemente por qué esta oferta parece incorrecta..."
   />
-
+ 
   <div class="modal-footer">
     <app-boton variante="secundario" [disabled]="enviandoReporte()" (click)="cerrarReporte()">
       Cancelar

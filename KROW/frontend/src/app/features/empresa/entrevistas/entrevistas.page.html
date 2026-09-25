@@ -7,7 +7,7 @@
       </div>
       <app-boton variante="primario" tamanio="sm" (click)="abrirModal()">+ Programar entrevista</app-boton>
     </header>
-
+ 
     @if (cargando()) {
       <app-spinner mensaje="Cargando entrevistas..." />
     } @else if (entrevistas().length === 0) {
@@ -42,7 +42,7 @@
     }
   </div>
 </section>
-
+ 
 <app-modal [abierto]="modalAbierto()" titulo="Programar entrevista" (cerrar)="cerrarModal()">
   <form [formGroup]="form" class="ent-form">
     <app-campo-select
@@ -65,7 +65,7 @@
     <app-boton variante="primario" (click)="programar()">Programar</app-boton>
   </div>
 </app-modal>
-
+ 
 <!-- Fase 6.4: reprogramar una entrevista existente (el backend la pasa a REPROGRAMADA y notifica) -->
 <app-modal [abierto]="modalReprogramarAbierto()" titulo="Reprogramar entrevista" (cerrar)="cerrarReprogramar()">
   <form [formGroup]="formReprograma" class="ent-form">
@@ -80,6 +80,6 @@
   </form>
   <div class="modal-footer">
     <app-boton variante="secundario" (click)="cerrarReprogramar()">Cancelar</app-boton>
-    <app-boton variante="primario" (click)="confirmarReprogramar()">Reprogramar</app-boton>
+    <app-boton variante="primario" [cargando]="confirmandoReprogramando()" (click)="confirmarReprogramar()">Reprogramar</app-boton>
   </div>
 </app-modal>

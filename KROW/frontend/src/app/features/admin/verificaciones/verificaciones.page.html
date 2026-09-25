@@ -4,14 +4,14 @@
       <h1 class="verif-admin__titulo">Verificaciones</h1>
       <p class="verif-admin__subtitulo">Gestiona las solicitudes de verificación de empresas</p>
     </header>
-
+ 
     <nav class="verif-admin__tabs">
       <button class="filtro" [class.filtro--activo]="filtro() === 'PENDIENTE'" (click)="setFiltro('PENDIENTE')">Pendientes</button>
       <button class="filtro" [class.filtro--activo]="filtro() === 'APROBADA'" (click)="setFiltro('APROBADA')">Aprobadas</button>
       <button class="filtro" [class.filtro--activo]="filtro() === 'RECHAZADA'" (click)="setFiltro('RECHAZADA')">Rechazadas</button>
       <button class="filtro" [class.filtro--activo]="filtro() === 'TODAS'" (click)="setFiltro('TODAS')">Todas</button>
     </nav>
-
+ 
     @if (cargando()) {
       <app-spinner />
     } @else if (filtradas.length === 0) {
@@ -43,7 +43,7 @@
     }
   </div>
 </section>
-
+ 
 <app-modal
   [abierto]="modalAbierto()"
   [titulo]="accion() === 'APROBADA' ? 'Aprobar verificación' : 'Rechazar verificación'"
@@ -62,6 +62,6 @@
   </div>
   <div class="modal-footer">
     <app-boton variante="secundario" (click)="cerrarModal()">Cancelar</app-boton>
-    <app-boton [variante]="accion() === 'APROBADA' ? 'primario' : 'peligro'" (click)="confirmar()">Confirmar</app-boton>
+    <app-boton [variante]="accion() === 'APROBADA' ? 'primario' : 'peligro'" [cargando]="confirmando()" (click)="confirmar()">Confirmar</app-boton>
   </div>
 </app-modal>

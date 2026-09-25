@@ -10,7 +10,7 @@ import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
 import { EmptyStateComponent } from '../../../shared/empty-state/empty-state.component';
 import { ModalComponent } from '../../../shared/modal/modal.component';
 import { CampoTextareaComponent } from '../../../shared/campo-textarea/campo-textarea.component';
-
+ 
 @Component({
   selector: 'app-admin-verificaciones-page',
   standalone: true,
@@ -21,7 +21,7 @@ import { CampoTextareaComponent } from '../../../shared/campo-textarea/campo-tex
 export class AdminVerificacionesPage implements OnInit {
   private readonly verificacionService = inject(VerificacionEmpresaService);
   private readonly toast = inject(ToastService);
-
+ 
   /** Cola del admin con el nombre de la empresa ya resuelto (1 query) */
   readonly verificaciones = signal<VerificacionConEmpresa[]>([]);
   readonly cargando = signal(true);
@@ -29,13 +29,13 @@ export class AdminVerificacionesPage implements OnInit {
   readonly modalAbierto = signal(false);
   readonly seleccionada = signal<VerificacionConEmpresa | null>(null);
   readonly accion = signal<Extract<EstadoVerificacion, 'APROBADA' | 'RECHAZADA'>>('APROBADA');
-
+ 
   observacion = '';
-
+ 
   ngOnInit(): void {
     this.cargar();
   }
-
+ 
   private cargar(): void {
     const estado = this.filtro() === 'TODAS' ? '' : (this.filtro() as EstadoVerificacion);
     this.verificacionService.listarTodas(estado).subscribe({
@@ -43,17 +43,17 @@ export class AdminVerificacionesPage implements OnInit {
       error: () => this.cargando.set(false),
     });
   }
-
+ 
   get filtradas(): VerificacionConEmpresa[] {
     return this.verificaciones();
   }
-
+ 
   setFiltro(f: EstadoVerificacion | 'TODAS'): void {
     this.filtro.set(f);
     this.cargando.set(true);
     this.cargar();
   }
-
+ 
   abrirResolver(v: VerificacionConEmpresa, accion: 'APROBADA' | 'RECHAZADA'): void {
     this.seleccionada.set(v);
     this.accion.set(accion);
@@ -61,13 +61,17 @@ export class AdminVerificacionesPage implements OnInit {
     this.modalAbierto.set(true);
   }
   cerrarModal(): void { this.modalAbierto.set(false); this.seleccionada.set(null); }
-
+ 
+  readonly confirmando = signal(false);
+ 
   confirmar(): void {
     const v = this.seleccionada();
-    if (!v) return;
+    if (!v || this.confirmando()) return;
+    this.confirmando.set(true);
     // el administrador lo toma el backend del token
     this.verificacionService.resolver(v.id_verificacion, this.accion(), this.observacion).subscribe({
       next: () => {
+        this.confirmando.set(false);
         this.toast.exito(`Verificación ${this.accion().toLowerCase()}`);
         this.verificaciones.update((lista) =>
           lista.map((x) => x.id_verificacion === v.id_verificacion
@@ -76,10 +80,13 @@ export class AdminVerificacionesPage implements OnInit {
         );
         this.cerrarModal();
       },
-      error: (err) => this.toast.error(err.message || 'No se pudo resolver'),
+      error: (err) => {
+        this.confirmando.set(false);
+        this.toast.error(err.message || 'No se pudo resolver');
+      },
     });
   }
-
+ 
   getVarianteEstado(estado: string): VarianteBadge {
     const mapa: Record<string, VarianteBadge> = {
       PENDIENTE: 'estado-pendiente',
@@ -97,3 +104,5 @@ export class AdminVerificacionesPage implements OnInit {
     return mapa[estado] ?? 'neutro';
   }
 }
+ 
+ 

@@ -7,18 +7,18 @@
         </svg>
         Empresas verificadas. Sin trampa.
       </app-badge>
-
+ 
       <h1 class="hero__titulo">
         Tu primer trabajo<br />
         <em>no debería ser</em><br />
         una lotería.
       </h1>
-
+ 
       <p class="hero__subtitulo">
         KROW conecta a jóvenes con empresas reales. Prácticas y empleos
         verificados, perfiles honestos, y un proceso que respeta tu tiempo.
       </p>
-
+ 
       <div class="hero__acciones">
         <app-boton variante="primario" tamanio="lg" [routerLink]="['/registro/usuario']">
           Empezar gratis
@@ -30,10 +30,10 @@
         <a routerLink="/propuestas" class="hero__enlace">Ver ofertas →</a>
       </div>
     </div>
-
+ 
     <aside class="hero__panel" aria-label="Ofertas destacadas">
       <h2 class="hero__panel-titulo">Ofertas destacadas</h2>
-
+ 
       @if (cargando()) {
         <app-spinner [tamanio]="24" />
       } @else if (destacadas().length === 0) {
@@ -43,11 +43,11 @@
           @for (oferta of destacadas(); track oferta.id_propuesta) {
             <a class="hero__item" [routerLink]="['/propuestas', oferta.id_propuesta]">
               <div class="hero__item-avatar">
-                <span>{{ (oferta.empresa?.nombre ?? 'K').charAt(0) }}</span>
+                <span>{{ oferta.empresa.nombre.charAt(0) }}</span>
               </div>
               <div class="hero__item-info">
                 <span class="hero__item-nombre">{{ oferta.nombre }}</span>
-                <span class="hero__item-empresa">{{ oferta.empresa?.nombre ?? 'Empresa' }}</span>
+                <span class="hero__item-empresa">{{ oferta.empresa.nombre }}</span>
                 <div class="hero__item-badges">
                   <app-badge variante="tipo">{{ etiquetaTipo(oferta.tipo) }}</app-badge>
                   <app-badge variante="modalidad">{{ etiquetaModalidad(oferta.modalidad) }}</app-badge>
@@ -57,12 +57,12 @@
           }
         </div>
       }
-
+ 
       <a routerLink="/propuestas" class="hero__ver-todas">Ver todas las ofertas →</a>
     </aside>
   </div>
 </section>
-
+ 
 <!-- Stats REALES: totales del servidor, nunca inventados -->
 <section class="stats" aria-label="KROW en números">
   <div class="stats__contenedor">
@@ -74,13 +74,13 @@
     }
   </div>
 </section>
-
+ 
 <!-- Cómo funciona -->
 <section class="pasos">
   <div class="pasos__contenedor">
     <h2 class="pasos__titulo">Cómo funciona</h2>
     <p class="pasos__subtitulo">Tres pasos y ya estás postulando.</p>
-
+ 
     <ol class="pasos__lista">
       @for (paso of pasos; track paso.numero) {
         <li class="paso">
@@ -92,7 +92,7 @@
     </ol>
   </div>
 </section>
-
+ 
 <!-- Tipos de oportunidad -->
 <section class="tipos">
   <div class="tipos__contenedor">
@@ -100,7 +100,7 @@
     <p class="tipos__subtitulo">
       Elige la que mejor encaje con tu momento. Todas valen lo mismo.
     </p>
-
+ 
     <div class="tipos__grid">
       @for (tipo of tipos; track tipo.clave) {
         <article class="tipo">
@@ -114,7 +114,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- Pilares -->
 <section class="pilares">
   <div class="pilares__contenedor">
@@ -151,7 +151,7 @@
     </div>
   </div>
 </section>
-
+ 
 <!-- CTA final -->
 <section class="cta">
   <div class="cta__contenedor">
@@ -171,3 +171,5 @@
     </div>
   </div>
 </section>
+ 
+ 
