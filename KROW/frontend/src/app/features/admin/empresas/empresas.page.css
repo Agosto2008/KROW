@@ -1,0 +1,16 @@
+.adm-emp { padding: var(--esp-7) 0 var(--esp-9); }
+.adm-emp__contenedor { max-width: 1000px; margin: 0 auto; padding: 0 var(--esp-5); }
+.adm-emp__cabecera { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--esp-4); margin-bottom: var(--esp-5); flex-wrap: wrap; }
+.adm-emp__titulo { font-size: 32px; margin: 0 0 4px 0; }
+.adm-emp__subtitulo { font-size: 14px; color: var(--gris-medio); margin: 0; }
+.adm-emp__buscador { padding: 10px 14px; border: 1px solid var(--gris-borde); border-radius: var(--radio-md); background: var(--blanco-puro); font-family: var(--fuente-cuerpo); font-size: 14px; min-width: 260px; }
+.adm-emp__buscador:focus { outline: none; border-color: var(--negro-puro); }
+.adm-emp__lista { display: flex; flex-direction: column; gap: var(--esp-3); }
+.emp-card { display: flex; gap: var(--esp-4); padding: var(--esp-4); border: 1px solid var(--gris-borde); border-radius: var(--radio-md); background: var(--blanco-perla); }
+.emp-card__avatar { width: 48px; height: 48px; background: var(--negro-puro); color: var(--blanco-perla); border-radius: var(--radio-md); display: flex; align-items: center; justify-content: center; font-family: var(--fuente-titulo); font-size: 20px; font-weight: 600; flex-shrink: 0; }
+.emp-card__info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.emp-card__nombre-fila { display: flex; align-items: center; gap: var(--esp-2); }
+.emp-card__nombre { font-size: 15px; font-weight: 600; }
+.emp-card__meta { font-size: 12px; color: var(--gris-medio); }
+.emp-card__desc { font-size: 13px; color: var(--gris-carbon); margin: 4px 0 0 0; line-height: 1.5; }
+.emp-card__acciones { display: flex; gap: var(--esp-2); align-self: center; flex-shrink: 0; }

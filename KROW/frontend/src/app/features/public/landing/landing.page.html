@@ -1,0 +1,175 @@
+<section class="hero">
+  <div class="hero__contenedor">
+    <div class="hero__texto">
+      <app-badge variante="neutro" class="hero__badge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        Empresas verificadas. Sin trampa.
+      </app-badge>
+ 
+      <h1 class="hero__titulo">
+        Tu primer trabajo<br />
+        <em>no debería ser</em><br />
+        una lotería.
+      </h1>
+ 
+      <p class="hero__subtitulo">
+        KROW conecta a jóvenes con empresas reales. Prácticas y empleos
+        verificados, perfiles honestos, y un proceso que respeta tu tiempo.
+      </p>
+ 
+      <div class="hero__acciones">
+        <app-boton variante="primario" tamanio="lg" [routerLink]="['/registro/usuario']">
+          Empezar gratis
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </app-boton>
+        <a routerLink="/propuestas" class="hero__enlace">Ver ofertas →</a>
+      </div>
+    </div>
+ 
+    <aside class="hero__panel" aria-label="Ofertas destacadas">
+      <h2 class="hero__panel-titulo">Ofertas destacadas</h2>
+ 
+      @if (cargando()) {
+        <app-spinner [tamanio]="24" />
+      } @else if (destacadas().length === 0) {
+        <p class="hero__panel-vacio">Aún no hay ofertas destacadas.</p>
+      } @else {
+        <div class="hero__lista">
+          @for (oferta of destacadas(); track oferta.id_propuesta) {
+            <a class="hero__item" [routerLink]="['/propuestas', oferta.id_propuesta]">
+              <div class="hero__item-avatar">
+                <span>{{ oferta.empresa.nombre.charAt(0) }}</span>
+              </div>
+              <div class="hero__item-info">
+                <span class="hero__item-nombre">{{ oferta.nombre }}</span>
+                <span class="hero__item-empresa">{{ oferta.empresa.nombre }}</span>
+                <div class="hero__item-badges">
+                  <app-badge variante="tipo">{{ etiquetaTipo(oferta.tipo) }}</app-badge>
+                  <app-badge variante="modalidad">{{ etiquetaModalidad(oferta.modalidad) }}</app-badge>
+                </div>
+              </div>
+            </a>
+          }
+        </div>
+      }
+ 
+      <a routerLink="/propuestas" class="hero__ver-todas">Ver todas las ofertas →</a>
+    </aside>
+  </div>
+</section>
+ 
+<!-- Stats REALES: totales del servidor, nunca inventados -->
+<section class="stats" aria-label="KROW en números">
+  <div class="stats__contenedor">
+    @for (stat of stats(); track stat.etiqueta) {
+      <div class="stats__item">
+        <span class="stats__numero">{{ verValor(stat.valor) }}</span>
+        <span class="stats__etiqueta">{{ stat.etiqueta }}</span>
+      </div>
+    }
+  </div>
+</section>
+ 
+<!-- Cómo funciona -->
+<section class="pasos">
+  <div class="pasos__contenedor">
+    <h2 class="pasos__titulo">Cómo funciona</h2>
+    <p class="pasos__subtitulo">Tres pasos y ya estás postulando.</p>
+ 
+    <ol class="pasos__lista">
+      @for (paso of pasos; track paso.numero) {
+        <li class="paso">
+          <span class="paso__numero" aria-hidden="true">{{ paso.numero }}</span>
+          <h3 class="paso__titulo">{{ paso.titulo }}</h3>
+          <p class="paso__texto">{{ paso.texto }}</p>
+        </li>
+      }
+    </ol>
+  </div>
+</section>
+ 
+<!-- Tipos de oportunidad -->
+<section class="tipos">
+  <div class="tipos__contenedor">
+    <h2 class="tipos__titulo">Cuatro formas de empezar</h2>
+    <p class="tipos__subtitulo">
+      Elige la que mejor encaje con tu momento. Todas valen lo mismo.
+    </p>
+ 
+    <div class="tipos__grid">
+      @for (tipo of tipos; track tipo.clave) {
+        <article class="tipo">
+          <h3 class="tipo__nombre">{{ tipo.nombre }}</h3>
+          <p class="tipo__texto">{{ tipo.texto }}</p>
+          <a class="tipo__enlace" [routerLink]="['/propuestas']" [queryParams]="{ tipo: tipo.clave }">
+            Ver {{ tipo.nombre.toLowerCase() }} →
+          </a>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+ 
+<!-- Pilares -->
+<section class="pilares">
+  <div class="pilares__contenedor">
+    <h2 class="pilares__titulo">Una plataforma pensada para ti</h2>
+    <div class="pilares__grid">
+      <article class="pilar">
+        <h3 class="pilar__titulo">Enfoque en jóvenes sin experiencia</h3>
+        <p class="pilar__texto">
+          Diseñado especialmente para quienes buscan su primera oportunidad
+          laboral, sin importar la edad ni el punto de partida.
+        </p>
+      </article>
+      <article class="pilar">
+        <h3 class="pilar__titulo">Claridad y transparencia</h3>
+        <p class="pilar__texto">
+          Toda la información de las ofertas es clara, honesta y visible desde
+          el primer vistazo.
+        </p>
+      </article>
+      <article class="pilar">
+        <h3 class="pilar__titulo">Verificación de empresas</h3>
+        <p class="pilar__texto">
+          Cada empresa pasa por un proceso de verificación para garantizar un
+          entorno seguro.
+        </p>
+      </article>
+      <article class="pilar">
+        <h3 class="pilar__titulo">Búsqueda simplificada</h3>
+        <p class="pilar__texto">
+          Una experiencia ordenada y eficiente, sin ruido innecesario ni
+          distracciones.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+ 
+<!-- CTA final -->
+<section class="cta">
+  <div class="cta__contenedor">
+    <div class="cta__bloque">
+      <h2 class="cta__titulo">¿Buscas tu primera oportunidad?</h2>
+      <p class="cta__texto">Crea tu perfil gratis y empieza a postular hoy.</p>
+      <app-boton variante="primario" tamanio="lg" [routerLink]="['/registro/usuario']">
+        Registrarme como candidato
+      </app-boton>
+    </div>
+    <div class="cta__bloque">
+      <h2 class="cta__titulo">¿Tienes una empresa?</h2>
+      <p class="cta__texto">Publica tus ofertas y encuentra talento joven verificado.</p>
+      <app-boton variante="secundario" tamanio="lg" [routerLink]="['/registro/empresa']">
+        Registrar mi empresa
+      </app-boton>
+    </div>
+  </div>
+</section>
+ 
+ 

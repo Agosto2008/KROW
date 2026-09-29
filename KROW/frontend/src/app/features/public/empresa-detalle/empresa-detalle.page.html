@@ -1,0 +1,117 @@
+@if (cargando()) {
+  <app-spinner mensaje="Cargando empresa..." />
+} @else if (!empresa()) {
+  <app-empty-state titulo="Empresa no encontrada" mensaje="La empresa que buscas no existe." />
+} @else {
+  <section class="pagina">
+    <div class="pagina__contenedor">
+      <a routerLink="/empresas" class="empresa-detalle__volver">← Volver a empresas</a>
+
+      <header class="empresa-detalle__cabecera">
+        <app-avatar-empresa [fotografia]="empresa()!.fotografia" tamanio="lg" />
+        <div class="empresa-detalle__info">
+          <h1 class="pagina__titulo">{{ empresa()!.nombre }}</h1>
+          <div class="empresa-detalle__badges">
+            @if (empresa()!.verificada) {
+              <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+            } @else {
+              <app-badge variante="neutro">Sin verificar</app-badge>
+            }
+            @if (nivelVerificacion(); as nivel) {
+              <app-badge [variante]="varianteNivel()">{{ nivel }}</app-badge>
+            }
+            @if (empresa()!.ubicacion) {
+              <app-badge variante="neutro">{{ empresa()!.ubicacion }}</app-badge>
+            }
+          </div>
+
+          @if (empresa()!.verificacion; as verif) {
+            <p class="empresa-detalle__verif">
+              Nivel {{ verif.tipo_verificacion }} ·
+              {{
+                verif.estado === 'APROBADA'
+                  ? 'aprobada'
+                  : verif.estado === 'PENDIENTE'
+                    ? 'en revisión'
+                    : 'rechazada'
+              }}
+              el {{ verif.fecha | date: 'dd/MM/yyyy' }}
+            </p>
+          }
+        </div>
+      </header>
+
+      @if (empresa()!.descripcion) {
+        <section class="empresa-detalle__bloque">
+          <h2 class="empresa-detalle__subtitulo">Sobre la empresa</h2>
+          <p class="empresa-detalle__texto">{{ empresa()!.descripcion }}</p>
+        </section>
+      }
+
+      <section class="empresa-detalle__bloque">
+        <h2 class="empresa-detalle__subtitulo">
+          Ofertas activas ({{ empresa()!.propuestas.length }})
+        </h2>
+
+        @if (empresa()!.propuestas.length === 0) {
+          <app-empty-state
+            titulo="Sin ofertas activas"
+            mensaje="Esta empresa no tiene publicadas ofertas en este momento."
+          />
+        } @else {
+          <div class="empresa-detalle__grid">
+            @for (propuesta of empresa()!.propuestas; track propuesta.id_propuesta) {
+              <app-propuesta-card
+                [propuesta]="propuesta"
+                [empresaNombre]="empresa()!.nombre"
+                [empresaFotografia]="empresa()!.fotografia ?? null"
+                [empresaVerificada]="empresa()!.verificada"
+                [esFavorito]="false"
+              />
+            }
+          </div>
+        }
+      </section>
+
+      <button type="button" class="empresa-detalle__reportar" (click)="abrirReporte()">
+        Reportar esta empresa
+      </button>
+    </div>
+  </section>
+}
+
+<!-- Modal de reporte de empresa (Fase 5.8) -->
+<app-modal
+  [abierto]="modalReporteAbierto()"
+  titulo="Reportar empresa"
+  (cerrar)="cerrarReporte()"
+>
+  <p class="reporte__ayuda">
+    El reporte llega al equipo de moderacion de KROW. Tu identidad no se
+    muestra a la empresa.
+  </p>
+
+  <app-campo-select
+    etiqueta="Motivo"
+    [requerido]="true"
+    [opciones]="motivosReporte"
+    [(ngModel)]="motivoReporte"
+  />
+
+  <app-campo-textarea
+    etiqueta="Cuentanos que ocurrio"
+    [filas]="4"
+    [requerido]="true"
+    [(ngModel)]="detalleReporte"
+    placeholder="Describe brevemente por que esta empresa parece incorrecta..."
+  />
+
+  <div class="modal-footer">
+    <app-boton variante="secundario" [disabled]="enviandoReporte()" (click)="cerrarReporte()">
+      Cancelar
+    </app-boton>
+    <app-boton variante="peligro" [cargando]="enviandoReporte()" (click)="enviarReporte()">
+      Enviar reporte
+    </app-boton>
+  </div>
+</app-modal>

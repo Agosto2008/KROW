@@ -1,0 +1,188 @@
+<section class="emp-sol">
+  <div class="emp-sol__contenedor">
+    <header class="emp-sol__cabecera">
+      <h1 class="emp-sol__titulo">Solicitudes recibidas</h1>
+      <p class="emp-sol__subtitulo">{{ solicitudes().length }} solicitudes en {{ grupos().length }} ofertas</p>
+    </header>
+ 
+    @if (cargando()) {
+      <app-spinner mensaje="Cargando solicitudes..." />
+    } @else if (solicitudes().length === 0) {
+      <app-empty-state titulo="Sin solicitudes" mensaje="Aún no has recibido solicitudes." />
+    } @else {
+      <!-- Fase 6.3: agrupadas por oferta (una sola petición, sin N+1) -->
+      <div class="emp-sol__grupos">
+        @for (g of grupos(); track g.propuestaId) {
+          <section class="grupo">
+            <header class="grupo__cabecera">
+              <h2 class="grupo__titulo">{{ g.propuestaNombre }}</h2>
+              <span class="grupo__contador">
+                {{ g.solicitudes.length }}
+                {{ g.solicitudes.length === 1 ? 'solicitud' : 'solicitudes' }}
+              </span>
+            </header>
+            <div class="emp-sol__lista">
+              @for (s of g.solicitudes; track s.id_solicitud) {
+                <div class="soli">
+                  <div class="soli__info">
+                    <div class="soli__titulo-fila">
+                      <span class="soli__usuario">{{ nombreCandidato(s) }}</span>
+                      <app-badge [variante]="getVarianteEstado(s.estado)">
+                        {{ getEtiquetaEstado(s.estado) }}
+                      </app-badge>
+                    </div>
+                    <p class="soli__propuesta">
+                      Aplicó a: <strong>{{ s.propuesta_nombre }}</strong>
+                    </p>
+                    <p class="soli__fecha">{{ s.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+                    @if (s.comentario_empresa) {
+                      <p class="soli__comentario">→ {{ s.comentario_empresa }}</p>
+                    }
+                  </div>
+                  <div class="soli__acciones">
+                    <app-boton variante="fantasma" tamanio="sm" (click)="verPerfil(s)">
+                      Ver perfil
+                    </app-boton>
+                    @if (s.estado === 'PENDIENTE' || s.estado === 'EN_REVISION') {
+                      <app-boton variante="secundario" tamanio="sm" (click)="abrirAccion(s, 'EN_REVISION')">Revisar</app-boton>
+                      <app-boton variante="primario" tamanio="sm" (click)="abrirAccion(s, 'ACEPTADA')">Aceptar</app-boton>
+                      <app-boton variante="peligro" tamanio="sm" (click)="abrirAccion(s, 'RECHAZADA')">Rechazar</app-boton>
+                    } @else if (s.estado === 'ACEPTADA') {
+                      <app-boton variante="secundario" tamanio="sm" (click)="abrirAccion(s, 'RECHAZADA')">Rechazar</app-boton>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        }
+      </div>
+    }
+  </div>
+</section>
+ 
+<app-modal
+  [abierto]="modalAbierto()"
+  titulo="Comentario para el candidato"
+  (cerrar)="cerrarModal()"
+>
+  <app-campo-textarea
+    etiqueta="Comentario (opcional)"
+    [filas]="4"
+    [(ngModel)]="comentarioTexto"
+    placeholder="Ej: Nos gustaría conocerte mejor. ¿Podrías agendar una entrevista?"
+  />
+  <div class="modal-footer">
+    <app-boton variante="secundario" (click)="cerrarModal()">Cancelar</app-boton>
+    <app-boton variante="primario" [cargando]="confirmando()" (click)="confirmarAccion()">Confirmar</app-boton>
+  </div>
+</app-modal>
+ 
+<!-- Fase 6.3: perfil del candidato (nombre + CV + sus solicitudes) -->
+<app-modal
+  [abierto]="modalPerfilAbierto()"
+  titulo="Perfil del candidato"
+  ancho="lg"
+  (cerrar)="cerrarPerfil()"
+>
+  @if (cargandoPerfil() && !perfilActual()) {
+    <app-spinner mensaje="Cargando perfil..." />
+  } @else if (!perfilActual()) {
+    <app-empty-state
+      titulo="Perfil no disponible"
+      mensaje="No pudimos cargar los datos del candidato."
+    />
+  } @else {
+    <div class="perfil">
+      <header class="perfil__cabecera">
+        @if (perfilActual()!.fotografia) {
+          <img
+            class="perfil__foto"
+            [src]="perfilActual()!.fotografia"
+            [alt]="nombrePerfil(perfilActual()!)"
+          />
+        }
+        <div>
+          <h3 class="perfil__nombre">{{ nombrePerfil(perfilActual()!) }}</h3>
+          @if (perfilActual()!.descripcion_personal) {
+            <p class="perfil__bio">{{ perfilActual()!.descripcion_personal }}</p>
+          }
+        </div>
+      </header>
+ 
+      @if (perfilActual()!.perfil_profesional) {
+        <h4 class="perfil__subtitulo">Perfil profesional</h4>
+        <p class="perfil__texto">{{ perfilActual()!.perfil_profesional }}</p>
+      }
+ 
+      <div class="perfil__grid">
+        @if (perfilActual()!.campo_laboral) {
+          <div class="perfil__campo">
+            <span>Campo laboral</span>
+            <p>{{ perfilActual()!.campo_laboral }}</p>
+          </div>
+        }
+        @if (perfilActual()!.campo_estudiantil) {
+          <div class="perfil__campo">
+            <span>Campo estudiantil</span>
+            <p>{{ perfilActual()!.campo_estudiantil }}</p>
+          </div>
+        }
+        @if (perfilActual()!.idiomas) {
+          <div class="perfil__campo">
+            <span>Idiomas</span>
+            <p>{{ perfilActual()!.idiomas }}</p>
+          </div>
+        }
+        @if (perfilActual()!.habilidades) {
+          <div class="perfil__campo">
+            <span>Habilidades</span>
+            <p>{{ perfilActual()!.habilidades }}</p>
+          </div>
+        }
+        @if (perfilActual()!.certificaciones) {
+          <div class="perfil__campo">
+            <span>Certificaciones</span>
+            <p>{{ perfilActual()!.certificaciones }}</p>
+          </div>
+        }
+        @if (perfilActual()!.portafolio) {
+          <div class="perfil__campo perfil__campo--ancho">
+            <span>Portafolio</span>
+            <p>
+              <a [href]="perfilActual()!.portafolio" target="_blank" rel="noopener noreferrer">
+                {{ perfilActual()!.portafolio }}
+              </a>
+            </p>
+          </div>
+        }
+      </div>
+      @if (perfilActual()!.curriculum_actualizado) {
+        <p class="perfil__cv-fecha">
+          CV actualizado: {{ perfilActual()!.curriculum_actualizado | date:'dd/MM/yyyy' }}
+        </p>
+      }
+ 
+      <h4 class="perfil__subtitulo">Solicitudes a mis ofertas</h4>
+      @if (solicitudesDelCandidato().length === 0) {
+        <p class="perfil__texto">Sin solicitudes registradas.</p>
+      } @else {
+        <ul class="perfil__sols">
+          @for (s of solicitudesDelCandidato(); track s.id_solicitud) {
+            <li class="perfil__sol">
+              <span class="perfil__sol-oferta">{{ s.propuesta_nombre }}</span>
+              <app-badge [variante]="getVarianteEstado(s.estado)">
+                {{ getEtiquetaEstado(s.estado) }}
+              </app-badge>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+  <div class="modal-footer">
+    <app-boton variante="secundario" (click)="cerrarPerfil()">Cerrar</app-boton>
+  </div>
+</app-modal>
+ 
+ 

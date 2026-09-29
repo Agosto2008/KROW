@@ -1,0 +1,92 @@
+<header class="navbar">
+  <div class="navbar__contenedor">
+    <app-logo enlace="/" tamanio="md" variante="oscuro" />
+
+    <nav class="navbar__nav" [class.navbar__nav--abierto]="menuAbierto()" aria-label="Principal">
+      @for (item of itemsNav(); track item.ruta) {
+        <a
+          class="navbar__enlace"
+          [routerLink]="item.ruta"
+          routerLinkActive="navbar__enlace--activo"
+          [routerLinkActiveOptions]="{ exact: false }"
+          (click)="navegar()"
+        >
+          {{ item.etiqueta }}
+        </a>
+      }
+    </nav>
+
+    <div class="navbar__acciones">
+      @if (veCampana()) {
+        <a
+          class="navbar__icono navbar__campana"
+          [routerLink]="rutaNotificaciones"
+          aria-label="Notificaciones"
+          (click)="navegar()"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          @if (noLeidas() > 0) {
+            <span class="navbar__contador" aria-hidden="true">
+              {{ noLeidas() > 99 ? '99+' : noLeidas() }}
+            </span>
+          }
+        </a>
+      }
+
+      @if (autenticado()) {
+        <a
+          class="navbar__usuario"
+          [routerLink]="rutaPerfil"
+          title="Mi perfil"
+          (click)="navegar()"
+        >
+          <span class="navbar__usuario-avatar" aria-hidden="true">
+            {{ nombreVisible().charAt(0) | uppercase }}
+          </span>
+          <span class="navbar__usuario-texto">
+            <span class="navbar__usuario-nombre">{{ nombreVisible() }}</span>
+            <span class="navbar__usuario-rol">{{ rol() }}</span>
+          </span>
+        </a>
+
+        <app-boton variante="fantasma" tamanio="sm" (click)="cerrarSesion()">
+          Salir
+        </app-boton>
+      } @else {
+        <div class="navbar__sesion">
+          <app-boton variante="fantasma" tamanio="sm" [routerLink]="['/login']" (click)="navegar()">
+            Entrar
+          </app-boton>
+          <app-boton variante="primario" tamanio="sm" [routerLink]="['/registro/usuario']" (click)="navegar()">
+            Registrarse
+          </app-boton>
+        </div>
+      }
+
+      <button
+        type="button"
+        class="navbar__hamburguesa"
+        [attr.aria-expanded]="menuAbierto()"
+        aria-controls="menu-movil"
+        [attr.aria-label]="menuAbierto() ? 'Cerrar menú' : 'Abrir menú'"
+        (click)="alternarMenu()"
+      >
+        @if (menuAbierto()) {
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        } @else {
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        }
+      </button>
+    </div>
+  </div>
+</header>

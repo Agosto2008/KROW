@@ -1,0 +1,90 @@
+<section class="pagina">
+  <div class="pagina__contenedor">
+    <header class="pagina__cabecera">
+      <div>
+        <h1 class="pagina__titulo">Mis solicitudes</h1>
+        <p class="pagina__subtitulo">{{ solicitudes().length }} solicitudes enviadas</p>
+      </div>
+    </header>
+ 
+    @if (cargando()) {
+      <app-spinner mensaje="Cargando solicitudes..." />
+    } @else if (solicitudes().length === 0) {
+      <app-empty-state
+        titulo="Sin solicitudes"
+        mensaje="Aún no has aplicado a ninguna oferta."
+      >
+        <a routerLink="/propuestas" class="enlace-primario">Explorar ofertas</a>
+      </app-empty-state>
+    } @else {
+      <div class="solicitudes__lista">
+        @for (solicitud of solicitudes(); track solicitud.id_solicitud) {
+          <div class="solicitud">
+            <div class="solicitud__info">
+              <a
+                [routerLink]="['/propuestas', solicitud.propuesta_id]"
+                class="solicitud__titulo"
+              >
+                {{ solicitud.propuesta_nombre }}
+              </a>
+              <span class="solicitud__empresa">
+                {{ solicitud.empresa.nombre }}
+                @if (solicitud.empresa.verificada) {
+                  <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+                }
+              </span>
+              <span class="solicitud__fecha">
+                Enviada el {{ solicitud.fecha | date:'dd/MM/yyyy' }}
+              </span>
+              @if (solicitud.comentario_empresa) {
+                <p class="solicitud__comentario">
+                  <strong>Respuesta:</strong> {{ solicitud.comentario_empresa }}
+                </p>
+              }
+            </div>
+            <div class="solicitud__acciones">
+              <app-badge [variante]="getVarianteEstado(solicitud.estado)">
+                {{ getEtiquetaEstado(solicitud.estado) }}
+              </app-badge>
+              @if (puedeCancelar(solicitud.estado)) {
+                <button
+                  type="button"
+                  class="solicitud__cancelar"
+                  (click)="pedirCancelar(solicitud)"
+                >
+                  Cancelar
+                </button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+ 
+    <!-- Confirmación de cancelación (sin vuelta atrás) -->
+    <app-modal
+      [abierto]="modalCancelarAbierto()"
+      titulo="Cancelar solicitud"
+      ancho="sm"
+      (cerrar)="cerrarModal()"
+    >
+      <p class="cancelar__texto">
+        Vas a cancelar tu solicitud a
+        <strong>{{ solicitudACancelarVisible?.propuesta_nombre }}</strong>.
+        La empresa ya no la verá como activa y esta oferta no aceptará
+        más postulaciones tuyas.
+      </p>
+ 
+      <div class="cancelar__acciones">
+        <app-boton variante="secundario" [disabled]="cancelando()" (click)="cerrarModal()">
+          Mantener solicitud
+        </app-boton>
+        <app-boton variante="peligro" [cargando]="cancelando()" (click)="confirmarCancelar()">
+          Sí, cancelar
+        </app-boton>
+      </div>
+    </app-modal>
+  </div>
+</section>
+ 
+ 

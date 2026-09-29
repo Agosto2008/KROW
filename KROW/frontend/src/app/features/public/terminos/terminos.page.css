@@ -1,0 +1,20 @@
+.terminos { padding: var(--esp-7) 0 var(--esp-9); }
+.terminos__contenedor { max-width: 780px; margin: 0 auto; padding: 0 var(--esp-5); }
+
+.terminos__etiqueta { font-size: 11px; letter-spacing: 0.1em; font-weight: 600; color: var(--gris-medio); text-transform: uppercase; margin: 0 0 4px 0; }
+.terminos__titulo { font-size: 40px; margin: 0 0 var(--esp-2) 0; }
+.terminos__fecha { font-size: 13px; color: var(--gris-medio); margin: 0 0 var(--esp-6) 0; }
+
+.terminos__bloques { display: flex; flex-direction: column; gap: var(--esp-3); }
+.bloque { background: var(--blanco-hueso); border: 1px solid var(--gris-borde); border-radius: var(--radio-md); padding: var(--esp-4) var(--esp-5); }
+.bloque__titulo { font-family: var(--fuente-cuerpo); font-size: 16px; font-weight: 600; margin: 0 0 var(--esp-2) 0; }
+.bloque__texto { font-size: 14px; color: var(--gris-carbon); line-height: 1.7; margin: 0; }
+.bloque__texto a { color: var(--negro-puro); font-weight: 500; text-underline-offset: 3px; }
+
+.terminos__pie { margin: var(--esp-5) 0 0 0; font-size: 14px; color: var(--gris-medio); }
+.terminos__pie a { color: var(--negro-puro); font-weight: 500; text-underline-offset: 3px; }
+
+@media (max-width: 560px) {
+  .terminos__titulo { font-size: 30px; }
+  .bloque { padding: var(--esp-4); }
+}

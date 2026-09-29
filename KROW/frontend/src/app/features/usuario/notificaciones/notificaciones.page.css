@@ -1,0 +1,27 @@
+/* Notificaciones: el shell (.pagina*) llega por `styleUrls`
+   desde shared/estilos/pagina.css. Aquí solo lo propio de la lista. */
+
+.notif__lista { display: flex; flex-direction: column; gap: var(--esp-2); }
+
+.notif-item {
+  width: 100%;
+  display: flex; align-items: flex-start; gap: var(--esp-3);
+  padding: var(--esp-4) var(--esp-5);
+  background: var(--blanco-perla); border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-md); cursor: pointer;
+  font-family: var(--fuente-cuerpo); text-align: left;
+  transition: border-color var(--trans-rapida), opacity var(--trans-rapida);
+}
+.notif-item:hover { border-color: var(--gris-carbon); }
+.notif-item--leida { opacity: 0.65; }
+
+.notif-item__punto {
+  width: 8px; height: 8px; background: var(--negro-puro);
+  border-radius: 50%; margin-top: 8px; flex-shrink: 0;
+}
+.notif-item__punto--oculto { background: transparent; }
+
+.notif-item__info { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.notif-item__titulo { font-size: 14px; font-weight: 600; color: var(--negro-puro); }
+.notif-item__mensaje { font-size: 13px; color: var(--gris-carbon); }
+.notif-item__fecha { font-size: 11px; color: var(--gris-medio); }

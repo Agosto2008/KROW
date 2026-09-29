@@ -1,0 +1,49 @@
+<section class="adm-emp">
+  <div class="adm-emp__contenedor">
+    <header class="adm-emp__cabecera">
+      <div>
+        <h1 class="adm-emp__titulo">Empresas</h1>
+        <p class="adm-emp__subtitulo">{{ empresas().length }} empresas registradas</p>
+      </div>
+      <input
+        class="adm-emp__buscador"
+        type="text"
+        placeholder="Buscar empresa o ubicación..."
+        [(ngModel)]="busqueda"
+      />
+    </header>
+
+    @if (cargando()) {
+      <app-spinner />
+    } @else if (filtradas.length === 0) {
+      <app-empty-state titulo="Sin resultados" mensaje="No se encontraron empresas." />
+    } @else {
+      <div class="adm-emp__lista">
+        @for (e of filtradas; track e.id_empresa) {
+          <div class="emp-card">
+            <div class="emp-card__avatar">{{ e.nombre.charAt(0) }}</div>
+            <div class="emp-card__info">
+              <div class="emp-card__nombre-fila">
+                <span class="emp-card__nombre">{{ e.nombre }}</span>
+                @if (e.verificada) {
+                  <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+                } @else {
+                  <app-badge variante="neutro">Sin verificar</app-badge>
+                }
+              </div>
+              <span class="emp-card__meta">
+                {{ e.ubicacion || 'Sin ubicación' }} · Registrada el {{ e.fecha_registro | date:'dd/MM/yyyy' }}
+              </span>
+              @if (e.descripcion) {
+                <p class="emp-card__desc">{{ e.descripcion }}</p>
+              }
+            </div>
+            <div class="emp-card__acciones">
+              <app-boton variante="secundario" tamanio="sm" [routerLink]="['/empresas', e.id_empresa]">Ver detalle</app-boton>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>

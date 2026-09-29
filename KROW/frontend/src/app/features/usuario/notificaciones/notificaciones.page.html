@@ -1,0 +1,39 @@
+<section class="pagina">
+  <div class="pagina__contenedor">
+    <header class="pagina__cabecera">
+      <div>
+        <h1 class="pagina__titulo">Notificaciones</h1>
+        <p class="pagina__subtitulo">{{ notificaciones().length }} notificaciones</p>
+      </div>
+      @if (notificaciones().some((n) => !n.leida)) {
+        <app-boton variante="secundario" tamanio="sm" (click)="marcarTodas()">
+          Marcar todas como leídas
+        </app-boton>
+      }
+    </header>
+
+    @if (cargando()) {
+      <app-spinner mensaje="Cargando notificaciones..." />
+    } @else if (notificaciones().length === 0) {
+      <app-empty-state titulo="Sin notificaciones" mensaje="No tienes notificaciones por ahora." />
+    } @else {
+      <div class="notif__lista">
+        @for (n of notificaciones(); track n.id_notificacion) {
+          <button
+            type="button"
+            class="notif-item"
+            [class.notif-item--leida]="n.leida"
+            (click)="marcarLeida(n)"
+          >
+            <span class="notif-item__punto" [class.notif-item__punto--oculto]="n.leida"></span>
+            <span class="notif-item__info">
+              <span class="notif-item__titulo">{{ n.titulo || 'Notificación' }}</span>
+              <span class="notif-item__mensaje">{{ n.mensaje }}</span>
+              <span class="notif-item__fecha">{{ n.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+            </span>
+          </button>
+        }
+      </div>
+    }
+  </div>
+</section>

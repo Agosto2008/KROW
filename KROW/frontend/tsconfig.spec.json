@@ -1,0 +1,8 @@
+/* Configuración para los tests unitarios (vitest + jsdom vía @angular/build:unit-test) */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec"
+  },
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+}

@@ -1,0 +1,66 @@
+<section class="adm-cta">
+  <div class="adm-cta__contenedor">
+    <header class="adm-cta__cabecera">
+      <h1 class="adm-cta__titulo">Cuentas</h1>
+      <p class="adm-cta__subtitulo">Busca, filtra y gestiona el estado de las cuentas de KROW</p>
+    </header>
+
+    <!-- 7.5: el valor vive en textoBusqueda (ngModel) y se manda al backend;
+         antes se leía de un input oculto que siempre estaba vacío -->
+    <form class="adm-cta__buscador" (ngSubmit)="buscar()">
+      <app-campo-input
+        etiqueta="Buscar por correo o nombre"
+        placeholder="ana@correo.com"
+        autocomplete="off"
+        name="busqueda"
+        [(ngModel)]="textoBusqueda"
+      />
+      <app-boton variante="primario" tipo="submit" [cargando]="cargando()">Buscar</app-boton>
+    </form>
+
+    @if (cargando()) {
+      <p class="adm-cta__estado">Cargando cuentas…</p>
+    } @else if (cuentas().length === 0) {
+      <p class="adm-cta__estado">No encontramos cuentas con ese criterio.</p>
+    } @else {
+      <div class="adm-cta__lista">
+        @for (c of cuentas(); track c.id_cuenta) {
+          <div class="cta-card">
+            <div class="cta-card__info">
+              <div class="cta-card__fila">
+                <span class="cta-card__id">Cuenta #{{ c.id_cuenta }}</span>
+                <app-badge [variante]="getVarianteEstado(c.estado)">{{ c.estado }}</app-badge>
+                <app-badge [variante]="getVarianteRol(c.rol)">{{ c.rol }}</app-badge>
+                @if (c.verificada) {
+                  <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+                }
+              </div>
+              <span class="cta-card__nombre">{{ nombreCuenta(c) }}</span>
+              <span class="cta-card__correo">{{ c.correo }}</span>
+              <span class="cta-card__meta">Registrada el {{ c.fecha_creacion | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="cta-card__acciones">
+              @if (c.estado !== 'ACTIVA') {
+                <app-boton variante="primario" tamanio="sm" (click)="cambiarEstado(c, 'ACTIVA')">Activar</app-boton>
+              }
+              @if (c.estado !== 'SUSPENDIDA') {
+                <app-boton variante="peligro" tamanio="sm" (click)="cambiarEstado(c, 'SUSPENDIDA')">Suspender</app-boton>
+              }
+              @if (c.estado !== 'INACTIVA') {
+                <app-boton variante="secundario" tamanio="sm" (click)="cambiarEstado(c, 'INACTIVA')">Inactivar</app-boton>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (totalPaginas > 1) {
+        <nav class="adm-cta__paginacion" aria-label="Paginación de cuentas">
+          <app-boton variante="secundario" tamanio="sm" (click)="cambiarPagina(-1)">← Anterior</app-boton>
+          <span>Página {{ pagina() }} de {{ totalPaginas }} ({{ total() }} cuentas)</span>
+          <app-boton variante="secundario" tamanio="sm" (click)="cambiarPagina(1)">Siguiente →</app-boton>
+        </nav>
+      }
+    }
+  </div>
+</section>

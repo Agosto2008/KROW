@@ -1,0 +1,51 @@
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.campo__etiqueta {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gris-carbon);
+}
+
+.campo__requerido { color: var(--error); margin-left: 2px; }
+
+.campo__input {
+  font-family: var(--fuente-cuerpo);
+  font-size: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-md);
+  background: var(--blanco-puro);
+  color: var(--negro-puro);
+  transition: border-color var(--trans-rapida), box-shadow var(--trans-rapida);
+  width: 100%;
+}
+
+.campo__input:focus {
+  outline: none;
+  border-color: var(--negro-puro);
+  box-shadow: 0 0 0 3px rgba(11, 11, 11, 0.06);
+}
+
+.campo__input::placeholder { color: var(--gris-medio); }
+
+.campo__input:disabled {
+  background: var(--blanco-hueso);
+  cursor: not-allowed;
+}
+
+.campo--error .campo__input { border-color: var(--error); }
+
+.campo__error {
+  font-size: 12px;
+  color: var(--error);
+}
+
+.campo__ayuda {
+  font-size: 12px;
+  color: var(--gris-medio);
+}

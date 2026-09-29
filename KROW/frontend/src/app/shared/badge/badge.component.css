@@ -1,0 +1,70 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-family: var(--fuente-cuerpo);
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--gris-borde);
+  background: var(--blanco-hueso);
+  color: var(--gris-carbon);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge__icono { flex-shrink: 0; }
+
+/* Tipo (Trabajo / Prácticas / etc) — más énfasis */
+.badge--tipo {
+  background: var(--negro-puro);
+  color: var(--blanco-perla);
+  border-color: var(--negro-puro);
+  font-weight: 600;
+}
+
+/* Modalidad — outline sutil */
+.badge--modalidad {
+  background: transparent;
+  color: var(--gris-carbon);
+  border-color: var(--gris-borde);
+}
+
+/* Estados */
+.badge--estado-activa,
+.badge--estado-aceptada {
+  background: var(--exito-bg);
+  color: var(--exito);
+  border-color: var(--exito-bg);
+}
+
+.badge--estado-pausada,
+.badge--estado-revision {
+  background: var(--alerta-bg);
+  color: var(--alerta);
+  border-color: var(--alerta-bg);
+}
+
+.badge--estado-pendiente {
+  background: var(--blanco-hueso);
+  color: var(--gris-carbon);
+  border-color: var(--gris-borde);
+}
+
+.badge--estado-cerrada,
+.badge--estado-vencida,
+.badge--estado-cancelada,
+.badge--estado-rechazada {
+  background: var(--error-bg);
+  color: var(--error);
+  border-color: var(--error-bg);
+}
+
+/* Verificada */
+.badge--verificada {
+  background: var(--negro-puro);
+  color: var(--blanco-perla);
+  border-color: var(--negro-puro);
+  font-weight: 500;
+}

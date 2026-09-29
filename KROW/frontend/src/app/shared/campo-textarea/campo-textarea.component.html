@@ -1,0 +1,28 @@
+<div class="campo" [class.campo--error]="error">
+  @if (etiqueta) {
+    <label class="campo__etiqueta" [attr.for]="idCampo">
+      {{ etiqueta }}
+      @if (requerido) {
+        <span class="campo__requerido" aria-hidden="true">*</span>
+      }
+    </label>
+  }
+  <textarea
+    class="campo__textarea"
+    [id]="idCampo"
+    [rows]="filas"
+    [placeholder]="placeholder"
+    [disabled]="deshabilitado"
+    [value]="valor"
+    [attr.aria-required]="requerido ? 'true' : null"
+    [attr.aria-invalid]="error ? 'true' : null"
+    [attr.aria-describedby]="error ? idError : (ayuda ? idAyuda : null)"
+    (input)="onInput($any($event.target).value)"
+    (blur)="onBlur()"
+  ></textarea>
+  @if (error) {
+    <span class="campo__error" [id]="idError" role="alert">{{ error }}</span>
+  } @else if (ayuda) {
+    <span class="campo__ayuda" [id]="idAyuda">{{ ayuda }}</span>
+  }
+</div>

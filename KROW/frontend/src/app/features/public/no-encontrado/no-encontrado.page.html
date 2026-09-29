@@ -1,0 +1,23 @@
+<section class="nf">
+  <div class="nf__contenedor">
+    <p class="nf__codigo" aria-hidden="true">404</p>
+
+    <h1 class="nf__titulo">Esta página no existe</h1>
+    <p class="nf__texto">
+      Puede que el enlace esté roto o que la oferta ya no esté disponible.
+    </p>
+
+    <div class="nf__acciones">
+      <app-boton variante="primario" tamanio="lg" [routerLink]="['/']">
+        Volver al inicio
+      </app-boton>
+      <app-boton variante="secundario" tamanio="lg" [routerLink]="['/propuestas']">
+        Explorar ofertas
+      </app-boton>
+    </div>
+
+    <p class="nf__pie">
+      ¿Buscabas una empresa? <a routerLink="/empresas">Ver directorio</a>
+    </p>
+  </div>
+</section>

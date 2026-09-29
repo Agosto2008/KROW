@@ -1,0 +1,39 @@
+/* Solicitudes: el shell (.pagina*) llega por `styleUrls`
+   desde shared/estilos/pagina.css. Aquí solo lo propio de la lista. */
+
+.solicitudes__lista { display: flex; flex-direction: column; gap: var(--esp-3); }
+
+.solicitud {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: var(--esp-4); padding: var(--esp-4) var(--esp-5);
+  background: var(--blanco-perla); border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-md);
+}
+
+.solicitud__info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.solicitud__titulo { font-size: 15px; font-weight: 600; color: var(--negro-puro); text-decoration: none; }
+.solicitud__titulo:hover { text-decoration: underline; }
+.solicitud__empresa { display: inline-flex; align-items: center; gap: var(--esp-2); font-size: 13px; color: var(--gris-carbon); }
+.solicitud__fecha { font-size: 12px; color: var(--gris-medio); }
+.solicitud__comentario { margin: 6px 0 0 0; font-size: 13px; color: var(--gris-carbon); }
+
+/* Acciones de la fila: badge + cancelar */
+.solicitud__acciones {
+  display: flex; flex-direction: column; align-items: flex-end; gap: var(--esp-2);
+}
+
+.solicitud__cancelar {
+  padding: 6px 12px; background: transparent;
+  border: 1px solid var(--gris-borde); border-radius: var(--radio-sm);
+  font-family: var(--fuente-cuerpo); font-size: 12px; font-weight: 500;
+  color: var(--error); cursor: pointer;
+  transition: border-color var(--trans-rapida), background var(--trans-rapida);
+}
+
+.solicitud__cancelar:hover {
+  border-color: var(--error); background: var(--error-bg);
+}
+
+/* Modal de confirmacion */
+.cancelar__texto { font-size: 14px; line-height: 1.6; color: var(--gris-carbon); margin: 0 0 var(--esp-5) 0; }
+.cancelar__acciones { display: flex; justify-content: flex-end; gap: var(--esp-3); }

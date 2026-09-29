@@ -1,0 +1,37 @@
+<section class="cv">
+  <div class="cv__contenedor">
+    <header class="cv__cabecera">
+      <div>
+        <h1 class="cv__titulo">Mi currículum</h1>
+        @if (fechaActualizacion()) {
+          <p class="cv__meta">Actualizado el {{ fechaActualizacion()! | date:'dd/MM/yyyy HH:mm' }}</p>
+        }
+      </div>
+      <app-boton variante="primario" [cargando]="guardando()" (click)="guardar()">
+        Guardar cambios
+      </app-boton>
+    </header>
+
+    @if (cargando()) {
+      <app-spinner mensaje="Cargando currículum..." />
+    } @else {
+      @if (sinCurriculum()) {
+        <p class="cv__aviso">
+          Todavía no tienes currículum. Completa los campos y guarda:
+          las empresas lo verán cuando postules a sus ofertas.
+        </p>
+      }
+      <form [formGroup]="form" class="cv__form">
+        <app-campo-textarea etiqueta="Perfil profesional" [filas]="3" formControlName="perfil_profesional" ayuda="Breve resumen de quién eres y qué buscas" [error]="errorDe('perfil_profesional')" />
+        <app-campo-textarea etiqueta="Campo laboral" [filas]="3" formControlName="campo_laboral" ayuda="Experiencia y áreas donde has trabajado" />
+        <app-campo-textarea etiqueta="Campo estudiantil" [filas]="3" formControlName="campo_estudiantil" ayuda="Formación académica, estudios actuales" />
+        <app-campo-textarea etiqueta="Fortalezas" [filas]="3" formControlName="fortalezas" />
+        <app-campo-textarea etiqueta="Debilidades" [filas]="3" formControlName="debilidades" />
+        <app-campo-textarea etiqueta="Idiomas" [filas]="2" formControlName="idiomas" ayuda="Ej: Español (nativo), Inglés (B2)" />
+        <app-campo-textarea etiqueta="Habilidades" [filas]="3" formControlName="habilidades" ayuda="Técnicas y blandas, separadas por comas" />
+        <app-campo-textarea etiqueta="Certificaciones" [filas]="2" formControlName="certificaciones" />
+        <app-campo-input etiqueta="Portafolio (URL)" placeholder="https://..." formControlName="portafolio" [error]="errorDe('portafolio')" />
+      </form>
+    }
+  </div>
+</section>

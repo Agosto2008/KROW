@@ -1,0 +1,157 @@
+@if (cargando()) {
+  <app-spinner mensaje="Cargando panel..." />
+} @else if (!empresa()) {
+  <app-empty-state titulo="Sin empresa" mensaje="No encontramos tu empresa." />
+} @else {
+  <section class="panel">
+    <div class="panel__contenedor">
+      <header class="panel__cabecera">
+        <div class="panel__empresa">
+          <div class="panel__avatar">{{ iniciales }}</div>
+          <div>
+            <div class="panel__nombre-fila">
+              <h1 class="panel__nombre">{{ empresa()!.nombre }}</h1>
+              @if (empresa()!.verificada) {
+                <app-badge variante="verificada" [conIcono]="true">Verificada</app-badge>
+              }
+            </div>
+            <p class="panel__meta">{{ empresa()!.ubicacion || 'Sin ubicación' }}</p>
+          </div>
+        </div>
+        <div class="panel__acciones">
+          <app-boton variante="fantasma" tamanio="sm" (click)="abrirPassword()">
+            Cambiar contraseña
+          </app-boton>
+          <app-boton variante="secundario" tamanio="sm" (click)="abrirPerfil()">
+            Editar perfil
+          </app-boton>
+        </div>
+      </header>
+
+      <!-- KPIs reales (Fase 6.1): calculados de las 4 peticiones, sin setTimeout -->
+      <div class="panel__kpis" role="list">
+        @for (k of kpis(); track k.etiqueta) {
+          <div class="kpi" role="listitem">
+            <span class="kpi__valor" [class.kpi__valor--texto]="k.esTexto">{{ k.valor }}</span>
+            <span class="kpi__etiqueta">{{ k.etiqueta }}</span>
+            <span class="kpi__detalle">{{ k.detalle }}</span>
+          </div>
+        }
+      </div>
+
+      <nav class="panel__tabs">
+        <button class="panel__tab" [class.panel__tab--activa]="tabActiva() === 'ofertas'" (click)="setTab('ofertas')">
+          Mis ofertas
+        </button>
+        <button class="panel__tab" [class.panel__tab--activa]="tabActiva() === 'perfil'" (click)="setTab('perfil')">
+          Perfil empresa
+        </button>
+      </nav>
+
+      @if (tabActiva() === 'ofertas') {
+        <div class="panel__seccion-cabecera">
+          <h2 class="panel__seccion-titulo">Ofertas publicadas</h2>
+          <app-boton variante="primario" tamanio="sm" [routerLink]="['/empresa/propuestas/nueva']">
+            + Nueva oferta
+          </app-boton>
+        </div>
+
+        @if (propuestas().length === 0) {
+          <app-empty-state titulo="Sin ofertas" mensaje="Aún no has publicado ninguna oferta.">
+            <app-boton variante="primario" [routerLink]="['/empresa/propuestas/nueva']">Crear primera oferta</app-boton>
+          </app-empty-state>
+        } @else {
+          <div class="panel__lista">
+            @for (p of propuestas(); track p.id_propuesta) {
+              <div class="oferta">
+                <div class="oferta__info">
+                  <div class="oferta__titulo-fila">
+                    <a [routerLink]="['/propuestas', p.id_propuesta]" class="oferta__titulo">{{ p.nombre }}</a>
+                    <app-badge variante="tipo">{{ getEtiquetaTipo(p.tipo) }}</app-badge>
+                    <app-badge [variante]="getVarianteEstado(p.estado)">{{ p.estado }}</app-badge>
+                  </div>
+                  <p class="oferta__meta">
+                    {{ p.modalidad.toLowerCase() }} · {{ p.ubicacion || 'Sin ubicación' }}
+                    @if (p.pago) { · {{ p.pago }} €/mes }
+                    · Publicado el {{ p.fecha_publicacion | date:'dd/MM/yyyy' }}
+                  </p>
+                </div>
+                <div class="oferta__acciones">
+                  <app-boton variante="fantasma" tamanio="sm" [routerLink]="['/empresa/propuestas', p.id_propuesta, 'editar']">
+                    Editar
+                  </app-boton>
+                  <app-boton variante="peligro" tamanio="sm" (click)="eliminarPropuesta(p.id_propuesta)">
+                    Eliminar
+                  </app-boton>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      }
+
+      @if (tabActiva() === 'perfil') {
+        <div class="panel__perfil">
+          <h2 class="panel__seccion-titulo">Sobre la empresa</h2>
+          <p class="panel__texto">{{ empresa()!.descripcion || 'Sin descripción.' }}</p>
+          <h2 class="panel__seccion-titulo">Propuesta de valor</h2>
+          <p class="panel__texto">{{ empresa()!.propuesta_empresa || 'Sin propuesta.' }}</p>
+          <h2 class="panel__seccion-titulo">Contacto</h2>
+          <p class="panel__texto">📞 {{ empresa()!.telefono || '—' }}</p>
+          <p class="panel__texto">📍 {{ empresa()!.ubicacion || '—' }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <app-modal [abierto]="modalPerfilAbierto()" titulo="Editar perfil" ancho="lg" (cerrar)="cerrarPerfil()">
+    <form [formGroup]="formPerfil" class="modal-form">
+      <app-campo-input etiqueta="Nombre" formControlName="nombre" [requerido]="true" />
+      <app-campo-textarea etiqueta="Descripción" [filas]="3" formControlName="descripcion" />
+      <app-campo-textarea etiqueta="Propuesta de valor" [filas]="3" formControlName="propuesta_empresa" />
+      <app-campo-input etiqueta="Teléfono" tipo="tel" formControlName="telefono" />
+      <app-campo-input etiqueta="Ubicación" formControlName="ubicacion" />
+    </form>
+    <div modalFooter class="modal-footer">
+      <app-boton variante="secundario" (click)="cerrarPerfil()">Cancelar</app-boton>
+      <app-boton variante="primario" [cargando]="guardando()" (click)="guardarPerfil()">Guardar</app-boton>
+    </div>
+  </app-modal>
+
+  <!-- Fase 6.7: cambiar contraseña (la exige la actual) -->
+  <app-modal [abierto]="modalPasswordAbierto()" titulo="Cambiar contraseña" (cerrar)="cerrarPassword()">
+    <form [formGroup]="formPassword" class="modal-form" (ngSubmit)="guardarPassword()">
+      <app-campo-input
+        etiqueta="Contraseña actual"
+        tipo="password"
+        autocomplete="current-password"
+        formControlName="password_actual"
+        [requerido]="true"
+        [error]="errorPassword('password_actual')"
+      />
+      <app-campo-input
+        etiqueta="Nueva contraseña"
+        tipo="password"
+        autocomplete="new-password"
+        formControlName="password_nueva"
+        [requerido]="true"
+        ayuda="Mínimo 8 caracteres"
+        [error]="errorPassword('password_nueva')"
+      />
+      <app-campo-input
+        etiqueta="Repite la nueva contraseña"
+        tipo="password"
+        autocomplete="new-password"
+        formControlName="password_confirmar"
+        [requerido]="true"
+        [error]="errorPassword('password_confirmar')"
+      />
+    </form>
+    <div class="modal-footer">
+      <app-boton variante="secundario" (click)="cerrarPassword()">Cancelar</app-boton>
+      <app-boton variante="primario" [cargando]="guardandoPassword()" (click)="guardarPassword()">
+        Guardar
+      </app-boton>
+    </div>
+  </app-modal>
+}

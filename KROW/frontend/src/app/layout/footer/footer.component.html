@@ -1,0 +1,34 @@
+<footer class="footer">
+  <div class="footer__contenedor">
+    <div class="footer__columna">
+      <app-logo enlace="/" tamanio="md" variante="oscuro" />
+      <p class="footer__descripcion">
+        Plataforma para el primer empleo y prácticas de jóvenes.
+        Conectamos talento con oportunidades reales y empresas verificadas.
+      </p>
+    </div>
+
+    <div class="footer__columna">
+      <h5 class="footer__titulo">Plataforma</h5>
+      <a routerLink="/propuestas" class="footer__enlace">Explorar ofertas</a>
+      <a routerLink="/empresas" class="footer__enlace">Empresas</a>
+      <a routerLink="/login" class="footer__enlace">Iniciar sesión</a>
+    </div>
+
+    <div class="footer__columna">
+      <h5 class="footer__titulo">Únete</h5>
+      <a routerLink="/registro/usuario" class="footer__enlace">Registro de candidato</a>
+      <a routerLink="/registro/empresa" class="footer__enlace">Registro de empresa</a>
+    </div>
+
+    <div class="footer__columna">
+      <h5 class="footer__titulo">Ayuda</h5>
+      <a routerLink="/soporte" class="footer__enlace">Soporte y contacto</a>
+      <a routerLink="/terminos" class="footer__enlace">Términos y condiciones</a>
+    </div>
+  </div>
+
+  <div class="footer__base">
+    <span>© {{ anio }} KROW. Todos los derechos reservados.</span>
+  </div>
+</footer>

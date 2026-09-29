@@ -1,0 +1,12 @@
+/* Estilos propios del registro de empresa.
+   El shell (.auth*) llega por `styleUrls` desde shared/estilos/auth.css. */
+
+.auth__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--esp-3);
+}
+
+@media (max-width: 480px) {
+  .auth__grid { grid-template-columns: 1fr; }
+}

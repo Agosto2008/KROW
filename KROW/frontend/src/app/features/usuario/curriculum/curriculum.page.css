@@ -1,0 +1,19 @@
+.cv { padding: var(--esp-7) 0 var(--esp-9); }
+.cv__contenedor { max-width: 860px; margin: 0 auto; padding: 0 var(--esp-5); }
+
+.cv__cabecera {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--esp-4); margin-bottom: var(--esp-6); flex-wrap: wrap;
+}
+.cv__titulo { font-size: 32px; margin: 0 0 4px 0; }
+.cv__meta { font-size: 13px; color: var(--gris-medio); margin: 0; }
+
+/* Aviso cuando aun no existe CV (GET responde 404) */
+.cv__aviso {
+  font-size: 14px; line-height: 1.6; color: var(--gris-carbon);
+  background: var(--info-bg); border: 1px solid var(--gris-borde);
+  border-radius: var(--radio-md); padding: var(--esp-3) var(--esp-4);
+  margin: 0 0 var(--esp-5) 0;
+}
+
+.cv__form { display: flex; flex-direction: column; gap: var(--esp-4); }

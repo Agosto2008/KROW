@@ -1,0 +1,116 @@
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UsuarioService } from '../../../core/api/usuario.service';
+import { AuthService } from '../../../core/api/auth.service';
+import { ToastService } from '../../../shared/toast/toast.service';
+import { Usuario } from '../../../core/models/Index';
+import { CampoInputComponent } from '../../../shared/campo-input/campo-input.component';
+import { CampoTextareaComponent } from '../../../shared/campo-textarea/campo-textarea.component';
+import { BotonComponent } from '../../../shared/boton/boton.component';
+import { ModalComponent } from '../../../shared/modal/modal.component';
+import { SpinnerComponent } from '../../../shared/spinner/spinner.component';
+
+@Component({
+  selector: 'app-perfil-page',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, CampoInputComponent, CampoTextareaComponent, BotonComponent, ModalComponent, SpinnerComponent],
+  templateUrl: './perfil.page.html',
+  styleUrl: './perfil.page.css',
+})
+export class PerfilPage implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly usuarioService = inject(UsuarioService);
+  private readonly auth = inject(AuthService);
+  private readonly toast = inject(ToastService);
+
+  readonly usuario = signal<Usuario | null>(null);
+  readonly cargando = signal(true);
+  readonly modalAbierto = signal(false);
+  readonly guardando = signal(false);
+
+  readonly form = this.fb.nonNullable.group({
+    primer_nombre: ['', Validators.required],
+    segundo_nombre: [''],
+    primer_apellido: ['', Validators.required],
+    segundo_apellido: [''],
+    telefono: [''],
+    descripcion_personal: [''],
+    direccion: [''],
+    fecha_nacimiento: [''],
+  });
+
+  ngOnInit(): void {
+    // id_usuario (NO id_cuenta): el backend compara contra el usuario del token.
+    // En el seed Ana es cuenta_id=2 pero usuario_id=1; usar la cuenta cargaría
+    // el perfil de Luis y guardaría con 403.
+    const id = this.auth.idUsuario();
+    if (!id) {
+      this.cargando.set(false);
+      return;
+    }
+    this.usuarioService.obtenerPorId(id).subscribe({
+      next: (u) => {
+        this.usuario.set(u);
+        this.form.patchValue({
+          primer_nombre: u.primer_nombre,
+          segundo_nombre: u.segundo_nombre ?? '',
+          primer_apellido: u.primer_apellido,
+          segundo_apellido: u.segundo_apellido ?? '',
+          telefono: u.telefono ?? '',
+          descripcion_personal: u.descripcion_personal ?? '',
+          direccion: u.direccion ?? '',
+          fecha_nacimiento: u.fecha_nacimiento ?? '',
+        });
+        this.cargando.set(false);
+      },
+      error: () => this.cargando.set(false),
+    });
+  }
+
+  abrirModal(): void { this.modalAbierto.set(true); }
+  cerrarModal(): void { this.modalAbierto.set(false); }
+
+  guardar(): void {
+    const u = this.usuario();
+    if (!u || this.form.invalid) return;
+    this.guardando.set(true);
+    this.usuarioService.actualizar(u.id_usuario, this.form.getRawValue()).subscribe({
+      next: () => {
+        this.toast.exito('Perfil actualizado');
+        this.guardando.set(false);
+        this.cerrarModal();
+        this.usuario.set({ ...u, ...this.form.getRawValue() } as Usuario);
+      },
+      error: (err) => {
+        this.guardando.set(false);
+        this.toast.error(err.message || 'No se pudo actualizar');
+      },
+    });
+  }
+
+  get iniciales(): string {
+    const u = this.usuario();
+    if (!u) return '';
+    return `${u.primer_nombre.charAt(0)}${u.primer_apellido.charAt(0)}`.toUpperCase();
+  }
+
+  /**
+   * Error visible del campo (solo tras tocarlo), para pasarlo al
+   * `app-campo-input` via `[error]` — accesibilidad + usuario lo ve.
+   */
+  errorDe(control: string): string {
+    const c = this.form.get(control);
+    if (!c || !c.touched) return '';
+    if (c.hasError('required')) return 'Este campo es obligatorio';
+    if (c.hasError('minlength')) return 'Demasiado corto';
+    if (c.hasError('pattern')) return 'Formato no válido';
+    return '';
+  }
+
+  get nombreCompleto(): string {
+    const u = this.usuario();
+    if (!u) return '';
+    return [u.primer_nombre, u.segundo_nombre, u.primer_apellido, u.segundo_apellido].filter(Boolean).join(' ');
+  }
+}
